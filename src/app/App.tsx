@@ -8,8 +8,8 @@ import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/Goog
 import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
 import { CrashReportPrompt } from "../features/diagnostics/CrashReportPrompt";
 import { UsageNotice } from "../features/diagnostics/UsageNotice";
-import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
-import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
+import { DeviceFilesDialog } from "../features/device/DeviceFilesDialog";
+import { DeviceSettingsRoute } from "../features/device/DeviceSettingsRoute";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
 import { FollowLinkActions } from "../features/follow/FollowLinkActions";
@@ -71,9 +71,25 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [shareSlot, setShareSlot] = useState<HTMLElement | null>(null);
   const [settingsTab, setSettingsTab] = useState<"general" | "help">("general");
   // A Home card's menu choice: the profile opens, then the action runs once.
-  const [followRequest, setFollowRequest] = useState<{ n: number; kind: "latest" | "forget" } | undefined>(undefined);
-  const [shareRequest, setShareRequest] = useState<{ n: number; open: boolean } | undefined>(undefined);
+  // A Home card's menu action, run on the card's file without opening it in
+  // the editor (`ShareMenu(path)`, `GetLatestAsync(path)`, `StopFollowing(path)`).
+  // The session is the file, held out of sight, and closed when it is done with.
+  const [cardAction, setCardAction] = useState<{
+    readonly snapshot: EditorSnapshot;
+    readonly kind: "copy_link" | "open_sheet" | "latest" | "forget";
+    readonly n: number;
+  } | null>(null);
+  const [libraryKey, setLibraryKey] = useState(0);
+  const cardSession = cardAction?.snapshot.sessionId ?? null;
+  useEffect(() => {
+    if (cardSession === null) return undefined;
+    return () => {
+      void client.closeProfile(cardSession, "discard").catch(() => undefined);
+    };
+  }, [client, cardSession]);
   const [devicePreferences, setDevicePreferences] = useState<EditorSnapshot | null>(null);
+  // `DeviceFilesWindow`, opened from the device page and from Home.
+  const [filesOpen, setFilesOpen] = useState(false);
   const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
   // A community profile is an anonymous Sheets download (1950d85): saving can
   // never reach that sheet, so the editor says it holds a copy.
@@ -284,6 +300,25 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     },
     [client, closing, devicePreferences, finishEditorClose, showFailure],
   );
+
+  // A file opened from the files window replaces whatever is open, as
+  // `OpenDeviceProfile` does: device settings edits are dropped (Avalonia
+  // reads them again on the next visit), editor work is asked about first.
+  const openFromDeviceFiles = async (opened: EditorSnapshot): Promise<void> => {
+    setFilesOpen(false);
+    if (devicePreferences !== null && devicePreferences.sessionId !== opened.sessionId) {
+      await client.closeProfile(devicePreferences.sessionId, "discard").catch(() => undefined);
+    }
+    if (editor !== null) {
+      const outcome = await client.closeProfile(editor.sessionId, "if_clean").catch(() => null);
+      if (outcome?.kind === "keptOpenUnsavedChanges") {
+        await client.closeProfile(opened.sessionId, "discard").catch(() => undefined);
+        setMessage(t("Main_ThisProfileHasUnsavedChanges"));
+        return;
+      }
+    }
+    showEditor(opened);
+  };
 
   const openProfile = async (): Promise<void> => {
     try {
@@ -519,7 +554,6 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           snapshot={editor}
           onSnapshot={setEditor}
           buttonsSlot={shareSlot}
-          shareRequest={shareRequest}
           onReview={(review) => {
             setWorkbookReview(review);
             setReviewFromSheet(false);
@@ -531,7 +565,6 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           snapshot={editor}
           onSnapshot={setEditor}
           buttonsSlot={shareSlot}
-          request={followRequest}
         />
         {shareSlot === null || client.exportProfileXlsx === undefined
           ? null
@@ -561,7 +594,42 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       </section>
     );
   } else if (activeDestination === "home") {
+    const cardActions =
+      cardAction === null ? null : (
+        <section className="card-action" aria-label={t("Shell_Profile")}>
+          <ProfileDriveActions
+            client={client}
+            snapshot={cardAction.snapshot}
+            onSnapshot={(next) => setCardAction((current) => (current === null ? null : { ...current, snapshot: next }))}
+            buttonsSlot={null}
+            shareRequest={
+              cardAction.kind === "copy_link" || cardAction.kind === "open_sheet"
+                ? { n: cardAction.n, open: cardAction.kind === "open_sheet" }
+                : undefined
+            }
+            onReview={(review) => {
+              setWorkbookReview(review);
+              setReviewFromSheet(false);
+              setMessage("");
+            }}
+          />
+          <FollowLinkActions
+            client={client}
+            snapshot={cardAction.snapshot}
+            onSnapshot={(next) => setCardAction((current) => (current === null ? null : { ...current, snapshot: next }))}
+            onChanged={() => setLibraryKey((key) => key + 1)}
+            buttonsSlot={null}
+            request={
+              cardAction.kind === "latest" || cardAction.kind === "forget"
+                ? { n: cardAction.n, kind: cardAction.kind }
+                : undefined
+            }
+          />
+        </section>
+      );
     content = (
+      <>
+      {cardActions}
       <HomePage
         client={client}
         rescue={rescue}
@@ -579,32 +647,35 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           setMessage("");
         }}
         onOpenCommunity={() => setActiveDestination("community")}
-        onManageDevice={() => setActiveDestination("device")}
+        onManageDevice={() => setFilesOpen(true)}
         onOpenHelp={() => {
           setSettingsTab("help");
           setSettingsOpen(true);
         }}
         onOpenRescue={() => void openRescue()}
         onDismissRescue={() => void dismissRescue()}
+        refreshKey={libraryKey}
         onOpened={(opened, then) => {
-          showEditor(opened);
-          const n = Date.now();
-          if (then === "latest" || then === "forget") setFollowRequest({ n, kind: then });
-          else if (then === "copy_link" || then === "open_sheet") setShareRequest({ n, open: then === "open_sheet" });
+          if (then === undefined) {
+            setCardAction(null);
+            showEditor(opened);
+            return;
+          }
+          setCardAction({ snapshot: opened, kind: then, n: Date.now() });
         }}
       />
+      </>
     );
-  } else if (activeDestination === "device" && devicePreferences !== null) {
+  } else if (activeDestination === "device") {
+    // Avalonia: the device nav is the settings page; files are a window.
     content = (
-      <DevicePreferencesPage
+      <DeviceSettingsRoute
         client={client}
         snapshot={devicePreferences}
         onSnapshot={setDevicePreferences}
-        onClose={() => void requestPreferencesClose("device")}
+        onManageFiles={() => setFilesOpen(true)}
       />
     );
-  } else if (activeDestination === "device") {
-    content = <DeviceLibraryPage client={client} onOpenProfile={showEditor} />;
   } else if (activeDestination === "community") {
     content = (
       <CommunityProfilesPage
@@ -702,6 +773,12 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         <p>{t("Main_ThisProfileHasUnsavedChanges")}</p>
         {closePromptFor === "prefs" ? <p>{t("Rewrite_SaveFromThePageFirst")}</p> : null}
       </Dialog>
+      <DeviceFilesDialog
+        client={client}
+        open={filesOpen}
+        onClose={() => setFilesOpen(false)}
+        onOpenProfile={(opened) => void openFromDeviceFiles(opened)}
+      />
     </>
   );
 }

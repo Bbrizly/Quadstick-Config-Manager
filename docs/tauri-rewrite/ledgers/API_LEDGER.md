@@ -105,3 +105,7 @@ the library mints an opaque id for it and that is what travels.
 ## Phase 6 commands
 
 `list_library_profiles`, `open_library_profile {id}`, `delete_library_profile {id}`, `list_templates`, `open_template {id}`, `save_template {sessionId, expectedRevision, name}`. Ids are opaque and replaced by each listing; no path crosses. Settings gain `rowCards`, `compactCards`, `cardSentenceStyle` (`press_when` | `input_to_output`).
+
+## Phase 7 commands
+
+`device_location {deviceId}` -> string or null (display only). `rename_template {id, name}` -> `{kind: renamed|taken, name}` (no-clobber); `delete_template {id}` (template ids only). `get_custom_name_drafts {sessionId}` / `set_custom_name_drafts {sessionId, drafts: [[name, output]]}` -> `{drafts, kept}`; kept is false while the profile has no file. `check_latest_from_link` changes gain `limitation`. 90 commands.

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
+import { InfoButton } from "../editor/Popover";
 import { useI18n, type MessageKey } from "../../i18n";
 import type { BridgeState, ControllerClient, ControllerOptions } from "../../platform";
 
@@ -15,19 +16,42 @@ const BRIDGE_TEXT: Record<BridgeState, MessageKey> = {
 
 const WARN: ReadonlySet<BridgeState> = new Set(["no_access", "no_virtual_pad", "stopped"]);
 
-/** `DeviceSettingsPage.Explain`: one line, and the long help behind it. */
+/** `MainWindow.Explain`: one line, and a "?" with the long help behind it. */
 function Explain({ line, heading, help }: { readonly line: MessageKey; readonly heading: MessageKey; readonly help: MessageKey }) {
   const { t } = useI18n();
   return (
-    <details className="device-preference-adapters">
-      <summary>{t(line)}</summary>
-      <h4>{t(heading)}</h4>
-      {t(help)
-        .split(/\n\s*\n/u)
-        .map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
-    </details>
+    <div className="explain-row">
+      <span>{t(line)}</span>
+      <InfoButton name={t(heading)} title={t(heading)} body={t(help)} />
+    </div>
+  );
+}
+
+/** A Fluent ToggleSwitch with no On/Off words, and the title beside it. */
+function Switch({
+  checked,
+  disabled,
+  label,
+  onChange,
+}: {
+  readonly checked: boolean;
+  readonly disabled: boolean;
+  readonly label: string;
+  readonly onChange: (on: boolean) => void;
+}) {
+  return (
+    <label className="switch-row">
+      <input
+        className="qcm-switch"
+        type="checkbox"
+        role="switch"
+        aria-checked={checked}
+        checked={checked}
+        disabled={disabled}
+        onChange={(event) => onChange(event.currentTarget.checked)}
+      />
+      <span className="switch-title">{label}</span>
+    </label>
   );
 }
 
@@ -89,15 +113,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
     const text = bridgeState === null ? "" : t(BRIDGE_TEXT[bridgeState]);
     return (
       <section className="controller-row" aria-label={t("DevicePage_Bridge")}>
-        <label className="checkbox-row">
-          <input
-            type="checkbox"
-            checked={options.bridgeOn}
-            disabled={busy}
-            onChange={(event) => void toggle(event.currentTarget.checked)}
-          />
-          <span>{t("DevicePage_Bridge")}</span>
-        </label>
+        <Switch checked={options.bridgeOn} disabled={busy} label={t("DevicePage_Bridge")} onChange={(on) => void toggle(on)} />
         <Explain line="DevicePage_BridgeLine" heading="DevicePage_Bridge" help="DevicePage_BridgeHelp" />
         <LiveRegion visuallyHidden={false}>
           {text === "" ? null : (
@@ -135,28 +151,22 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
 
   return (
     <section className="controller-row" aria-label={t("DevicePage_MacGames")}>
-      <h3>{t("DevicePage_MacGames")}</h3>
+      <h3 className="controller-title">{t("DevicePage_MacGames")}</h3>
       <Explain line="DevicePage_MacGamesLine" heading="DevicePage_MacGames" help="DevicePage_MacGamesHelp" />
       {options.macSandboxed ? (
-        <div>
+        <div className="controller-store">
           <p>{t("DevicePage_MacPadStoreLine")}</p>
-          <button type="button" onClick={() => copy(options.macCommand)}>
-            {t("DevicePage_MacPadCopy")}
-          </button>
-          <button type="button" onClick={() => copy(options.macUndoCommand)}>
-            {t("DevicePage_MacPadCopyUndo")}
-          </button>
+          <div className="controller-copy">
+            <button type="button" onClick={() => copy(options.macCommand)}>
+              {t("DevicePage_MacPadCopy")}
+            </button>
+            <button type="button" onClick={() => copy(options.macUndoCommand)}>
+              {t("DevicePage_MacPadCopyUndo")}
+            </button>
+          </div>
         </div>
       ) : (
-        <label className="checkbox-row">
-          <input
-            type="checkbox"
-            checked={options.macOn}
-            disabled={busy}
-            onChange={(event) => void toggleMac(event.currentTarget.checked)}
-          />
-          <span>{t("DevicePage_MacPad")}</span>
-        </label>
+        <Switch checked={options.macOn} disabled={busy} label={t("DevicePage_MacPad")} onChange={(on) => void toggleMac(on)} />
       )}
       <Explain line="DevicePage_MacPadLine" heading="DevicePage_MacPad" help="DevicePage_MacPadHelp" />
       <LiveRegion visuallyHidden={false}>

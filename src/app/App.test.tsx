@@ -29,7 +29,7 @@ describe("TASK-036/037 app shell", () => {
     fireEvent.click(device);
     expect(device).toHaveAttribute("aria-current", "page");
     expect(home).not.toHaveAttribute("aria-current");
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("On your QuadStick");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Your QuadStick's settings");
   });
 
   it("applies explicit themes and returns cleanly to system preference", () => {

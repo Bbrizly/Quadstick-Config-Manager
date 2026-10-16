@@ -51,7 +51,7 @@ describe("controller bridge and Mac gamepad rows", () => {
   it("switches the bridge and says each state in words", async () => {
     const { controller, calls, push } = fake({});
     const view = show(controller);
-    const box = await screen.findByRole("checkbox", { name: "Xbox controller bridge" });
+    const box = await screen.findByRole("switch", { name: "Xbox controller bridge" });
     fireEvent.click(box);
     expect(await screen.findByText("Waiting for a QuadStick in emulation mode 2.")).toBeInTheDocument();
     push("no_access");
@@ -65,9 +65,9 @@ describe("controller bridge and Mac gamepad rows", () => {
   it("the Mac switch reports a change that did not take", async () => {
     const { controller, calls } = fake({ kind: "mac" }, false);
     show(controller);
-    fireEvent.click(await screen.findByRole("checkbox", { name: "Gamepad in mode 0" }));
+    fireEvent.click(await screen.findByRole("switch", { name: "Gamepad in mode 0" }));
     expect(await screen.findByText("This Mac did not take the change, so nothing was changed.")).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: "Gamepad in mode 0" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "Gamepad in mode 0" })).not.toBeChecked();
     expect(calls).toEqual(["mac:true"]);
   });
 
@@ -76,7 +76,7 @@ describe("controller bridge and Mac gamepad rows", () => {
     show(controller);
     expect(await screen.findByRole("button", { name: "Copy the command" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Copy the undo command" })).toBeInTheDocument();
-    expect(screen.queryByRole("checkbox")).toBeNull();
+    expect(screen.queryByRole("switch")).toBeNull();
     await waitFor(() => expect(screen.getByText(/App Store version cannot make this change/u)).toBeInTheDocument());
   });
 });

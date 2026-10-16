@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
+import { ControllerRow } from "./ControllerRow";
+import { DeviceBand } from "./DeviceBand";
 import { DeviceLinkDialog } from "./DeviceLinkDialog";
 import { useI18n } from "../../i18n";
-import { useLiveInput } from "../live/useLiveInput";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
   asQcmError,
   type EditorOp,
   type EditorSnapshot,
   type InstallPlan,
-  type LiveSnapshot,
+  type ModelChoice,
   type PreferenceCatalog,
   type PreferenceDefinition,
   type QcmClient,
@@ -18,9 +19,17 @@ import {
 
 interface DevicePreferencesPageProps {
   readonly client: QcmClient;
-  readonly snapshot: EditorSnapshot;
+  /** prefs.csv off the stick, or null with no stick (the catalog is drawn). */
+  readonly snapshot: EditorSnapshot | null;
+  /** Said in place of "Found your QuadStick at" when there is no session. */
+  readonly status?: string;
   readonly onSnapshot: (snapshot: EditorSnapshot) => void;
-  readonly onClose: () => void;
+  /** Find the drive and read it again (`LoadDeviceSettingsAsync`). */
+  readonly onReload: () => void;
+  /** The files window (`ShowDeviceFilesAsync`). */
+  readonly onManageFiles: () => void;
+  /** `DriveAccessButton`, offered while no drive is found. */
+  readonly onChooseDrive?: () => void;
 }
 
 interface PreferenceRow {
@@ -31,7 +40,8 @@ interface PreferenceRow {
   readonly description: string;
 }
 
-function rowsOf(snapshot: EditorSnapshot): PreferenceRow[] {
+function rowsOf(snapshot: EditorSnapshot | null): PreferenceRow[] {
+  if (snapshot === null) return [];
   const sheet = snapshot.modes.find((mode) => mode.kind === "preferences");
   if (sheet === undefined) return [];
   return Array.from({ length: sheet.bindingCount }, (_, offset) => {
@@ -90,41 +100,6 @@ export function AdapterModes() {
           <p key={paragraph}>{paragraph}</p>
         ))}
     </details>
-  );
-}
-
-function liveText(frame: LiveSnapshot | null, t: ReturnType<typeof useI18n>["t"]): string {
-  if (frame?.status.kind === "reading") {
-    return frame.status.motion.buttons.length === 0
-      ? t("DevicePage_ReadingProductNothingPressed", [frame.status.product])
-      : t("DevicePage_ReadingProductPressedNow", [
-          frame.status.product,
-          frame.status.motion.buttons.join(", "),
-        ]);
-  }
-  if (frame?.status.kind === "xinputOnly") return t("Main_ThisEmulationModeIsNot");
-  return t("DevicePage_NothingIsReadingTheStick");
-}
-
-function AxisView({ frame, deadZone }: { readonly frame: LiveSnapshot | null; readonly deadZone: number }) {
-  const reading = frame?.status.kind === "reading" ? frame.status.motion : null;
-  const x = reading?.x ?? 0;
-  const y = reading?.y ?? 0;
-  const clampedDeadZone = Math.max(0, Math.min(100, deadZone));
-  return (
-    <div className="device-axis-view" aria-hidden="true">
-      <span
-        className="device-axis-dead-zone"
-        style={{ width: `${String(clampedDeadZone)}%`, height: `${String(clampedDeadZone)}%` }}
-      />
-      <span
-        className="device-axis-dot"
-        style={{
-          left: `${String(50 + x * 45)}%`,
-          top: `${String(50 + y * 45)}%`,
-        }}
-      />
-    </div>
   );
 }
 
@@ -225,25 +200,14 @@ function PreferenceValue({
   );
 }
 
-/** The live stick, only while the Joystick group is open: nothing reads the
- * stick for a picture nobody is looking at. */
-function JoystickTravel({ client, deadZone }: { readonly client: QcmClient; readonly deadZone: number }) {
-  const { t } = useI18n();
-  const [live, setLive] = useState<LiveSnapshot | null>(null);
-  useLiveInput(client, setLive);
-  return (
-    <>
-      <AxisView frame={live} deadZone={deadZone} />
-      <output>{liveText(live, t)}</output>
-    </>
-  );
-}
-
 export function DevicePreferencesPage({
   client,
   snapshot,
+  status = "",
   onSnapshot,
-  onClose,
+  onReload,
+  onManageFiles,
+  onChooseDrive,
 }: DevicePreferencesPageProps) {
   const { t, plural } = useI18n();
   const [catalog, setCatalog] = useState<PreferenceCatalog | null>(null);
@@ -256,25 +220,48 @@ export function DevicePreferencesPage({
   // What the file held when it was read, so the save bar can count changes
   // (`RefreshDeviceSaveBar`). A reload or a save opens a new session.
   const [baseline, setBaseline] = useState<{ readonly session: string; readonly values: ReadonlyMap<string, string> }>(
-    () => ({ session: snapshot.sessionId, values: new Map(rows.map((row) => [row.name, row.value])) }),
+    () => ({ session: snapshot?.sessionId ?? "", values: new Map(rows.map((row) => [row.name, row.value])) }),
   );
-  if (baseline.session !== snapshot.sessionId) {
-    setBaseline({ session: snapshot.sessionId, values: new Map(rows.map((row) => [row.name, row.value])) });
+  const sessionId = snapshot?.sessionId ?? "";
+  if (baseline.session !== sessionId) {
+    setBaseline({ session: sessionId, values: new Map(rows.map((row) => [row.name, row.value])) });
   }
   const changed = rows.filter((row) => baseline.values.get(row.name) !== row.value).length;
   const [linkOpen, setLinkOpen] = useState(false);
   // Reload and Undo both throw edits away, so with changes they ask first.
   const [askDiscard, setAskDiscard] = useState(false);
+  const [askReload, setAskReload] = useState(false);
+  // Avalonia says where the drive is mounted; the path is display text from
+  // `device_location`, and every file operation still goes by the opaque id.
   const [deviceName, setDeviceName] = useState("");
-  const sourceDevice = snapshot.source.kind === "device" ? snapshot.source.device : null;
+  const sourceDevice = snapshot?.source.kind === "device" ? snapshot.source.device : null;
+  const [model, setModel] = useState<ModelChoice>("fps");
+  useEffect(() => {
+    let cancelled = false;
+    void client.getSettings().then(
+      (settings) => {
+        if (!cancelled) setModel(settings.model);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
   useEffect(() => {
     if (sourceDevice === null) return undefined;
     let cancelled = false;
-    void client.listDevices().then(
-      (presence) => {
-        if (!cancelled) setDeviceName(presence.devices.find((device) => device.deviceId === sourceDevice)?.displayName ?? "");
+    const locate = client.deviceLocation;
+    void (locate === undefined ? Promise.resolve(null) : locate.call(client, sourceDevice).catch(() => null)).then(
+      async (path) => {
+        const name =
+          path ??
+          (await client.listDevices().then(
+            (presence) => presence.devices.find((device) => device.deviceId === sourceDevice)?.displayName ?? "",
+            () => "",
+          ));
+        if (!cancelled) setDeviceName(name);
       },
-      () => undefined,
     );
     return () => {
       cancelled = true;
@@ -311,7 +298,7 @@ export function DevicePreferencesPage({
 
 
   const apply = async (ops: readonly EditorOp[]): Promise<EditorSnapshot | null> => {
-    if (busy || ops.length === 0) return null;
+    if (snapshot === null || busy || ops.length === 0) return null;
     setBusy(true);
     try {
       const next = await client.applyEditorOps(snapshot.sessionId, snapshot.revision, ops);
@@ -331,6 +318,7 @@ export function DevicePreferencesPage({
   };
 
   const addMissing = (definition: PreferenceDefinition): void => {
+    if (snapshot === null) return;
     const sheet = snapshot.modes.find((mode) => mode.kind === "preferences");
     const row = latestInsertionRow(snapshot);
     if (sheet === undefined || row === null) return;
@@ -345,7 +333,7 @@ export function DevicePreferencesPage({
   };
 
   const reset = async (): Promise<void> => {
-    if (snapshot.source.kind !== "device" || busy) return;
+    if (snapshot?.source.kind !== "device" || busy) return;
     setBusy(true);
     try {
       await client.closeProfile(snapshot.sessionId, "discard");
@@ -360,7 +348,7 @@ export function DevicePreferencesPage({
   };
 
   const prepareSave = async (): Promise<void> => {
-    if (snapshot.source.kind !== "device" || busy) return;
+    if (snapshot?.source.kind !== "device" || busy) return;
     setBusy(true);
     try {
       const prepared = await client.prepareInstall(snapshot.sessionId, snapshot.source.device);
@@ -377,7 +365,7 @@ export function DevicePreferencesPage({
   };
 
   const commitSave = async (): Promise<void> => {
-    if (plan?.confirmation === null || plan === null || snapshot.source.kind !== "device" || busy) return;
+    if (plan?.confirmation === null || plan === null || snapshot?.source.kind !== "device" || busy) return;
     setBusy(true);
     try {
       const receipt = await client.commitInstall(plan.planId, plan.confirmation.confirmationId);
@@ -394,11 +382,13 @@ export function DevicePreferencesPage({
     }
   };
 
-  const deadZone = useMemo(() => {
-    const candidate = rows.find((row) => row.name.includes("dead_zone") || row.name === "joystick_deflection_minimum");
-    const parsed = candidate === undefined ? null : exactInteger(candidate.value);
-    return parsed ?? 0;
-  }, [rows]);
+  // `DeviceNumber`: the file's value, else the catalog default.
+  const numberOf = (name: string, fallback: number): number => {
+    const value = exactInteger(rowByName.get(name)?.value ?? "");
+    if (value !== null) return value;
+    const known = exactInteger(catalog?.definitions.find((definition) => definition.name === name)?.default ?? "");
+    return known ?? fallback;
+  };
 
   const countIn = (name: string): number =>
     catalog?.definitions.filter((definition) => definition.category === name).length ?? 0;
@@ -411,15 +401,29 @@ export function DevicePreferencesPage({
         <div className="device-page-copy">
           <h1 id="device-preferences-title">{t("DevicePage_YourQuadStickSSettings")}</h1>
           <p className="secondary">{t("DevicePage_TheseSettingsLiveInPrefs")}</p>
-          {/* Avalonia names the drive's path; paths never reach the window
-              here, so it names the drive. */}
-          {deviceName === "" ? null : <p>{t("DevicePage_FoundYourQuadStickAtRoot", [deviceName])}</p>}
+          {/* No stick is a state, not an error, but the first thing to know
+              here: bold, as Avalonia's warn line. */}
+          {snapshot === null ? (
+            status === "" ? null : (
+              <p className={sourceDevice === null ? "device-status warn" : "device-status"} role="status">
+                {status}
+              </p>
+            )
+          ) : deviceName === "" ? null : (
+            <p className="device-status">{t("DevicePage_FoundYourQuadStickAtRoot", [deviceName])}</p>
+          )}
+          {client.controller === undefined ? null : <ControllerRow controller={client.controller} />}
         </div>
         <div className="device-page-actions">
-          <button className="device-reload" type="button" disabled={busy} aria-label={t("DevicePage_ReadTheSettingsFromYour")} onClick={() => (changed > 0 ? setAskDiscard(true) : void reset())}>
+          {snapshot === null && onChooseDrive !== undefined ? (
+            <button type="button" disabled={busy} onClick={onChooseDrive}>
+              {t("Install_ChooseTheQuadStickDrive")}
+            </button>
+          ) : null}
+          <button className="device-reload" type="button" disabled={busy} aria-label={t("DevicePage_ReadTheSettingsFromYour")} onClick={() => (changed > 0 ? setAskReload(true) : onReload())}>
             {t("DevicePage_Reload")}
           </button>
-          <button className="quiet" type="button" disabled={busy} onClick={onClose}>
+          <button className="quiet" type="button" disabled={busy} aria-label={t("Shell_ManageTheProfileFilesOn")} onClick={onManageFiles}>
             {t("Shell_ManageFiles")}
           </button>
           {client.console === undefined ? null : (
@@ -450,12 +454,9 @@ export function DevicePreferencesPage({
             ))}
           </nav>
           <div className="device-preference-main">
-            {category === "Joystick" ? (
-              <section className="device-live-tuning" aria-labelledby="device-live-title">
-                <h2 id="device-live-title">{t("DevicePage_JoystickTravel")}</h2>
-                <JoystickTravel client={client} deadZone={deadZone} />
-              </section>
-            ) : null}
+            {category === null ? null : (
+              <DeviceBand client={client} category={category} model={model} numberOf={numberOf} />
+            )}
             <div className="device-preference-list">
               {definitions.map((definition) => {
                 const row = rowByName.get(definition.name);
@@ -471,12 +472,12 @@ export function DevicePreferencesPage({
                     <h3 id={`pref-${definition.name}`} title={definition.name}>{definition.label}</h3>
                     <div className="device-preference-control">
                       {row === undefined ? (
-                        <button type="button" disabled={busy} onClick={() => addMissing(definition)}>
+                        <button type="button" disabled={busy || snapshot === null} onClick={() => addMissing(definition)}>
                           {t("Main_Add")}
                         </button>
                       ) : (
                         <PreferenceValue
-                          key={`${String(snapshot.revision)}-${definition.name}-${row.value}`}
+                          key={`${String(snapshot?.revision ?? 0)}-${definition.name}-${row.value}`}
                           definition={definition}
                           row={row.row}
                           value={row.value}
@@ -499,7 +500,7 @@ export function DevicePreferencesPage({
                   <h3>{row.name}</h3>
                   <div className="device-preference-control">
                     <PreferenceValue
-                      key={`${String(snapshot.revision)}-unknown-${String(row.row)}-${row.value}`}
+                      key={`${String(snapshot?.revision ?? 0)}-unknown-${String(row.row)}-${row.value}`}
                       definition={null}
                       row={row.row}
                       value={row.value}
@@ -555,6 +556,30 @@ export function DevicePreferencesPage({
               }}
             >
               {t("DevicePage_UndoChanges")}
+            </button>
+          </>
+        }
+      >
+        <p>{t("DevicePage_TheSettingsYouChangedHere")}</p>
+      </Dialog>
+
+      <Dialog
+        open={askReload}
+        title={t("DevicePage_ThrowAwayYourChanges")}
+        onClose={() => setAskReload(false)}
+        actions={
+          <>
+            <button type="button" data-autofocus onClick={() => setAskReload(false)}>
+              {t("Device_Cancel")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAskReload(false);
+                onReload();
+              }}
+            >
+              {t("DevicePage_Reload")}
             </button>
           </>
         }

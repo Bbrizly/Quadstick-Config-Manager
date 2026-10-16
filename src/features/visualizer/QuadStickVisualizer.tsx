@@ -1,9 +1,6 @@
 import { createPortal } from "react-dom";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
-import fpsPhoto from "../../QuadStick.App/Assets/QuadStickFPS.png";
-import originalPhoto from "../../QuadStick.App/Assets/QuadStickOriginal.png";
-import singletonPhoto from "../../QuadStick.App/Assets/QuadStickSingleton.png";
 import backPhoto from "../../QuadStick.App/Assets/QuadStickBack.png";
 import { useI18n, type MessageKey } from "../../i18n";
 import type { LiveSnapshot, QcmClient } from "../../platform";
@@ -42,6 +39,7 @@ import {
 import { useLiveInput } from "../live/useLiveInput";
 import { GestureTable } from "./GestureTable";
 import { comboPairTitle, comboPrefix, firstMappedCombo } from "./parts";
+import { photoFor } from "./photos";
 import "./visualizer.css";
 
 export type VisualizerBinding = BindingCells;
@@ -224,15 +222,6 @@ const MODEL_SHORT: Record<QsModel, string> = {
   singleton: "Singleton",
 };
 
-const PHOTOS: Record<QsModel, string> = {
-  fps: fpsPhoto,
-  original: originalPhoto,
-  singleton: singletonPhoto,
-};
-
-function photoFor(model: QsModel): string {
-  return PHOTOS[model];
-}
 
 function modelHasZone(diagram: DeviceDiagramSpec, zoneId: ZoneId): boolean {
   return diagram.zones.includes(zoneId);

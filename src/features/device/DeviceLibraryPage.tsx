@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
+import { InfoButton } from "../editor/Popover";
 import { ControllerRow } from "./ControllerRow";
 import { DeviceLinkDialog } from "./DeviceLinkDialog";
 import {
@@ -17,6 +18,9 @@ import {
 interface DeviceLibraryPageProps {
   readonly client: QcmClient;
   readonly onOpenProfile: (snapshot: EditorSnapshot) => void;
+  /** Inside the files window: the page heading, settings and link live on
+   * the settings page, which is where Avalonia's window opens from. */
+  readonly inDialog?: boolean;
 }
 
 function csvName(value: string): string {
@@ -25,7 +29,7 @@ function csvName(value: string): string {
   return `${trimmed}.csv`;
 }
 
-export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPageProps) {
+export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false }: DeviceLibraryPageProps) {
   const { t } = useI18n();
   const [presence, setPresence] = useState<DevicePresenceSnapshot | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -240,11 +244,28 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   const devices = presence?.devices ?? [];
 
   return (
-    <section className="device-page" aria-labelledby="device-page-title">
+    <section
+      className={inDialog ? "device-page in-dialog" : "device-page"}
+      {...(inDialog ? { "aria-label": t("Device_FilesOnYourQuadStick") } : { "aria-labelledby": "device-page-title" })}
+    >
       <header className="feature-page-header">
         <div>
-          <h1 id="device-page-title">{t("Shell_OnYourQuadStick")}</h1>
-          <p>{t("Device_EverythingHereReadsAndWrites")}</p>
+          {inDialog ? (
+            // `DeviceFilesWindow`: one line, the rest behind its "?".
+            <div className="explain-row">
+              <span>{t("Device_ManageFilesOnTheQuadStick")}</span>
+              <InfoButton
+                name={t("Device_FilesOnYourQuadStick")}
+                title={t("Device_FilesOnYourQuadStick")}
+                body={t("Device_EverythingHereReadsAndWrites")}
+              />
+            </div>
+          ) : (
+            <>
+              <h1 id="device-page-title">{t("Shell_OnYourQuadStick")}</h1>
+              <p>{t("Device_EverythingHereReadsAndWrites")}</p>
+            </>
+          )}
         </div>
         <div className="feature-page-actions">
           <button type="button" disabled={busy} onClick={() => void refresh()}>
@@ -253,7 +274,7 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
           <button type="button" disabled={busy} onClick={() => void chooseDevice()}>
             {t("Install_ChooseTheQuadStickDrive")}
           </button>
-          {client.console === undefined ? null : (
+          {client.console === undefined || inDialog ? null : (
             <button
               type="button"
               aria-label={t("Link_PageButtonName")}
@@ -264,7 +285,7 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
           )}
         </div>
       </header>
-      {client.controller === undefined ? null : <ControllerRow controller={client.controller} />}
+      {client.controller === undefined || inDialog ? null : <ControllerRow controller={client.controller} />}
 
       {message === "" ? null : <output className="feature-status">{message}</output>}
 
@@ -304,13 +325,15 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
                       : t("DevicePage_PlugInYourQuadStickTo")}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  disabled={busy || selectedLibrary === null}
-                  onClick={() => void openPreferences()}
-                >
-                  {t("Main_DeviceSettings")}
-                </button>
+                {inDialog ? null : (
+                  <button
+                    type="button"
+                    disabled={busy || selectedLibrary === null}
+                    onClick={() => void openPreferences()}
+                  >
+                    {t("Main_DeviceSettings")}
+                  </button>
+                )}
               </div>
 
               {selectedLibrary === null ? (

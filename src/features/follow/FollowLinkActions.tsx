@@ -22,6 +22,8 @@ export interface FollowLinkActionsProps {
   readonly buttonsSlot?: HTMLElement | null;
   /** A Home card's menu choice, run once when this file is known to follow. */
   readonly request?: { readonly n: number; readonly kind: "latest" | "forget" } | undefined;
+  /** The file was replaced or stopped following (a Home card redraws). */
+  readonly onChanged?: () => void;
 }
 
 interface Review {
@@ -44,6 +46,7 @@ export function FollowLinkActions({
   onSnapshot,
   buttonsSlot,
   request,
+  onChanged,
 }: FollowLinkActionsProps) {
   const { t } = useI18n();
   const [known, setKnown] = useState<{ readonly key: string; readonly follows: boolean } | null>(null);
@@ -165,6 +168,7 @@ export function FollowLinkActions({
       const result = await replace.call(client, pending.planId);
       if (result.kind === "replaced") {
         onSnapshot(result.snapshot);
+        onChanged?.();
         setMessage(t("Follow_Replaced"));
       } else {
         setMessage(t("Follow_ChangedMeanwhile"));
@@ -177,6 +181,7 @@ export function FollowLinkActions({
     void guarded(async () => {
       const state = await forget.call(client, snapshot.sessionId);
       setFollows(state.follows);
+      onChanged?.();
       setMessage(t("Follow_Forgotten"));
     });
   };

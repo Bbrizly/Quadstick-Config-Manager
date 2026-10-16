@@ -337,7 +337,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 85);
+        assert_eq!(commands.len(), 90);
         for expected in [
             "import_sheets_link",
             "check_latest_from_link",

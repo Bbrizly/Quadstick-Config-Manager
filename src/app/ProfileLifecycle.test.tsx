@@ -78,7 +78,7 @@ describe("TASK-040A local profile lifecycle", () => {
     fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
     dialog = await screen.findByRole("dialog", { name: "Profile" });
     fireEvent.click(within(dialog).getByRole("button", { name: "Don't save" }));
-    await screen.findByRole("heading", { level: 1, name: "On your QuadStick" });
+    await screen.findByRole("heading", { level: 1, name: "Your QuadStick's settings" });
   });
 
   it("uses Save As before closing a dirty profile that has no local target", async () => {

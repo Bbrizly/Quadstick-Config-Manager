@@ -39,6 +39,8 @@ export interface HomePageProps {
   readonly onDismissRescue: () => void;
   /** A library card or a template opened; `then` is the menu action to run on it. */
   readonly onOpened?: (snapshot: EditorSnapshot, then?: CardFollowUp) => void;
+  /** Bumped when a card's file changed out of sight (Get the latest, Forget). */
+  readonly refreshKey?: number;
 }
 
 /** `EditedNote`: rough on purpose; "yesterday" is how people sort in their heads. */
@@ -101,6 +103,7 @@ export function HomePage({
   onOpenRescue,
   onDismissRescue,
   onOpened,
+  refreshKey = 0,
 }: HomePageProps) {
   const { t, plural, locale } = useI18n();
   const [library, setLibrary] = useState<readonly LibraryCard[]>([]);
@@ -125,9 +128,10 @@ export function HomePage({
     void list.call(client).then(setLibrary, () => setLibrary([]));
   }, [client]);
 
+  // Again whenever a card's file changed out of sight (the key moved).
   useEffect(() => {
-    refreshLibrary();
-  }, [refreshLibrary]);
+    if (refreshKey >= 0) refreshLibrary();
+  }, [refreshLibrary, refreshKey]);
 
   const openCard = async (card: LibraryCard, then?: CardFollowUp): Promise<void> => {
     const open = client.openLibraryProfile;

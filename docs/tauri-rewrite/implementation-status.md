@@ -169,6 +169,28 @@ Bundle: main JS 489 to 542 kB (gzip 147 to 160): new views plus validation.json 
 
 Gates (local, macOS): `pnpm check` (162 tests), `cargo test --workspace` (475), clippy `-D warnings`, fmt, catalogs regenerated clean, `pnpm tauri build --debug --no-bundle`.
 
+## Phase 7 (2026-10-15): last parity items
+
+| Item | State |
+|---|---|
+| Device nav | **DONE** opens device settings (finds the drive, reads prefs.csv; no stick draws the catalog with the bold line and a drive picker; two drives ask which). Files are a window: Manage files on the page and on Home |
+| Device settings | **DONE** group picture (photo, rings on the group's parts, case lights, joystick pad with dead/full circles, live stick on the photo for the two joystick groups only) and the Games on a Mac block (switch, ? help) |
+| Card menu actions | **DONE** run on the card's file in a session held out of sight, closed after; the editor never opens |
+| Unused custom names | **DONE** kept in `custom-names.json` under the profile's key (Avalonia: settings by path); untitled ones wait for the first save |
+| Templates | **DONE** Rename (never overwrites) and Delete in the picker |
+| Drive path | **DONE** "Found your QuadStick at /Volumes/QUADSTICK" from `device_location` (display text only) |
+| Get the latest list | **DONE** "• " lines, 12 then "• …", the workbook limitation said too, two plain 140-wide answers |
+| Typography | **DONE** Inter 400/500/600/700 (the files Avalonia.Fonts.Inter embeds, Latin subset, 184 kB); icons fill their box like PathIcon; Add row 600 with a 16 glyph; grid header tops level. Device photo: callouts hang from their bottom edge, the photo top is clear |
+| Undo | **DONE** never greyed, as Avalonia; "Nothing to undo." / "Change undone." |
+
+Still different: no prefs.csv on the stick shows the catalog with Add disabled (Avalonia lets you edit and save a new one); RenderPreview renders Helvetica headless (it never gets Inter), the shipped Avalonia app is Inter, the rewrite matches the shipped app; a template rename on a volume without hard links checks then renames, as .NET `File.Move` does.
+
+Idle (production build, headless Chrome, focus emulated, 5 s settle, 5 s trace): Home, editor Rows, device view, device settings each 0 DrawFrame / animation frames / timers / layout.
+
+Bundle: main JS 542 to 555 kB (gzip 160 to 165), CSS 41 to 57 kB, plus four Inter woff2 (184 kB).
+
+Gates (local, macOS): `pnpm check` (165 tests), `cargo test --workspace`, clippy `-D warnings`, fmt, `pnpm tauri build --debug --no-bundle`.
+
 ## Runtime cost while a game runs
 
 - Console: nothing runs while the dialog is closed or idle. Ports are listed on open and on Refresh only. Live input is subscribed, and the 30 ms breath wait runs, only during a measurement.

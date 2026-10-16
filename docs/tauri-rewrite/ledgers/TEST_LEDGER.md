@@ -106,3 +106,10 @@ Both need the full-volume hardware case in TASK-056.
 - `library_shell.rs`: template names, card facts (modes not sheets), ids retired by the next listing.
 - `profile_commands.rs`: the 85-command surface.
 - Frontend: problems bar (four warnings, expand, focus), Rows grid edit/note/"normal", device sidebar parts and nothing selected, Unused (145), Modes window rename/move, settings card wording.
+
+## Phase 7 (2026-10-15)
+
+- `library_shell.rs::templates_rename_without_overwriting_and_delete_only_by_template_id`.
+- `follow_link.rs::unused_custom_names_wait_for_a_file_then_last_with_it`.
+- `profile_commands.rs` / `lib.rs`: the 90-command surface.
+- Frontend: `DeviceSettingsRoute.test.tsx` (nav opens settings, mount path, files window; no stick bold line and drive picker), `CardActions.test.tsx` (forget a card's link with the editor shut), controller switch role.

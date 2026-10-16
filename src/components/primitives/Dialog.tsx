@@ -8,9 +8,11 @@ export interface DialogProps {
   readonly onClose: () => void;
   readonly children: ReactNode;
   readonly actions?: ReactNode;
+  /** A window-sized dialog (DeviceFilesWindow is 760 wide). */
+  readonly wide?: boolean;
 }
 
-export function Dialog({ open, title, onClose, children, actions }: DialogProps) {
+export function Dialog({ open, title, onClose, children, actions, wide = false }: DialogProps) {
   const panelRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -28,6 +30,9 @@ export function Dialog({ open, title, onClose, children, actions }: DialogProps)
     focusFirst(panel);
 
     const onKeyDown = (event: KeyboardEvent) => {
+      // A dialog opened inside this one (the files window's delete question)
+      // owns the keys until it closes.
+      if (panel.querySelector(".dialog-panel") !== null) return;
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
@@ -52,7 +57,7 @@ export function Dialog({ open, title, onClose, children, actions }: DialogProps)
       <dialog
         ref={panelRef}
         open
-        className="dialog-panel"
+        className={wide ? "dialog-panel wide" : "dialog-panel"}
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}

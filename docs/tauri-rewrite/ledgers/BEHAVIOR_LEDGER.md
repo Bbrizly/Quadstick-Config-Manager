@@ -81,5 +81,7 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-075 | B | editor (phase 6): Avalonia command bar (name box with fixed .csv, Share flyout, Unused (N), Undo, Add row in Rows only, Select, template, Save, Install, Help), sidebar (Modes ? and pencil, Custom output names, Configuration picker, connection line, parts list in device view, View words / cards / one-line toggles), Rows as the numbered cell grid, nothing selected at start, problems in a bottom bar | IMPLEMENTED |
 | B-076 | B | Home lists Documents/QuadStick Profiles as cards with a menu (share link, open sheet, get the latest, forget the link, delete); Use template opens saved templates; Save as template writes Templates/ | IMPLEMENTED |
 | B-077 | B | Settings: General holds language, appearance, size, model, card wording, Drive backup, updates; Advanced holds motion, grouping, privacy, window, tutorial; Help holds the quick guide | IMPLEMENTED |
+| B-078 | B | device nav opens device settings (drive found and read, none draws the catalog, several ask), files in a window from the page and Home; group picture and Games on a Mac block; drive path line | phase 7 shots + `DeviceSettingsRoute.test.tsx` | IMPLEMENTED |
+| B-079 | B | Home card menu actions act on the file without opening it; unused custom names kept per profile; template rename/delete; Get the latest list as `ConfirmLatestAsync`; Undo never greyed; Inter | phase 7 | IMPLEMENTED |
 
 Status moves to PARITY-TESTED/HARDWARE-VERIFIED only with linked TEST_LEDGER evidence.

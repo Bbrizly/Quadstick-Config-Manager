@@ -81,4 +81,20 @@ export function seedDevicePreview(mock: MockQcmClient): void {
   const client: { -readonly [K in keyof QcmClient]: QcmClient[K] } = mock;
   client.getPreferenceCatalog = () => Promise.resolve(preview);
   client.console = previewConsole;
+  // A Mac with nothing set up, as the Avalonia shot is rendered on one.
+  client.controller = {
+    getControllerOptions: () =>
+      Promise.resolve({
+        kind: "mac",
+        bridgeOn: false,
+        bridgeState: null,
+        macOn: false,
+        macSandboxed: false,
+        macCommand: null,
+        macUndoCommand: null,
+      }),
+    setControllerBridge: () => Promise.resolve(false),
+    setMacGamepad: (on: boolean) => Promise.resolve({ took: true, on }),
+    subscribeControllerBridge: () => Promise.resolve({ dispose: () => undefined }),
+  };
 }
