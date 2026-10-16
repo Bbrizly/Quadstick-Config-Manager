@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "Il Suo foglio è stato importato senza problemi.",
   "Review_YourSpreadsheetArrowKeysPick": "Il Suo foglio di calcolo. I tasti freccia selezionano una cella, Invio la modifica, Canc la svuota.",
   "Review_YourSpreadsheetWithWhatWe": "Il Suo foglio di calcolo, con quanto abbiamo letto segnato su di esso. Una cella colorata è una che il QuadStick legge. Una cella semplice è una che non guarda mai, quindi le note e i Suoi nomi per le righe sono al sicuro lì. Clicchi su qualsiasi cella per modificarla, o la trascini in un'altra colonna della stessa riga. Ogni modifica qui è una modifica al profilo aperto dietro questa finestra.",
+  "Rewrite_BackUpThisProfile": "Esegui il backup di questo profilo su Google Drive",
   "Rewrite_ConnectGoogleDrive": "Collega Google Drive",
   "Rewrite_ErrorCancelled": "Annullato.",
   "Rewrite_ErrorConfig": "Non è stato possibile usare questo profilo. Controllalo e riprova.",

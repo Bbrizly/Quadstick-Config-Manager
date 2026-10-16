@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "シートはそのままきれいに取り込まれました。",
   "Review_YourSpreadsheetArrowKeysPick": "あなたのスプレッドシートです。矢印キーでセルを選び、Enter で編集し、Delete で空にします。",
   "Review_YourSpreadsheetWithWhatWe": "あなたのスプレッドシートに、読み取った内容を示す色をつけたものです。色のついたセルは QuadStick が読み取るセルです。色のないセルは QuadStick が見ないセルなので、メモや行の名前を安全に置けます。任意のセルをクリックして変更するか、同じ行の別の列にドラッグしてください。ここでの変更はすべて、このウィンドウの背後で開いているプロファイルへの変更になります。",
+  "Rewrite_BackUpThisProfile": "このプロファイルを Google ドライブにバックアップ",
   "Rewrite_ConnectGoogleDrive": "Google ドライブに接続",
   "Rewrite_ErrorCancelled": "キャンセルしました。",
   "Rewrite_ErrorConfig": "このプロファイルを使用できませんでした。内容を確認して、もう一度お試しください。",

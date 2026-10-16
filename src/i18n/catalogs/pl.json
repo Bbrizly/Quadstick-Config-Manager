@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "Twój arkusz został wczytany bez zastrzeżeń.",
   "Review_YourSpreadsheetArrowKeysPick": "Twój arkusz. Klawisze strzałek wybierają komórkę, Enter ją edytuje, Delete ją opróżnia.",
   "Review_YourSpreadsheetWithWhatWe": "Twój arkusz, z zaznaczonym tym, co odczytaliśmy. Zabarwiona komórka to taka, którą QuadStick odczytuje. Zwykła komórka to taka, na którą nigdy nie patrzy, więc notatki i Twoje własne nazwy wierszy są tam bezpieczne. Kliknij dowolną komórkę, aby ją zmienić, albo przeciągnij ją do innej kolumny w tym samym wierszu. Każda zmiana tutaj jest zmianą w profilu otwartym pod tym oknem.",
+  "Rewrite_BackUpThisProfile": "Utwórz kopię zapasową tego profilu na Dysku Google",
   "Rewrite_ConnectGoogleDrive": "Połącz z Dyskiem Google",
   "Rewrite_ErrorCancelled": "Anulowano.",
   "Rewrite_ErrorConfig": "Nie można użyć tego profilu. Sprawdź profil i spróbuj ponownie.",

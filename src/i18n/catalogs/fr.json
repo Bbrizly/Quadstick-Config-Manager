@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "Votre feuille est arrivée propre.",
   "Review_YourSpreadsheetArrowKeysPick": "Votre feuille de calcul. Les flèches choisissent une cellule, Entrée la modifie, Suppr la vide.",
   "Review_YourSpreadsheetWithWhatWe": "Votre feuille de calcul, avec ce que nous avons lu marqué dessus. Une cellule teintée est une cellule que le QuadStick lit. Une cellule sans couleur est une cellule qu'il ne regarde jamais, donc les notes et vos propres noms de lignes y sont en sécurité. Cliquez sur n'importe quelle cellule pour la changer, ou faites-la glisser vers une autre colonne de la même ligne. Chaque changement ici est un changement du profil ouvert derrière cette fenêtre.",
+  "Rewrite_BackUpThisProfile": "Sauvegarder ce profil sur Google Drive",
   "Rewrite_ConnectGoogleDrive": "Connecter Google Drive",
   "Rewrite_ErrorCancelled": "Annulé.",
   "Rewrite_ErrorConfig": "Ce profil n’a pas pu être utilisé. Vérifiez-le puis réessayez.",

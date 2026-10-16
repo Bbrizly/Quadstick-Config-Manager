@@ -299,7 +299,9 @@ export function ProfileDriveActions({
         </button>
       )}
       <button type="button" className="menu-item" disabled={busy} onClick={() => void backupNow()}>
-        {t("Main_BackingUpToGoogleDrive")}
+        {/* Not `Main_BackingUpToGoogleDrive`: that is the Home button's
+            connected-state line, and this item backs up the open profile. */}
+        {t("Rewrite_BackUpThisProfile")}
       </button>
     </>
   );

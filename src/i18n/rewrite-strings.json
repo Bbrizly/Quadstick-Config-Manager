@@ -19,7 +19,8 @@
     "Rewrite_MoreActionsFor": "More actions for {0}",
     "Rewrite_TourWelcome": "Welcome",
     "Rewrite_TourYourQuadStick": "Your QuadStick",
-    "Rewrite_TourInstall": "Install"
+    "Rewrite_TourInstall": "Install",
+    "Rewrite_BackUpThisProfile": "Back up this profile to Google Drive"
   },
   "ar": {
     "Rewrite_SkipToMainContent": "تخطي إلى المحتوى الرئيسي",
@@ -41,7 +42,8 @@
     "Rewrite_MoreActionsFor": "مزيد من الإجراءات لـ {0}",
     "Rewrite_TourWelcome": "مرحبًا",
     "Rewrite_TourYourQuadStick": "جهاز QuadStick الخاص بك",
-    "Rewrite_TourInstall": "التثبيت"
+    "Rewrite_TourInstall": "التثبيت",
+    "Rewrite_BackUpThisProfile": "نسخ هذا الملف الشخصي احتياطيًا إلى Google Drive"
   },
   "de": {
     "Rewrite_SkipToMainContent": "Zum Hauptinhalt springen",
@@ -63,7 +65,8 @@
     "Rewrite_MoreActionsFor": "Weitere Aktionen für {0}",
     "Rewrite_TourWelcome": "Willkommen",
     "Rewrite_TourYourQuadStick": "Dein QuadStick",
-    "Rewrite_TourInstall": "Installieren"
+    "Rewrite_TourInstall": "Installieren",
+    "Rewrite_BackUpThisProfile": "Dieses Profil in Google Drive sichern"
   },
   "es": {
     "Rewrite_SkipToMainContent": "Saltar al contenido principal",
@@ -85,7 +88,8 @@
     "Rewrite_MoreActionsFor": "Más acciones para {0}",
     "Rewrite_TourWelcome": "Bienvenido",
     "Rewrite_TourYourQuadStick": "Tu QuadStick",
-    "Rewrite_TourInstall": "Instalar"
+    "Rewrite_TourInstall": "Instalar",
+    "Rewrite_BackUpThisProfile": "Hacer copia de seguridad de este perfil en Google Drive"
   },
   "fr": {
     "Rewrite_SkipToMainContent": "Aller au contenu principal",
@@ -107,7 +111,8 @@
     "Rewrite_MoreActionsFor": "Autres actions pour {0}",
     "Rewrite_TourWelcome": "Bienvenue",
     "Rewrite_TourYourQuadStick": "Votre QuadStick",
-    "Rewrite_TourInstall": "Installer"
+    "Rewrite_TourInstall": "Installer",
+    "Rewrite_BackUpThisProfile": "Sauvegarder ce profil sur Google Drive"
   },
   "hi": {
     "Rewrite_SkipToMainContent": "मुख्य सामग्री पर जाएँ",
@@ -129,7 +134,8 @@
     "Rewrite_MoreActionsFor": "{0} के लिए और विकल्प",
     "Rewrite_TourWelcome": "स्वागत है",
     "Rewrite_TourYourQuadStick": "आपका QuadStick",
-    "Rewrite_TourInstall": "इंस्टॉल करें"
+    "Rewrite_TourInstall": "इंस्टॉल करें",
+    "Rewrite_BackUpThisProfile": "इस प्रोफ़ाइल का Google Drive पर बैकअप लें"
   },
   "it": {
     "Rewrite_SkipToMainContent": "Vai al contenuto principale",
@@ -151,7 +157,8 @@
     "Rewrite_MoreActionsFor": "Altre azioni per {0}",
     "Rewrite_TourWelcome": "Benvenuto",
     "Rewrite_TourYourQuadStick": "Il tuo QuadStick",
-    "Rewrite_TourInstall": "Installa"
+    "Rewrite_TourInstall": "Installa",
+    "Rewrite_BackUpThisProfile": "Esegui il backup di questo profilo su Google Drive"
   },
   "ja": {
     "Rewrite_SkipToMainContent": "メインコンテンツへ移動",
@@ -173,7 +180,8 @@
     "Rewrite_MoreActionsFor": "{0} のその他の操作",
     "Rewrite_TourWelcome": "ようこそ",
     "Rewrite_TourYourQuadStick": "お使いの QuadStick",
-    "Rewrite_TourInstall": "インストール"
+    "Rewrite_TourInstall": "インストール",
+    "Rewrite_BackUpThisProfile": "このプロファイルを Google ドライブにバックアップ"
   },
   "ko": {
     "Rewrite_SkipToMainContent": "주요 콘텐츠로 이동",
@@ -195,7 +203,8 @@
     "Rewrite_MoreActionsFor": "{0}의 추가 작업",
     "Rewrite_TourWelcome": "환영합니다",
     "Rewrite_TourYourQuadStick": "내 QuadStick",
-    "Rewrite_TourInstall": "설치"
+    "Rewrite_TourInstall": "설치",
+    "Rewrite_BackUpThisProfile": "이 프로필을 Google 드라이브에 백업"
   },
   "nl": {
     "Rewrite_SkipToMainContent": "Naar hoofdinhoud",
@@ -217,7 +226,8 @@
     "Rewrite_MoreActionsFor": "Meer acties voor {0}",
     "Rewrite_TourWelcome": "Welkom",
     "Rewrite_TourYourQuadStick": "Je QuadStick",
-    "Rewrite_TourInstall": "Installeren"
+    "Rewrite_TourInstall": "Installeren",
+    "Rewrite_BackUpThisProfile": "Dit profiel back-uppen naar Google Drive"
   },
   "pl": {
     "Rewrite_SkipToMainContent": "Przejdź do głównej treści",
@@ -239,7 +249,8 @@
     "Rewrite_MoreActionsFor": "Więcej działań dla {0}",
     "Rewrite_TourWelcome": "Witaj",
     "Rewrite_TourYourQuadStick": "Twój QuadStick",
-    "Rewrite_TourInstall": "Instalacja"
+    "Rewrite_TourInstall": "Instalacja",
+    "Rewrite_BackUpThisProfile": "Utwórz kopię zapasową tego profilu na Dysku Google"
   },
   "pt": {
     "Rewrite_SkipToMainContent": "Ir para o conteúdo principal",
@@ -261,7 +272,8 @@
     "Rewrite_MoreActionsFor": "Mais ações para {0}",
     "Rewrite_TourWelcome": "Boas-vindas",
     "Rewrite_TourYourQuadStick": "Seu QuadStick",
-    "Rewrite_TourInstall": "Instalar"
+    "Rewrite_TourInstall": "Instalar",
+    "Rewrite_BackUpThisProfile": "Fazer backup deste perfil no Google Drive"
   },
   "zh-Hans": {
     "Rewrite_SkipToMainContent": "跳到主要内容",
@@ -283,6 +295,7 @@
     "Rewrite_MoreActionsFor": "{0} 的更多操作",
     "Rewrite_TourWelcome": "欢迎",
     "Rewrite_TourYourQuadStick": "你的 QuadStick",
-    "Rewrite_TourInstall": "安装"
+    "Rewrite_TourInstall": "安装",
+    "Rewrite_BackUpThisProfile": "将此配置文件备份到 Google 云端硬盘"
   }
 }

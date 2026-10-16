@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "A sua planilha entrou limpa.",
   "Review_YourSpreadsheetArrowKeysPick": "A sua planilha. As setas escolhem uma célula, Enter a edita, Delete a esvazia.",
   "Review_YourSpreadsheetWithWhatWe": "A sua planilha, com o que lemos marcado nela. Uma célula colorida é uma que o QuadStick lê. Uma célula simples é uma que ele nunca olha, então notas e os seus próprios nomes para linhas ficam seguros ali. Clique em qualquer célula para alterá-la, ou arraste-a para outra coluna na mesma linha. Toda alteração aqui é uma alteração no perfil aberto atrás desta janela.",
+  "Rewrite_BackUpThisProfile": "Fazer backup deste perfil no Google Drive",
   "Rewrite_ConnectGoogleDrive": "Conectar ao Google Drive",
   "Rewrite_ErrorCancelled": "Cancelado.",
   "Rewrite_ErrorConfig": "Não foi possível usar este perfil. Verifique o perfil e tente novamente.",

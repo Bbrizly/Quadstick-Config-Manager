@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "Ihr Tabellenblatt kam sauber herein.",
   "Review_YourSpreadsheetArrowKeysPick": "Ihre Tabelle. Die Pfeiltasten wählen eine Zelle, die Eingabetaste bearbeitet sie, Entf leert sie.",
   "Review_YourSpreadsheetWithWhatWe": "Ihre Tabelle, mit dem markiert, was wir gelesen haben. Eine eingefärbte Zelle ist eine, die der QuadStick liest. Eine einfache Zelle ist eine, die er nie ansieht, dort sind also Notizen und Ihre eigenen Namen für Zeilen sicher. Klicken Sie auf eine Zelle, um sie zu ändern, oder ziehen Sie sie in eine andere Spalte derselben Zeile. Jede Änderung hier ist eine Änderung am Profil, das hinter diesem Fenster geöffnet ist.",
+  "Rewrite_BackUpThisProfile": "Dieses Profil in Google Drive sichern",
   "Rewrite_ConnectGoogleDrive": "Google Drive verbinden",
   "Rewrite_ErrorCancelled": "Abgebrochen.",
   "Rewrite_ErrorConfig": "Dieses Profil konnte nicht verwendet werden. Prüfen Sie das Profil und versuchen Sie es erneut.",

@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "Uw blad is zonder problemen binnengekomen.",
   "Review_YourSpreadsheetArrowKeysPick": "Uw spreadsheet. Pijltjestoetsen kiezen een cel, Enter bewerkt hem, Delete maakt hem leeg.",
   "Review_YourSpreadsheetWithWhatWe": "Uw spreadsheet, met gemarkeerd wat we hebben gelezen. Een gekleurde cel is er een die de QuadStick leest. Een gewone cel is er een waar hij nooit naar kijkt, dus notities en uw eigen namen voor rijen zijn daar veilig. Klik op een cel om deze te wijzigen, of sleep deze naar een andere kolom in dezelfde rij. Elke wijziging hier is een wijziging aan het profiel dat achter dit venster open staat.",
+  "Rewrite_BackUpThisProfile": "Dit profiel back-uppen naar Google Drive",
   "Rewrite_ConnectGoogleDrive": "Google Drive koppelen",
   "Rewrite_ErrorCancelled": "Geannuleerd.",
   "Rewrite_ErrorConfig": "Dit profiel kon niet worden gebruikt. Controleer het profiel en probeer het opnieuw.",

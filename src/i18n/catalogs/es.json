@@ -1227,6 +1227,7 @@
   "Review_YourSheetCameInClean": "Su hoja entró limpia.",
   "Review_YourSpreadsheetArrowKeysPick": "Su hoja de cálculo. Las flechas eligen una celda, Enter la edita, Delete la vacía.",
   "Review_YourSpreadsheetWithWhatWe": "Su hoja de cálculo, con lo que leímos marcado encima. Una celda coloreada es una que el QuadStick lee. Una celda sin color es una que nunca mira, así que las notas y sus propios nombres para las filas están seguros ahí. Haga clic en cualquier celda para cambiarla, o arrástrela a otra columna de la misma fila. Cada cambio aquí es un cambio en el perfil abierto detrás de esta ventana.",
+  "Rewrite_BackUpThisProfile": "Hacer copia de seguridad de este perfil en Google Drive",
   "Rewrite_ConnectGoogleDrive": "Conectar Google Drive",
   "Rewrite_ErrorCancelled": "Cancelado.",
   "Rewrite_ErrorConfig": "No se pudo usar este perfil. Revíselo e inténtelo de nuevo.",
