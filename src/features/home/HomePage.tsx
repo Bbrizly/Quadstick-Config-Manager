@@ -108,6 +108,10 @@ export function HomePage({
   const [confirmDelete, setConfirmDelete] = useState<LibraryCard | null>(null);
   const [templates, setTemplates] = useState<readonly TemplateEntry[] | null>(null);
   const [pickedTemplate, setPickedTemplate] = useState<string | null>(null);
+  // `UseTemplateAsync`'s Rename and Delete: they act on the picked template
+  // and leave the picker open.
+  const [renamingTemplate, setRenamingTemplate] = useState<{ readonly id: string; readonly name: string } | null>(null);
+  const [deletingTemplate, setDeletingTemplate] = useState<TemplateEntry | null>(null);
   // Read once per visit to Home, as `RefreshHomeCards` does: no timer ticks
   // the labels on while the page sits idle.
   const [now] = useState(() => Date.now());
@@ -162,6 +166,63 @@ export function HomePage({
     }
     setPickedTemplate(found[0]?.id ?? null);
     setTemplates(found);
+  };
+
+  // A fresh listing after each change: the ids are retired with it.
+  const relistTemplates = async (pickName: string | null, fallbackIndex: number): Promise<void> => {
+    const list = client.listTemplates;
+    if (list === undefined) return;
+    const found = await list.call(client).catch(() => [] as readonly TemplateEntry[]);
+    if (found.length === 0) {
+      setTemplates(null);
+      setHomeStatus(t("Main_YouHaveNotSavedAny"));
+      return;
+    }
+    const picked = found.find((entry) => entry.name === pickName) ?? found[Math.min(fallbackIndex, found.length - 1)];
+    setPickedTemplate(picked?.id ?? null);
+    setTemplates(found);
+  };
+
+  const renameTemplate = async (): Promise<void> => {
+    const rename = client.renameTemplate;
+    const target = renamingTemplate;
+    setRenamingTemplate(null);
+    if (rename === undefined || target === null) return;
+    if (target.name.trim() === "") {
+      setHomeStatus(t("Main_ATemplateNeedsAName"));
+      return;
+    }
+    const index = templates?.findIndex((entry) => entry.id === target.id) ?? 0;
+    try {
+      const result = await rename.call(client, target.id, target.name);
+      setHomeStatus(
+        result.kind === "taken"
+          ? t("Main_ATemplateNamedPathGetFileNameWithoutExtension", [result.name])
+          : t("Main_RenamedTemplateToPathGetFileNameWithoutExtension", [result.name]),
+      );
+      await relistTemplates(result.kind === "renamed" ? result.name : null, index);
+    } catch (reason) {
+      setHomeStatus(t("Main_CouldNotRenameTheTemplate", [localizedErrorMessage(asQcmError(reason).payload, t)]));
+    }
+  };
+
+  const deleteTemplate = async (): Promise<void> => {
+    const remove = client.deleteTemplate;
+    const target = deletingTemplate;
+    setDeletingTemplate(null);
+    if (remove === undefined || target === null) return;
+    const index = templates?.findIndex((entry) => entry.id === target.id) ?? 0;
+    try {
+      await remove.call(client, target.id);
+      await relistTemplates(null, index);
+      setHomeStatus((current) =>
+        current === t("Main_YouHaveNotSavedAny")
+          ? `${t("Main_DeletedTemplateName", [target.name])} ${current}`
+          : t("Main_DeletedTemplateName", [target.name]),
+      );
+    } catch (reason) {
+      setHomeStatus(t("Main_CouldNotDeleteTheTemplate", [localizedErrorMessage(asQcmError(reason).payload, t)]));
+    }
   };
 
   const openTemplate = async (): Promise<void> => {
@@ -508,7 +569,7 @@ export function HomePage({
         <p>{confirmDelete === null ? "" : t("Main_PathGetFileNamePathIsRemoved", [`${confirmDelete.name}.csv`])}</p>
       </Dialog>
       <Dialog
-        open={templates !== null}
+        open={templates !== null && renamingTemplate === null && deletingTemplate === null}
         title={t("Main_StartFromATemplate")}
         onClose={() => setTemplates(null)}
         actions={
@@ -536,6 +597,81 @@ export function HomePage({
             </label>
           ))}
         </div>
+        <div className="template-manage">
+          {client.renameTemplate === undefined ? null : (
+            <button
+              className="quiet"
+              type="button"
+              disabled={pickedTemplate === null}
+              aria-label={t("Main_RenameSelectedTemplate")}
+              onClick={() => {
+                const entry = templates?.find((candidate) => candidate.id === pickedTemplate);
+                if (entry === undefined) setHomeStatus(t("Main_SelectATemplateToRename"));
+                else setRenamingTemplate({ id: entry.id, name: entry.name });
+              }}
+            >
+              {t("Main_Rename")}
+            </button>
+          )}
+          {client.deleteTemplate === undefined ? null : (
+            <button
+              className="quiet danger"
+              type="button"
+              disabled={pickedTemplate === null}
+              aria-label={t("Main_DeleteSelectedTemplate")}
+              onClick={() => setDeletingTemplate(templates?.find((candidate) => candidate.id === pickedTemplate) ?? null)}
+            >
+              {t("Main_Delete")}
+            </button>
+          )}
+        </div>
+      </Dialog>
+      <Dialog
+        open={renamingTemplate !== null}
+        title={t("Main_RenameTemplate")}
+        onClose={() => setRenamingTemplate(null)}
+        actions={
+          <>
+            <button className="primary" type="button" onClick={() => void renameTemplate()}>
+              {t("Main_Rename")}
+            </button>
+            <button type="button" onClick={() => setRenamingTemplate(null)}>
+              {t("Main_Cancel")}
+            </button>
+          </>
+        }
+      >
+        <label>
+          <span>{t("Main_NewNameForThisTemplate")}</span>
+          <input
+            data-autofocus
+            value={renamingTemplate?.name ?? ""}
+            onChange={(event) => {
+              const name = event.currentTarget.value;
+              setRenamingTemplate((current) => (current === null ? null : { ...current, name }));
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") void renameTemplate();
+            }}
+          />
+        </label>
+      </Dialog>
+      <Dialog
+        open={deletingTemplate !== null}
+        title={deletingTemplate === null ? "" : t("Main_DeleteTemplateName", [deletingTemplate.name])}
+        onClose={() => setDeletingTemplate(null)}
+        actions={
+          <>
+            <button type="button" data-autofocus onClick={() => setDeletingTemplate(null)}>
+              {t("Main_Cancel")}
+            </button>
+            <button className="danger" type="button" onClick={() => void deleteTemplate()}>
+              {t("Main_Delete")}
+            </button>
+          </>
+        }
+      >
+        <p>{t("Main_ProfilesYouAlreadyMadeFrom")}</p>
       </Dialog>
 
       <p className="home-version">

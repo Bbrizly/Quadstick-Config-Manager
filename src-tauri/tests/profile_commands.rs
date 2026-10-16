@@ -669,8 +669,13 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 85);
+    assert_eq!(registered.len(), 90);
     for name in [
+        "rename_template",
+        "delete_template",
+        "device_location",
+        "get_custom_name_drafts",
+        "set_custom_name_drafts",
         "list_library_profiles",
         "open_library_profile",
         "delete_library_profile",

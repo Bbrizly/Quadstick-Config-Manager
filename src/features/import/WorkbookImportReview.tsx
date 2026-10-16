@@ -188,7 +188,7 @@ export function WorkbookImportReviewDialog({
 
 type Translate = (key: MessageKey, values?: readonly unknown[]) => string;
 
-function limitationText(limitation: WorkbookLimitation, t: Translate): string {
+export function limitationText(limitation: WorkbookLimitation, t: Translate): string {
   const partial = t("Review_OnlyPartOfTheSpreadsheet");
   switch (limitation.kind) {
     case "sheet_count":

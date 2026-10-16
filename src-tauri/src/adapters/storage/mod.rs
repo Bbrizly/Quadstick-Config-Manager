@@ -89,6 +89,18 @@ impl<V: VolumeSource> FileSystemDeviceStorage<V> {
     fn registry(&self) -> MutexGuard<'_, Registry> {
         self.registry.lock().unwrap_or_else(PoisonError::into_inner)
     }
+
+    /// Where a mounted QuadStick is, for the one line Avalonia's device page
+    /// says it in ("Found your QuadStick at /Volumes/QUADSTICK"). Display
+    /// text only: every file operation still goes through the opaque id.
+    #[must_use]
+    pub fn location(&self, device: StorageDeviceId) -> Option<String> {
+        let registry = self.registry();
+        registry
+            .root_of(device)
+            .ok()
+            .map(|found| found.root.display().to_string())
+    }
 }
 
 impl Registry {

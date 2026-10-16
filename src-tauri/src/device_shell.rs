@@ -296,6 +296,17 @@ fn require_generation<S: DeviceStorage, B: BackupStore, C: Clock + Clone>(
     Ok(())
 }
 
+impl<B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
+    DeviceShell<FileSystemDeviceStorage<DeviceVolumeSource>, B, C, P>
+{
+    /// `device_location`: the mount path, display text only.
+    pub fn device_location(&self, raw: Value) -> Result<Option<String>, QcmError> {
+        let request: DeviceRequest = parse(raw, "device_location request")?;
+        let device = device_id(&request.device_id)?;
+        Ok(self.devices().storage().location(device))
+    }
+}
+
 pub type DeviceShellState = DeviceShell<
     FileSystemDeviceStorage<DeviceVolumeSource>,
     FileSystemBackupStore,

@@ -43,7 +43,7 @@ import type {
   PendingRescue,
 } from "./contracts";
 import { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
-import type { LibraryCard, TemplateEntry, TemplateReceipt } from "./libraryContracts";
+import type { CustomNameDrafts, LibraryCard, TemplateEntry, TemplateReceipt, TemplateRename } from "./libraryContracts";
 import { QcmCommandError, type QcmClient } from "./qcmClient";
 import { INPUTS, KNOWN_OUTPUTS, LEGACY_INPUTS } from "./vocab";
 
@@ -258,6 +258,8 @@ export class MockQcmClient implements QcmClient {
   #failNextSettingsWrite = false;
   #library = new Map<string, { name: string; editedMs: number; follows: boolean }>();
   #templates = new Map<string, string>();
+  /** `custom-names.json`, by save target. */
+  #customNames = new Map<string, readonly (readonly [string, string])[]>();
   #nextCard = 1;
 
   /** Queue a pending crash report for startup-prompt tests. */
@@ -582,6 +584,43 @@ export class MockQcmClient implements QcmClient {
     this.#nextCard += 1;
     this.#templates.set(id, bare);
     return Promise.resolve({ name: `${bare}.csv` });
+  }
+
+  renameTemplate(id: string, name: string): Promise<TemplateRename> {
+    if (!this.#templates.has(id)) {
+      return Promise.reject(fail(ERROR_CODES.requestOutOfRange, "template is not one of the values this setting takes.", "retry"));
+    }
+    const bare = name.trim().replace(/[/\\:*?"<>|]/gu, "_").replace(/\.csv$/iu, "");
+    if (bare === "") return Promise.reject(fail(ERROR_CODES.requestOutOfRange, "template name is not one of the values this setting takes.", "retry"));
+    if ([...this.#templates].some(([other, existing]) => other !== id && existing === bare)) {
+      return Promise.resolve({ kind: "taken", name: bare });
+    }
+    this.#templates.set(id, bare);
+    return Promise.resolve({ kind: "renamed", name: bare });
+  }
+
+  deleteTemplate(id: string): Promise<void> {
+    this.#templates.delete(id);
+    return Promise.resolve();
+  }
+
+  deviceLocation(deviceId: string): Promise<string | null> {
+    const device = this.#devices.get(deviceId);
+    return Promise.resolve(device === undefined ? null : `/Volumes/${device.displayName}`);
+  }
+
+  getCustomNameDrafts(sessionId: string): Promise<CustomNameDrafts> {
+    const target = this.#sessions.get(sessionId)?.saveTarget ?? null;
+    if (target === null) return Promise.resolve({ drafts: [], kept: false });
+    return Promise.resolve({ drafts: this.#customNames.get(target) ?? [], kept: true });
+  }
+
+  setCustomNameDrafts(sessionId: string, drafts: readonly (readonly [string, string])[]): Promise<CustomNameDrafts> {
+    const target = this.#sessions.get(sessionId)?.saveTarget ?? null;
+    if (target === null) return Promise.resolve({ drafts, kept: false });
+    if (drafts.length === 0) this.#customNames.delete(target);
+    else this.#customNames.set(target, drafts);
+    return Promise.resolve({ drafts, kept: true });
   }
 
   chooseAndOpenProfile(): Promise<EditorSnapshot | null> {

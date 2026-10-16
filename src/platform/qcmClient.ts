@@ -15,7 +15,7 @@ import type {
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
-import type { LibraryCard, TemplateEntry, TemplateReceipt } from "./libraryContracts";
+import type { CustomNameDrafts, LibraryCard, TemplateEntry, TemplateReceipt, TemplateRename } from "./libraryContracts";
 import type { PreferenceCatalog } from "./preferenceContracts";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
@@ -44,6 +44,12 @@ export interface QcmClient {
   listTemplates?(): Promise<readonly TemplateEntry[]>;
   openTemplate?(id: string): Promise<EditorSnapshot>;
   saveTemplate?(sessionId: string, expectedRevision: number, name: string): Promise<TemplateReceipt>;
+  renameTemplate?(id: string, name: string): Promise<TemplateRename>;
+  deleteTemplate?(id: string): Promise<void>;
+  /** Where a QuadStick is mounted, display text only (`device_location`). */
+  deviceLocation?(deviceId: string): Promise<string | null>;
+  getCustomNameDrafts?(sessionId: string): Promise<CustomNameDrafts>;
+  setCustomNameDrafts?(sessionId: string, drafts: readonly (readonly [string, string])[]): Promise<CustomNameDrafts>;
   getProfileSnapshot(sessionId: string): Promise<EditorSnapshot>;
   applyEditorOps(sessionId: string, expectedRevision: number, ops: readonly EditorOp[]): Promise<EditorSnapshot>;
   undoEditor(sessionId: string, expectedRevision: number): Promise<EditorSnapshot>;

@@ -417,3 +417,55 @@ fn forgetting_the_link_stops_following_and_leaves_the_file() {
     assert_eq!(sheet.requests(), 0);
     assert_eq!(w.library.text(&target).as_deref(), Some(before.as_str()));
 }
+
+#[test]
+fn unused_custom_names_wait_for_a_file_then_last_with_it() {
+    let w = world(FollowLinks::in_memory());
+    let opened = w
+        .shell
+        .open_workbook_copy("names.csv", &profile(&["Walking"]))
+        .expect("opens");
+    let drafts = json!({ "sessionId": opened.session_id, "drafts": [["Shoot", "r2"]] });
+    // Untitled: nowhere to keep them yet, so the window holds them.
+    assert!(
+        !w.shell
+            .set_custom_name_drafts(drafts.clone())
+            .expect("set")
+            .kept
+    );
+    let slot = w.library.slot("names.csv");
+    w.picker.save.lock().expect("picker").push(slot);
+    w.shell
+        .save_profile_as(
+            json!({ "sessionId": opened.session_id, "expectedRevision": opened.revision }),
+        )
+        .expect("saves")
+        .expect("not cancelled");
+    assert!(w.shell.set_custom_name_drafts(drafts).expect("set").kept);
+    let read = w
+        .shell
+        .custom_name_drafts(json!({ "sessionId": opened.session_id }))
+        .expect("read");
+    assert_eq!(read.drafts, vec![("Shoot".to_owned(), "r2".to_owned())]);
+    // An empty list forgets them; a blank name is refused.
+    assert!(
+        w.shell
+            .set_custom_name_drafts(json!({ "sessionId": opened.session_id, "drafts": [] }))
+            .expect("clear")
+            .kept
+    );
+    assert!(
+        w.shell
+            .custom_name_drafts(json!({ "sessionId": opened.session_id }))
+            .expect("read")
+            .drafts
+            .is_empty()
+    );
+    assert!(
+        w.shell
+            .set_custom_name_drafts(
+                json!({ "sessionId": opened.session_id, "drafts": [[" ", "x"]] })
+            )
+            .is_err()
+    );
+}

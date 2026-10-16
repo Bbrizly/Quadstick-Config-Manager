@@ -96,6 +96,9 @@ pub enum LatestCheckDto {
         changes: Vec<ChangeDto>,
         #[serde(rename = "singleTab")]
         single_tab: bool,
+        /// A workbook too large to read whole, said beside the list as
+        /// `ConfirmLatestAsync` says `limitation`.
+        limitation: Option<qcm_config::WorkbookLimitation>,
     },
 }
 
@@ -292,6 +295,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             plan_id: format!("latest-{id}"),
             changes: changes.into_iter().map(ChangeDto::from).collect(),
             single_tab: got.single_tab,
+            limitation: got.limitation.clone(),
         })
     }
 

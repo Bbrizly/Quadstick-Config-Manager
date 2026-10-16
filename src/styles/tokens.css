@@ -3,10 +3,10 @@
    AppFont at that default, so every word in the app is Inter. Latin subset of
    the same Inter 3.019 files Avalonia.Fonts.Inter 11.1.3 embeds (SIL OFL 1.1);
    other scripts fall back to the system face, as on Avalonia. */
-@font-face { font-family: "QCM Inter"; font-weight: 400; font-display: block; src: url("./fonts/inter-400.woff2") format("woff2"); }
-@font-face { font-family: "QCM Inter"; font-weight: 500; font-display: block; src: url("./fonts/inter-500.woff2") format("woff2"); }
-@font-face { font-family: "QCM Inter"; font-weight: 600; font-display: block; src: url("./fonts/inter-600.woff2") format("woff2"); }
-@font-face { font-family: "QCM Inter"; font-weight: 700; font-display: block; src: url("./fonts/inter-700.woff2") format("woff2"); }
+@font-face { font-family: "QCM Inter"; font-weight: 400; font-display: fallback; src: url("./fonts/inter-400.woff2") format("woff2"); }
+@font-face { font-family: "QCM Inter"; font-weight: 500; font-display: fallback; src: url("./fonts/inter-500.woff2") format("woff2"); }
+@font-face { font-family: "QCM Inter"; font-weight: 600; font-display: fallback; src: url("./fonts/inter-600.woff2") format("woff2"); }
+@font-face { font-family: "QCM Inter"; font-weight: 700; font-display: fallback; src: url("./fonts/inter-700.woff2") format("woff2"); }
 
 :root,
 :root[data-theme="light"] {

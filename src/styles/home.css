@@ -298,3 +298,10 @@
   align-items: center;
   gap: 8px;
 }
+
+/* `UseTemplateAsync`: Rename and Delete in a row under the list. */
+.template-manage {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}

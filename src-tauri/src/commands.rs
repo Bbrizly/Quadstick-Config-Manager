@@ -240,6 +240,14 @@ pub fn choose_device_folder(
 }
 
 #[tauri::command]
+pub fn device_location(
+    state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<Option<String>, Failure> {
+    redact(state.device_location(request))
+}
+
+#[tauri::command]
 pub fn get_device_library(
     state: State<'_, DeviceShellState>,
     request: Value,
@@ -467,9 +475,47 @@ pub fn open_template(
 }
 
 #[tauri::command]
+pub fn rename_template(
+    cards: State<'_, crate::library_shell::LibraryCards>,
+    request: Value,
+) -> Result<crate::library_shell::TemplateRenameDto, Failure> {
+    redact(crate::library_shell::rename_template_card(
+        &cards,
+        &crate::library_shell::templates_dir(),
+        request,
+    ))
+}
+
+#[tauri::command]
+pub fn delete_template(
+    cards: State<'_, crate::library_shell::LibraryCards>,
+    request: Value,
+) -> Result<(), Failure> {
+    redact(crate::library_shell::delete_template_card(&cards, request))
+}
+
+#[tauri::command]
 pub fn save_template(
     state: State<'_, ShellState>,
     request: Value,
 ) -> Result<crate::library_shell::TemplateReceiptDto, Failure> {
     redact(state.save_template(&crate::library_shell::templates_dir(), request))
+}
+
+// ---- Custom output names not used yet (`names_shell.rs`) ----
+
+#[tauri::command]
+pub fn get_custom_name_drafts(
+    state: State<'_, ShellState>,
+    request: Value,
+) -> Result<crate::names_shell::CustomNameDraftsDto, Failure> {
+    redact(state.custom_name_drafts(request))
+}
+
+#[tauri::command]
+pub fn set_custom_name_drafts(
+    state: State<'_, ShellState>,
+    request: Value,
+) -> Result<crate::names_shell::CustomNameDraftsDto, Failure> {
+    redact(state.set_custom_name_drafts(request))
 }

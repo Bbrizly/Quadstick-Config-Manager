@@ -1,3 +1,4 @@
+import type { WorkbookLimitation } from "./workbookContracts";
 /** Pasted Sheets links and Get the latest (`MainWindow.Follow.cs`). */
 import type { EditorSnapshot } from "./contracts";
 import type { WorkbookImportReview } from "./workbookContracts";
@@ -42,6 +43,8 @@ export type LatestCheck =
       readonly planId: string;
       readonly changes: readonly ProfileChange[];
       readonly singleTab: boolean;
+      /** A workbook too large to read whole (`ConfirmLatestAsync` limitation). */
+      readonly limitation?: WorkbookLimitation | null;
     };
 
 export type LatestReplace =

@@ -16,7 +16,7 @@ import type {
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
-import type { LibraryCard, TemplateEntry, TemplateReceipt } from "./libraryContracts";
+import type { CustomNameDrafts, LibraryCard, TemplateEntry, TemplateReceipt, TemplateRename } from "./libraryContracts";
 import type { PreferenceCatalog } from "./preferenceContracts";
 import { asQcmError, type QcmClient } from "./qcmClient";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
@@ -100,6 +100,13 @@ export class TauriQcmClient implements QcmClient {
   saveTemplate(sessionId: string, expectedRevision: number, name: string): Promise<TemplateReceipt> {
     return call("save_template", { sessionId, expectedRevision, name });
   }
+  renameTemplate(id: string, name: string): Promise<TemplateRename> { return call("rename_template", { id, name }); }
+  deleteTemplate(id: string): Promise<void> { return call("delete_template", { id }); }
+  deviceLocation(deviceId: string): Promise<string | null> { return call("device_location", { deviceId }); }
+  getCustomNameDrafts(sessionId: string): Promise<CustomNameDrafts> { return call("get_custom_name_drafts", { sessionId }); }
+  setCustomNameDrafts(sessionId: string, drafts: readonly (readonly [string, string])[]): Promise<CustomNameDrafts> {
+    return call("set_custom_name_drafts", { sessionId, drafts });
+  }
   getProfileSnapshot(sessionId: string): Promise<EditorSnapshot> { return call("get_profile_snapshot", { sessionId }); }
   applyEditorOps(sessionId: string, expectedRevision: number, ops: readonly EditorOp[]): Promise<EditorSnapshot> { return call("apply_editor_ops", { sessionId, expectedRevision, ops }); }
   undoEditor(sessionId: string, expectedRevision: number): Promise<EditorSnapshot> { return call("undo_editor", { sessionId, expectedRevision }); }
@@ -164,7 +171,8 @@ export class TauriQcmClient implements QcmClient {
 
 export const TAURI_COMMANDS = [
   "list_library_profiles", "open_library_profile", "delete_library_profile",
-  "list_templates", "open_template", "save_template",
+  "list_templates", "open_template", "save_template", "rename_template", "delete_template",
+  "device_location", "get_custom_name_drafts", "set_custom_name_drafts",
   "get_app_snapshot", "get_settings", "update_settings", "new_profile", "choose_and_open_profile",
   "get_profile_snapshot", "apply_editor_ops", "undo_editor", "save_profile", "save_profile_as",
   "close_profile", "choose_and_import_workbook", "repair_workbook_tab", "accept_workbook_import",

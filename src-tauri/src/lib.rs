@@ -25,6 +25,7 @@ pub mod google_auth;
 pub mod google_commands;
 pub mod ipc;
 pub mod library_shell;
+pub mod names_shell;
 pub mod preference_ipc;
 pub mod registry;
 pub mod shell;
@@ -126,6 +127,11 @@ pub fn registered_commands() -> &'static [&'static str] {
         "list_templates",
         "open_template",
         "save_template",
+        "rename_template",
+        "delete_template",
+        "device_location",
+        "get_custom_name_drafts",
+        "set_custom_name_drafts",
     ]
 }
 
@@ -298,6 +304,11 @@ pub fn run() {
             commands::list_templates,
             commands::open_template,
             commands::save_template,
+            commands::rename_template,
+            commands::delete_template,
+            commands::device_location,
+            commands::get_custom_name_drafts,
+            commands::set_custom_name_drafts,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")

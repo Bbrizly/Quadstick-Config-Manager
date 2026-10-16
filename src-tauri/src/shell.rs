@@ -32,6 +32,8 @@ pub struct Shell<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> {
     settings: Mutex<Settings<S>>,
     picker: P,
     follow: FollowLinks,
+    /// `AppSettings.CustomNames`: names no row uses yet, by profile.
+    custom_names: FollowLinks,
     pending_follow: Mutex<BTreeMap<SessionId, String>>,
     latest: Mutex<LatestTable>,
 }
@@ -43,6 +45,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             settings: Mutex::new(Settings::load(settings)),
             picker,
             follow: FollowLinks::in_memory(),
+            custom_names: FollowLinks::in_memory(),
             pending_follow: Mutex::new(BTreeMap::new()),
             latest: Mutex::new(LatestTable::default()),
         }
@@ -53,6 +56,18 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     pub fn with_follow_links(mut self, follow: FollowLinks) -> Self {
         self.follow = follow;
         self
+    }
+
+    /// Where unused custom output names are kept. A new shell keeps them for
+    /// the run only.
+    #[must_use]
+    pub fn with_custom_names(mut self, names: FollowLinks) -> Self {
+        self.custom_names = names;
+        self
+    }
+
+    pub(crate) const fn custom_name_store(&self) -> &FollowLinks {
+        &self.custom_names
     }
 
     pub(crate) fn sessions(&self) -> MutexGuard<'_, ProfileSessions<Arc<L>>> {
@@ -421,6 +436,8 @@ pub fn native_shell() -> ShellState {
     let library = Arc::new(FileSystemProfileLibrary::new(PlatformVolumes));
     let picker = NativeProfilePicker::new(Arc::clone(&library));
     let follow = crate::diagnostics::app_data_dir().join("follow-links.json");
+    let names = crate::diagnostics::app_data_dir().join("custom-names.json");
     Shell::new(library, picker, SettingsFile::default_location())
         .with_follow_links(FollowLinks::file(follow))
+        .with_custom_names(FollowLinks::file(names))
 }

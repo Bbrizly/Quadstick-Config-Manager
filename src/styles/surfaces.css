@@ -311,3 +311,17 @@ button.link-close {
   min-height: var(--qcm-control-height);
   padding: 4px 10px;
 }
+
+/* `ConfirmLatestAsync`: a list of "• " lines at body size, spaced 4, and two
+   plain 140-wide answers. */
+.latest-changes {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.latest-answer {
+  min-width: 140px;
+}

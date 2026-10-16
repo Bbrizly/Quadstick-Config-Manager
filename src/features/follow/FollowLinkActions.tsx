@@ -6,7 +6,8 @@ import { LiveRegion } from "../../components/primitives/LiveRegion";
 import { RunOnce } from "../../components/primitives/RunOnce";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
-import { asQcmError, type EditorSnapshot, type ProfileChange, type QcmClient } from "../../platform";
+import { asQcmError, type EditorSnapshot, type ProfileChange, type QcmClient, type WorkbookLimitation } from "../../platform";
+import { limitationText } from "../import/WorkbookImportReview";
 import { changeText, sheetRefusalText } from "./sheetText";
 
 export interface FollowLinkActionsProps {
@@ -27,6 +28,7 @@ interface Review {
   readonly planId: string;
   readonly changes: readonly ProfileChange[];
   readonly singleTab: boolean;
+  readonly limitation: WorkbookLimitation | null;
 }
 
 const SHOWN_CHANGES = 12;
@@ -107,7 +109,12 @@ export function FollowLinkActions({
         return;
       case "changes":
         setMessage("");
-        setReview({ planId: answer.planId, changes: answer.changes, singleTab: answer.singleTab });
+        setReview({
+          planId: answer.planId,
+          changes: answer.changes,
+          singleTab: answer.singleTab,
+          limitation: answer.limitation ?? null,
+        });
     }
   };
 
@@ -237,26 +244,33 @@ export function FollowLinkActions({
         onClose={() => answerReview(false)}
         actions={
           <>
-            <button type="button" onClick={() => answerReview(true)}>
+            <button className="latest-answer" type="button" onClick={() => answerReview(true)}>
               {t("Follow_Replace")}
             </button>
-            {/* The safe answer is the default, so a stray Enter keeps the copy. */}
-            <button className="primary" type="button" data-autofocus onClick={() => answerReview(false)}>
+            {/* The safe answer is the default, so a stray Enter keeps the copy.
+                Avalonia's two are plain buttons of one width; neither is accent. */}
+            <button className="latest-answer" type="button" data-autofocus onClick={() => answerReview(false)}>
               {t("Follow_Keep")}
             </button>
           </>
         }
       >
         <p>{t("Follow_ReviewBody")}</p>
-        <ul>
+        {/* `ConfirmLatestAsync`: twelve "• " lines at most, then "• …". */}
+        <ul className="latest-changes">
           {shown.map((change, index) => (
-            <li key={`${change.kind}-${String(index)}`}>{changeText(change, t)}</li>
+            <li key={`${change.kind}-${String(index)}`}>{`• ${changeText(change, t)}`}</li>
           ))}
-          {(review?.changes.length ?? 0) > SHOWN_CHANGES ? <li>…</li> : null}
+          {(review?.changes.length ?? 0) > SHOWN_CHANGES ? <li>• …</li> : null}
         </ul>
         {/* A published link sees one tab; replacing a five-mode profile with
-            it would drop four modes, so the reason is said beside the list. */}
-        {review?.singleTab === true ? <p>{t("Main_ThisLinkIsAPublished")}</p> : null}
+            it would drop four modes, so the reason is said beside the list.
+            A workbook too large to read whole says so the same way. */}
+        {review?.singleTab === true ? (
+          <p>{t("Main_ThisLinkIsAPublished")}</p>
+        ) : review !== null && review.limitation !== null ? (
+          <p>{limitationText(review.limitation, t)}</p>
+        ) : null}
       </Dialog>
     </section>
   );

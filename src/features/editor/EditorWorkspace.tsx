@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
@@ -232,7 +232,53 @@ export function EditorWorkspace({
   const [selectedSheet, setSelectedSheet] = useState(() => profileModes[0]?.index ?? 0);
   // One past the last sheet is the names table, as on Avalonia.
   const [onCustomNames, setOnCustomNames] = useState(false);
-  const [drafts, setDrafts] = useState<ReadonlyMap<string, string>>(() => new Map());
+  // Names no row uses yet (`CustomNames.cs` `_drafts`), for this session
+  // only: another profile's never show here. Kept in `custom-names.json`
+  // under the profile's file, as Avalonia keeps them in settings by path.
+  const [draftState, setDraftState] = useState<{ readonly session: string; readonly map: ReadonlyMap<string, string> }>(
+    () => ({ session: snapshot.sessionId, map: new Map() }),
+  );
+  const drafts = useMemo(
+    () => (draftState.session === snapshot.sessionId ? draftState.map : new Map<string, string>()),
+    [draftState, snapshot.sessionId],
+  );
+  const draftsRef = useRef(drafts);
+  useEffect(() => {
+    draftsRef.current = drafts;
+  }, [drafts]);
+  const keepDrafts = client.setCustomNameDrafts;
+  const setDrafts = useCallback(
+    (next: ReadonlyMap<string, string>): void => {
+      setDraftState({ session: snapshot.sessionId, map: next });
+      // `PersistDrafts`: untitled, the backend says so and the window holds them.
+      void keepDrafts?.call(client, snapshot.sessionId, [...next]).catch(() => undefined);
+    },
+    [client, keepDrafts, snapshot.sessionId],
+  );
+  // `LoadDrafts` on open, and after the first Save As, where an untitled
+  // profile's names finally get a file to be kept under.
+  const loadDrafts = client.getCustomNameDrafts;
+  const draftTarget = snapshot.saveTarget;
+  useEffect(() => {
+    if (loadDrafts === undefined || draftTarget === null) return undefined;
+    let cancelled = false;
+    const session = snapshot.sessionId;
+    void loadDrafts.call(client, session).then(
+      (found) => {
+        if (cancelled) return;
+        const local = draftsRef.current;
+        if (found.drafts.length === 0 && local.size > 0) {
+          void keepDrafts?.call(client, session, [...local]).catch(() => undefined);
+          return;
+        }
+        setDraftState({ session, map: new Map(found.drafts) });
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client, draftTarget, keepDrafts, loadDrafts, snapshot.sessionId]);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [selectedZone, setSelectedZoneState] = useState<ZoneId | null>(null);
   const [pickedInput, setPickedInput] = useState<string | null>(null);

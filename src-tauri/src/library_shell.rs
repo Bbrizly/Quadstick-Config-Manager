@@ -68,6 +68,26 @@ struct SaveTemplateRequest {
     name: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RenameTemplateRequest {
+    id: String,
+    name: String,
+}
+
+/// What a template rename did (`UseTemplateAsync`'s Rename button).
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum TemplateRenameDto {
+    Renamed {
+        name: String,
+    },
+    /// Another template already has that name; nothing moved.
+    Taken {
+        name: String,
+    },
+}
+
 const MAX_TEMPLATE_NAME: usize = 120;
 
 /// Card id to path, replaced by every listing so an old id cannot reach a
@@ -358,6 +378,61 @@ impl ShellState {
     }
 }
 
+/// Rename a template file. A name another template has is refused, never
+/// overwritten; the same name is a no-op.
+pub fn rename_template_card(
+    cards: &LibraryCards,
+    dir: &Path,
+    raw: serde_json::Value,
+) -> Result<TemplateRenameDto, QcmError> {
+    let request: RenameTemplateRequest = parse(raw, "rename_template request")?;
+    if request.name.len() > MAX_TEMPLATE_NAME {
+        return Err(RequestError::TooLarge {
+            what: "template name",
+            limit: MAX_TEMPLATE_NAME,
+            actual: request.name.len(),
+        }
+        .into());
+    }
+    let name = safe_template_name(&request.name);
+    if name.is_empty() {
+        return Err(RequestError::OutOfRange {
+            what: "template name",
+        }
+        .into());
+    }
+    if !request.id.starts_with("tpl-") {
+        return Err(RequestError::OutOfRange { what: "template" }.into());
+    }
+    let old = cards.path(&request.id)?;
+    let new = dir.join(&name);
+    let bare = name.trim_end_matches(".csv").to_owned();
+    if new == old {
+        return Ok(TemplateRenameDto::Renamed { name: bare });
+    }
+    if new.exists() {
+        return Ok(TemplateRenameDto::Taken { name: bare });
+    }
+    fs::rename(&old, &new)
+        .map_err(|error| io_error(&error, StorageStage::ReplaceBeforeDisplace))?;
+    cards.forget(&request.id);
+    Ok(TemplateRenameDto::Renamed { name: bare })
+}
+
+/// Delete a template file. Profiles made from it are their own files.
+pub fn delete_template_card(cards: &LibraryCards, raw: serde_json::Value) -> Result<(), QcmError> {
+    let request: CardRequest = parse(raw, "delete_template request")?;
+    // Only an id from the templates listing: a library card id here would
+    // delete a profile.
+    if !request.id.starts_with("tpl-") {
+        return Err(RequestError::OutOfRange { what: "template" }.into());
+    }
+    let path = cards.path(&request.id)?;
+    fs::remove_file(&path).map_err(|error| io_error(&error, StorageStage::Delete))?;
+    cards.forget(&request.id);
+    Ok(())
+}
+
 /// Avalonia `TemplatesDir`.
 #[must_use]
 pub fn templates_dir() -> PathBuf {
@@ -405,6 +480,44 @@ mod tests {
         // A new listing retires the old ids.
         let _ = cards.remember("lib-", &files);
         assert!(cards.path(&ids[0]).is_err());
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn templates_rename_without_overwriting_and_delete_only_by_template_id() {
+        let dir = std::env::temp_dir().join(format!("qcm-templates-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(dir.join("A.csv"), "a").unwrap();
+        fs::write(dir.join("B.csv"), "b").unwrap();
+        let cards = LibraryCards::default();
+        let ids = cards.remember("tpl-", &profile_files(&dir));
+        let taken =
+            rename_template_card(&cards, &dir, serde_json::json!({"id": ids[0], "name": "B"}));
+        assert_eq!(
+            taken.unwrap(),
+            TemplateRenameDto::Taken {
+                name: "B".to_owned()
+            }
+        );
+        assert_eq!(fs::read_to_string(dir.join("B.csv")).unwrap(), "b");
+        let renamed = rename_template_card(
+            &cards,
+            &dir,
+            serde_json::json!({"id": ids[0], "name": "C/1"}),
+        );
+        assert_eq!(
+            renamed.unwrap(),
+            TemplateRenameDto::Renamed {
+                name: "C_1".to_owned()
+            }
+        );
+        assert!(dir.join("C_1.csv").is_file() && !dir.join("A.csv").exists());
+        // A library card id never reaches a template delete.
+        let lib = cards.remember("lib-", &[dir.join("B.csv")]);
+        assert!(delete_template_card(&cards, serde_json::json!({"id": lib[0]})).is_err());
+        delete_template_card(&cards, serde_json::json!({"id": ids[1]})).unwrap();
+        assert!(!dir.join("B.csv").exists());
         let _ = fs::remove_dir_all(&dir);
     }
 }
