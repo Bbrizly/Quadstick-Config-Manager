@@ -46,7 +46,10 @@ function OutputFields({
             aria-label={t("Main_OutputForRowBRow", [row])}
             disabled={disabled}
             value={draft[0] ?? ""}
-            onChange={(event) => setDraft((current) => current.with(0, event.currentTarget.value))}
+            onChange={(event) => {
+              const { value } = event.currentTarget;
+              setDraft((current) => current.with(0, value));
+            }}
             onBlur={() => commit(0)}
           />
         </label>
@@ -74,7 +77,10 @@ function OutputFields({
           aria-label={t("Main_FunctionForRowBRow", [row, draft[1] ?? ""])}
           disabled={disabled}
           value={draft[1] ?? ""}
-          onChange={(event) => setDraft((current) => current.with(1, event.currentTarget.value))}
+          onChange={(event) => {
+              const { value } = event.currentTarget;
+              setDraft((current) => current.with(1, value));
+            }}
           onBlur={() => commit(1)}
         />
       </label>
@@ -178,7 +184,10 @@ export function BindingInspector({
                 aria-label={t("Main_InputI1ForRow", [index + 1, row])}
                 disabled={disabled}
                 value={draft[column] ?? ""}
-                onChange={(event) => setDraft((current) => current.with(column, event.currentTarget.value))}
+                onChange={(event) => {
+              const { value } = event.currentTarget;
+              setDraft((current) => current.with(column, value));
+            }}
                 onBlur={() => commitInput(column)}
               />
               {/* 3ad22ce: the combo's own rows share this input by design. */}
