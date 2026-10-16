@@ -55,7 +55,7 @@ export function DriveBackupNotices({ client, onMessage, onReview }: DriveBackupN
       else if (event.kind === "superseded") {
         // It can overtake the question it voids, which then never shows.
         voided.add(event.resolutionId);
-        if (voided.size > 32) voided.delete(voided.values().next().value ?? "");
+        if (voided.size > 256) voided.delete(voided.values().next().value ?? "");
         setQuestions((queued) => queued.filter((q) => q.resolutionId !== event.resolutionId));
       } else if (!voided.delete(event.resolutionId)) setQuestions((queued) => [...queued, event]);
     }).then((subscription) => {
