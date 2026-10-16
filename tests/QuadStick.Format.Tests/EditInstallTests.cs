@@ -427,6 +427,10 @@ public class DeviceTests : IDisposable
     [InlineData("con.csv")]
     [InlineData("LPT1.csv")]
     [InlineData("my\0game.csv")]
+    // Firmware 2373's FatFs only maps ASCII (ff_convert in ff.c), so opening
+    // any name with a byte above 0x7F fails with FR_INVALID_NAME.
+    [InlineData("café.csv")]
+    [InlineData("ملف.csv")]
     public void A_name_the_device_cannot_hold_is_a_problem_and_never_installs(string name)
     {
         var f = Valid(name);

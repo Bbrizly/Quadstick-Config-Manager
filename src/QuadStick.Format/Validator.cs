@@ -653,7 +653,10 @@ public static class Validator
             // and then threw out of File.WriteAllText during the install, where
             // it was neither caught nor explained. It belongs in the problems
             // list with everything else that stops a profile installing.
-            || name.Any(char.IsControl))
+            || name.Any(char.IsControl)
+            // Firmware 2373 maps only ASCII to and from long names, so it
+            // refuses to open a name with any other character in it.
+            || !System.Text.Ascii.IsValid(name))
         {
             issues.Add(new Issue(Severity.Error, cell,
                 string.Format(CultureInfo.CurrentCulture, Strings.Issue_NameIsNotAValid, name),
