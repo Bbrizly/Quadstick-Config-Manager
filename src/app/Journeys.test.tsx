@@ -83,3 +83,42 @@ describe("first run to an installed profile", () => {
     expect(within(reopened).getByText("1 mapping")).toBeInTheDocument();
   });
 });
+
+describe("templates", () => {
+  it("saves a profile as a template, then starts a fresh profile from it on Home", async () => {
+    const client = new MockQcmClient();
+    render(<App client={client} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Start a new profile from one of your saved templates" }));
+    await screen.findByText(/You have not saved any templates yet/u);
+
+    fireEvent.click(screen.getAllByRole("button", { name: /^Create a new profile/u })[0]!);
+    await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
+    fireEvent.click(screen.getByRole("button", { name: /^Save this profile as a reusable template/u }));
+    const save = await screen.findByRole("dialog", { name: "Save as template" });
+    fireEvent.change(within(save).getByLabelText("Name for this template"), { target: { value: "Racing base" } });
+    fireEvent.click(within(save).getByRole("button", { name: "Save template" }));
+    await screen.findByText(/^Saved template Racing base(\.csv)?\. Find it under Use template/u);
+
+    fireEvent.click(screen.getByRole("button", { name: "Home" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Start a new profile from one of your saved templates" }));
+    const pick = await screen.findByRole("dialog", { name: "Start from a template" });
+    expect(within(pick).getByRole("radio", { name: "Racing base" })).toBeChecked();
+    fireEvent.click(within(pick).getByRole("button", { name: "Use template" }));
+    await screen.findByText("Started from template Racing base. Save to keep this as its own profile.");
+  });
+});
+
+describe("language", () => {
+  it("switches the whole shell to French from Settings and back", async () => {
+    const client = new MockQcmClient();
+    render(<App client={client} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Open Settings" }));
+    const language = await screen.findByRole("combobox", { name: /Language/u });
+    fireEvent.change(language, { target: { value: "fr" } });
+    await waitFor(() => expect(document.documentElement.lang).toBe("fr"));
+    expect(document.documentElement.dir).toBe("ltr");
+    await waitFor(async () => expect((await client.getSettings()).language).toBe("fr"));
+    expect(screen.queryByRole("button", { name: "Open Settings" })).toBeNull();
+  });
+});

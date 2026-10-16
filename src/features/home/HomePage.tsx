@@ -38,7 +38,8 @@ export interface HomePageProps {
   readonly onOpenRescue: () => void;
   readonly onDismissRescue: () => void;
   /** A library card or a template opened; `then` is the menu action to run on it. */
-  readonly onOpened?: (snapshot: EditorSnapshot, then?: CardFollowUp) => void;
+  /** `status`, when given, is the line to announce once the profile is open. */
+  readonly onOpened?: (snapshot: EditorSnapshot, then?: CardFollowUp, status?: string) => void;
   /** Bumped when a card's file changed out of sight (Get the latest, Forget). */
   readonly refreshKey?: number;
 }
@@ -236,12 +237,14 @@ export function HomePage({
   const openTemplate = async (): Promise<void> => {
     const open = client.openTemplate;
     const id = pickedTemplate;
+    const name = templates?.find((entry) => entry.id === id)?.name ?? "";
     setTemplates(null);
     if (open === undefined || id === null) return;
     try {
-      onOpened?.(await open.call(client, id));
+      // `UseTemplateAsync`: say it is a copy, so nobody thinks Save edits the template.
+      onOpened?.(await open.call(client, id), undefined, t("Main_StartedFromTemplatePathGetFileNameWithoutExtension", [name]));
     } catch (reason) {
-      setHomeStatus(localizedErrorMessage(asQcmError(reason).payload, t));
+      setHomeStatus(t("Main_CouldNotOpenThatTemplate", [localizedErrorMessage(asQcmError(reason).payload, t)]));
     }
   };
   const [deviceNames, setDeviceNames] = useState<string[]>([]);

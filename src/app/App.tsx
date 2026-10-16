@@ -718,10 +718,12 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         onOpenRescue={() => void openRescue()}
         onDismissRescue={() => void dismissRescue()}
         refreshKey={libraryKey}
-        onOpened={(opened, then) => {
+        onOpened={(opened, then, status) => {
           if (then === undefined) {
             setCardAction(null);
-            void replaceEditor(opened);
+            void replaceEditor(opened).then(() => {
+              if (status !== undefined) setMessage(status);
+            });
             return;
           }
           setCardAction({ snapshot: opened, kind: then, n: Date.now() });
