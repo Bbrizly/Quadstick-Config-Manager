@@ -947,3 +947,40 @@ impl ReceiptBytes for qcm_core::devices::InstallReceipt {
         file.to_csv_text().into_bytes()
     }
 }
+
+// Pulled while the old profile is being put back: nothing under the name can
+// be proven, so the answer is Uncertain with the backup named, never Restored.
+#[test]
+fn a_stick_pulled_during_the_restore_says_uncertain_and_names_the_backup() {
+    let rig = Rig::with_existing();
+    let mut devices = rig.devices();
+    rig.fake
+        .fail_at(StorageStage::ReplaceAfterDisplace, Fault::Io);
+    rig.fake.fail_at(StorageStage::RestoreWrite, Fault::Unplug);
+
+    let failure = install(&rig, &mut devices, &profile("racing.csv")).failed();
+
+    assert_eq!(failure.target, TargetState::Uncertain);
+    assert!(failure.backup.is_some());
+    let dto = QcmErrorDto::new(&failure.error, Some(failure.operation));
+    assert_eq!(dto.target_state.as_deref(), Some("uncertain"));
+}
+
+// Device settings are saved through the same transaction. A stick pulled
+// while the new prefs.csv is written leaves the old one whole.
+#[test]
+fn a_stick_pulled_while_saving_device_settings_leaves_the_old_ones() {
+    let rig = Rig::new();
+    rig.fake.put_file(rig.device, "prefs.csv", OLD_PROFILE);
+    let mut devices = rig.devices();
+    rig.fake.fail_at(StorageStage::TempWrite, Fault::Unplug);
+
+    let plan = devices
+        .plan_install(rig.device, &profile("prefs.csv"))
+        .expect("planned");
+    let id = plan.confirmation().expect("a gate").id;
+    let failure = devices.install(plan, Some(id)).expect_err("pulled");
+
+    assert_eq!(failure.target, TargetState::Unchanged);
+    assert_eq!(rig.file("prefs.csv").as_deref(), Some(OLD_PROFILE));
+}
