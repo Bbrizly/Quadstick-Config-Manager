@@ -220,4 +220,25 @@ public class DeviceLinkWindowTests
         }
         finally { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
     }
+    // The link drops mid-test (Bluetooth out of range, a cable pulled). The
+    // restart cannot reach the QuadStick, so saying it was put back would be
+    // a lie: the window says so and says how to put it back by hand.
+    [AvaloniaFact]
+    public async Task A_link_that_drops_mid_test_says_the_quadstick_was_not_put_back()
+    {
+        var (w, device, dir) = Open();
+        try
+        {
+            var run = w.MeasureNowAsync();
+            var give = DateTime.UtcNow.AddSeconds(10);
+            while (!w.PromptText.Contains("Puff", StringComparison.Ordinal) && DateTime.UtcNow < give)
+                await Task.Delay(5);
+            device.Silent = true;
+            await run.WaitAsync(TimeSpan.FromSeconds(20));
+            Assert.Null(w.LastStrength);
+            Assert.Contains(Strings.Link_NotPutBack, w.StatusText);
+            Assert.DoesNotContain(Strings.Link_Cancelled, w.StatusText);
+        }
+        finally { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
+    }
 }

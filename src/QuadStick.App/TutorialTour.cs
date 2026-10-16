@@ -83,11 +83,11 @@ public partial class MainWindow
 
         _tourSteps = new (string, string, Action, Func<Control?>)[]
         {
-            ("Welcome",
+            (Strings.Tour_Welcome,
              Strings.Tour_ThisShowsYouHowTo,
              () => ShowHome(),
              () => null),
-            ("Appearance",
+            (Strings.Settings_Appearance,
              Strings.Tour_SetLightOrDarkTo,
              () => { },
              () => AppearancePicker),
@@ -98,7 +98,7 @@ public partial class MainWindow
              // on screen with the spotlight on a Home button nobody could see.
              () => ShowHome(),
              () => HomeNewButton),
-            ("Your QuadStick",
+            (Strings.Tour_YourQuadStick,
              Strings.Tour_ThisIsYourQuadStickEach,
              () => { if (_file is null) NewFromTemplate(); SetDeviceView(true); },
              () => DeviceViewButton),
@@ -106,15 +106,15 @@ public partial class MainWindow
              Strings.Tour_PickAPartToSee,
              () => SelectZoneForPreview("joystick"),
              () => ZoneDetailPanel),
-            ("Save",
+            (Strings.Main_Save,
              Strings.Tour_SaveYourWorkToA,
              () => { },
              () => SaveButton),
-            ("Install",
+            (Strings.Tour_Install,
              Strings.Tour_WhenItSReadySend,
              () => { },
              () => InstallButton),
-            ("Done",
+            (Strings.Main_Done,
              Strings.Tour_YouCanReplayThisAnytime,
              () => { },
              () => null),
@@ -216,7 +216,7 @@ public partial class MainWindow
         _tourBody.Text = step.Body;
         _tourBack.IsEnabled = _tourIndex > 0;
         bool last = _tourIndex == _tourSteps.Length - 1;
-        _tourNext.Content = last ? "Finish" : "Next";
+        _tourNext.Content = last ? Strings.Main_Done : Strings.Tour_Next;
 
         // The live region reads the whole step; keep its Name in sync.
         AutomationProperties.SetName(_tourCallout, string.Format(CultureInfo.CurrentCulture, Strings.Tour_StepTitleStepBody, step.Title, step.Body));
