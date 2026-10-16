@@ -52,6 +52,22 @@ const ZONE_TITLES: Record<ZoneId, MessageKey> = {
   unset: "Main_NoInputYet",
 };
 
+// `Zone.DefaultInput`: what a part's own add button puts on the new row, so
+// the mapping lands in the panel the user is looking at.
+const ZONE_DEFAULT_INPUT: Record<ZoneId, string | null> = {
+  joystick: "up",
+  mp_left: "mp_left_sip",
+  mp_center: "mp_center_sip",
+  mp_right: "mp_right_sip",
+  combo: "mp_left_center_sip",
+  side: "right_sip",
+  lip: "lip",
+  jacks: "digital_in_8",
+  other: "usb_1_button_1",
+  settings: null,
+  unset: null,
+};
+
 const MODEL_CHOICES: readonly { readonly value: ModelChoice; readonly label: string }[] = [
   { value: "fps", label: "QuadStick FPS" },
   { value: "original", label: "QuadStick Original" },
@@ -280,6 +296,18 @@ export function EditorWorkspace({
     };
   }, [client, draftTarget, keepDrafts, loadDrafts, snapshot.sessionId]);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  // `FocusNewMappingCell`: which field of a just-added row takes focus once
+  // it has rendered (0 output, 2 first input). Focus must not fall to the page.
+  const focusNew = useRef<{ readonly row: number; readonly field: number } | null>(null);
+  useEffect(() => {
+    const pending = focusNew.current;
+    if (pending === null) return;
+    const fields = document.querySelectorAll<HTMLElement>(`[data-binding-row="${String(pending.row)}"] input`);
+    const target = fields[pending.field] ?? fields[0];
+    if (target === undefined) return;
+    target.focus();
+    focusNew.current = null;
+  });
   const [selectedZone, setSelectedZoneState] = useState<ZoneId | null>(null);
   const [pickedInput, setPickedInput] = useState<string | null>(null);
   const [wholeZone, setWholeZone] = useState(false);
@@ -644,7 +672,7 @@ export function EditorWorkspace({
   };
 
   // `AddMappingWithInput`: a new row on this mode with the input already on it.
-  const addRowWithInput = (input: string | null): void => {
+  const addRowWithInput = (input: string | null, inputWasChosen = true): void => {
     if (selectedMode === null) return;
     const newRow = selectedMode.startRow + 3 + selectedMode.bindingCount;
     const add: EditorOp = { op: "add_row", sheet: selectedMode.index };
@@ -653,6 +681,8 @@ export function EditorWorkspace({
     void apply(ops, () => {
       setSelectedRow(newRow);
       if (input !== null) setSelectedZone(zoneOf(input));
+      // The output when the input was picked, else the seeded input.
+      focusNew.current = { row: newRow, field: inputWasChosen ? 0 : 2 };
     });
   };
 
@@ -1216,8 +1246,17 @@ export function EditorWorkspace({
                     type="button"
                     className="mapping-add"
                     disabled={locked}
-                    aria-label={t("Shell_AddANewBindingRow")}
-                    onClick={() => void apply([{ op: "add_row", sheet: selectedMode.index }])}
+                    aria-label={t("Main_AddANewMappingFor", [t(ZONE_TITLES[selectedZone])])}
+                    onClick={() =>
+                      // The part clicked on the picture, when it belongs here,
+                      // or the zone's own default, like Avalonia.
+                      addRowWithInput(
+                        effectivePick !== null && zoneOf(effectivePick) === selectedZone
+                          ? effectivePick
+                          : ZONE_DEFAULT_INPUT[selectedZone],
+                        false,
+                      )
+                    }
                   >
                     {t("Shell_AddRow")}
                   </button>
