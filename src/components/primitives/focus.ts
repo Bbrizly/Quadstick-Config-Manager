@@ -14,8 +14,12 @@ export function focusableElements(root: HTMLElement): HTMLElement[] {
 }
 
 export function focusFirst(root: HTMLElement): void {
+  // A disabled autofocus button (Install, while the drive is still being
+  // looked for) cannot take focus, and focus would stay behind the dialog.
+  const focusable = focusableElements(root);
   const preferred = root.querySelector<HTMLElement>("[data-autofocus]");
-  (preferred ?? focusableElements(root)[0] ?? root).focus();
+  const target = preferred !== null && focusable.includes(preferred) ? preferred : focusable[0];
+  (target ?? root).focus();
 }
 
 export function trapTabKey(event: KeyboardEvent, root: HTMLElement): void {
@@ -37,7 +41,7 @@ export function trapTabKey(event: KeyboardEvent, root: HTMLElement): void {
   if (event.shiftKey && (active === first || !root.contains(active))) {
     event.preventDefault();
     last?.focus();
-  } else if (!event.shiftKey && active === last) {
+  } else if (!event.shiftKey && (active === last || !root.contains(active))) {
     event.preventDefault();
     first?.focus();
   }

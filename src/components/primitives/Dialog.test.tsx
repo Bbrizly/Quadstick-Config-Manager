@@ -57,3 +57,32 @@ describe("Dialog focus", () => {
     expect(screen.getByRole("button", { name: "Third 2" })).toHaveFocus();
   });
 });
+
+describe("Dialog focus while its content is still loading", () => {
+  it("skips a disabled autofocus button and pulls a stray Tab back inside", () => {
+    const view = render(
+      <>
+        <button type="button">Outside</button>
+        <Dialog
+          open
+          title="Install"
+          onClose={() => undefined}
+          actions={
+            <>
+              <button type="button">Cancel</button>
+              <button type="button" data-autofocus disabled>Install</button>
+            </>
+          }
+        >
+          <p>Looking for your QuadStick</p>
+        </Dialog>
+      </>,
+    );
+    const dialog = view.getByRole("dialog");
+    expect(dialog.contains(document.activeElement)).toBe(true);
+
+    view.getByRole("button", { name: "Outside" }).focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(view.getByRole("button", { name: "Cancel" })).toHaveFocus();
+  });
+});
