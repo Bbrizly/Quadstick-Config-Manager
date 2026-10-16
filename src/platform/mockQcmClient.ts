@@ -299,6 +299,11 @@ export class MockQcmClient implements QcmClient {
     return this.#dialogsOpened;
   }
 
+  /** Profile sessions still open, for leak checks. */
+  get openSessionCount(): number {
+    return this.#sessions.size;
+  }
+
   get liveListenerCount(): number {
     return this.#liveListeners.size;
   }

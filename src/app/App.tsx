@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { AppShell, type ShellDestination } from "../components/primitives/AppShell";
@@ -103,6 +103,12 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   // their prompt cannot offer a one-press Save.
   const [closePromptFor, setClosePromptFor] = useState<"editor" | "prefs">("editor");
   const [pendingDestination, setPendingDestination] = useState<ShellDestination | null>(null);
+  // A profile waiting to replace the open one once its unsaved work is
+  // saved or dropped. Cancel closes it instead. A second arrival while the
+  // prompt is up closes the first one.
+  const pendingReplacementRef = useRef<EditorSnapshot | null>(null);
+  // The link listener outlives renders; it reaches the current replaceEditor.
+  const replaceEditorRef = useRef<(opened: EditorSnapshot) => Promise<void>>(() => Promise.resolve());
   const [closing, setClosing] = useState(false);
   const [message, setMessage] = useState("");
   const [crashReport, setCrashReport] = useState<PendingCrashReport | null>(null);
@@ -183,7 +189,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     try {
       const opened = await open.call(client, rescue.rescueId);
       setRescue(null);
-      showEditor(opened);
+      await replaceEditor(opened);
       setMessage(t("Main_RecoveredProfileOpenedSaveIt"));
     } catch (reason) {
       showFailure(reason);
@@ -235,7 +241,8 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       setMessage(t("Community_LoadingTheCommunityList2"));
       try {
         const opened = await open.call(client, profileId);
-        if (!cancelled) showEditor(opened);
+        if (cancelled) await client.closeProfile(opened.sessionId, "discard").catch(() => undefined);
+        else await replaceEditorRef.current(opened);
       } catch {
         if (!cancelled) setMessage(t("Community_TheCommunityListCouldNot"));
       }
@@ -267,7 +274,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       cancelled = true;
       subscription?.dispose();
     };
-  }, [client, showEditor, t]);
+  }, [client, t]);
 
   const finishEditorClose = useCallback((destination: ShellDestination): void => {
     setEditor(null);
@@ -277,7 +284,69 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setPendingDestination(null);
     setActiveDestination(destination);
     setMessage("");
-  }, []);
+    const replacement = pendingReplacementRef.current;
+    pendingReplacementRef.current = null;
+    if (replacement !== null) showEditor(replacement);
+  }, [showEditor]);
+
+  // Every way a profile arrives (a link, a workbook, a file, recovered
+  // work) goes through here. The open profile is closed first, its session
+  // with it; unsaved work is asked about (Save / Don't save / Cancel)
+  // instead of being dropped. `dropPreferences` is the files window's
+  // `OpenDeviceProfile`: device settings edits go without asking.
+  const replaceEditor = async (
+    opened: EditorSnapshot,
+    dropPreferences = false,
+  ): Promise<void> => {
+    const ask = (forWhat: "editor" | "prefs"): void => {
+      const earlier = pendingReplacementRef.current;
+      if (earlier !== null && earlier.sessionId !== opened.sessionId) {
+        void client.closeProfile(earlier.sessionId, "discard").catch(() => undefined);
+      }
+      pendingReplacementRef.current = opened;
+      setPendingDestination(null);
+      setClosePromptFor(forWhat);
+      setClosePromptOpen(true);
+    };
+    const refuse = async (reason: unknown): Promise<void> => {
+      await client.closeProfile(opened.sessionId, "discard").catch(() => undefined);
+      showFailure(reason);
+    };
+    if (editor !== null && editor.sessionId !== opened.sessionId) {
+      let outcome;
+      try {
+        outcome = await client.closeProfile(editor.sessionId, "if_clean");
+      } catch (reason) {
+        await refuse(reason);
+        return;
+      }
+      if (outcome.kind === "keptOpenUnsavedChanges") {
+        ask("editor");
+        return;
+      }
+    }
+    if (devicePreferences !== null && devicePreferences.sessionId !== opened.sessionId) {
+      if (dropPreferences) {
+        await client.closeProfile(devicePreferences.sessionId, "discard").catch(() => undefined);
+      } else {
+        let outcome;
+        try {
+          outcome = await client.closeProfile(devicePreferences.sessionId, "if_clean");
+        } catch (reason) {
+          await refuse(reason);
+          return;
+        }
+        if (outcome.kind === "keptOpenUnsavedChanges") {
+          ask("prefs");
+          return;
+        }
+      }
+    }
+    showEditor(opened);
+  };
+  useEffect(() => {
+    replaceEditorRef.current = replaceEditor;
+  });
 
   const requestPreferencesClose = useCallback(
     async (destination: ShellDestination): Promise<void> => {
@@ -306,25 +375,13 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   // reads them again on the next visit), editor work is asked about first.
   const openFromDeviceFiles = async (opened: EditorSnapshot): Promise<void> => {
     setFilesOpen(false);
-    // Editor work first: if it stays, nothing else is touched.
-    if (editor !== null) {
-      const outcome = await client.closeProfile(editor.sessionId, "if_clean").catch(() => null);
-      if (outcome?.kind === "keptOpenUnsavedChanges") {
-        await client.closeProfile(opened.sessionId, "discard").catch(() => undefined);
-        setMessage(t("Main_ThisProfileHasUnsavedChanges"));
-        return;
-      }
-    }
-    if (devicePreferences !== null && devicePreferences.sessionId !== opened.sessionId) {
-      await client.closeProfile(devicePreferences.sessionId, "discard").catch(() => undefined);
-    }
-    showEditor(opened);
+    await replaceEditor(opened, true);
   };
 
   const openProfile = async (): Promise<void> => {
     try {
       const opened = await client.chooseAndOpenProfile();
-      if (opened !== null) showEditor(opened);
+      if (opened !== null) await replaceEditor(opened);
     } catch (reason) {
       showFailure(reason);
     }
@@ -332,7 +389,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
 
   const newProfile = async (): Promise<void> => {
     try {
-      showEditor(await client.newProfile("untitled.csv"));
+      await replaceEditor(await client.newProfile("untitled.csv"));
     } catch (reason) {
       showFailure(reason);
     }
@@ -401,7 +458,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       const opened = await accept.call(client, workbookReview.importId);
       const modes = workbookReview.modes.filter((mode) => mode.kind === "mode").length;
       setWorkbookReview(null);
-      showEditor(opened);
+      await replaceEditor(opened);
       if (reviewFromSheet) {
         const line = t("Main_ImportedModesImportedFromThe", [plural("Count_Mode", modes, [modes])]);
         setMessage(`${line} ${t("Main_ImportIsACopy")}`);
@@ -503,7 +560,12 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     if (closing) return;
     setClosePromptOpen(false);
     setPendingDestination(null);
-  }, [closing]);
+    const replacement = pendingReplacementRef.current;
+    pendingReplacementRef.current = null;
+    if (replacement !== null) {
+      void client.closeProfile(replacement.sessionId, "discard").catch(() => undefined);
+    }
+  }, [client, closing]);
 
   const navigate = useCallback(
     (destination: ShellDestination): void => {
@@ -659,7 +721,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         onOpened={(opened, then) => {
           if (then === undefined) {
             setCardAction(null);
-            showEditor(opened);
+            void replaceEditor(opened);
             return;
           }
           setCardAction({ snapshot: opened, kind: then, n: Date.now() });
