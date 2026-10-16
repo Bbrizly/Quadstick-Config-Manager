@@ -169,6 +169,9 @@ function PreferenceValue({
           aria-label={definition.label}
           onChange={(event) => setDraft(event.currentTarget.value)}
           onPointerUp={commitDraft}
+          // A screen reader's increment and switch access move the value
+          // with no pointer or arrow key, so leaving the slider commits too.
+          onBlur={commitDraft}
           onKeyUp={(event) => {
             if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
               commitDraft();
@@ -374,7 +377,8 @@ export function DevicePreferencesPage({
       await client.closeProfile(snapshot.sessionId, "discard");
       const fresh = await client.openDevicePreferences(snapshot.source.device, snapshot.source.generation);
       onSnapshot(fresh);
-      setMessage(t("Main_NoProblemsReadyToSave"));
+      // It is on the stick now; "ready to save" would say the opposite.
+      setMessage(t("Main_SavedToSavePath", [receipt.target]));
     } catch (reason) {
       showFailure(reason);
     } finally {

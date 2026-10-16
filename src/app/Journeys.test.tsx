@@ -252,3 +252,40 @@ describe("Drive backup and restore", () => {
     await waitFor(() => expect(calls.restored).toEqual(["ref-1"]));
   });
 });
+
+describe("device settings", () => {
+  it("changes a slider the way a screen reader does, then saves it to the stick", async () => {
+    const client = new MockQcmClient();
+    client.plugDevice("QUADSTICK", {
+      "prefs.csv": "Preferences\nprefs.csv\nPreference,Value,Units,Description\nmouse_speed,100,,\n",
+    });
+    Object.assign(client, {
+      getPreferenceCatalog: () =>
+        Promise.resolve({
+          categories: ["Mouse"],
+          definitions: [{
+            name: "mouse_speed", label: "Mouse speed", category: "Mouse", editor: "integer", default: "100",
+            minimum: 0, maximum: 200, unit: "", description: "", options: [], modeOverride: false, risk: "",
+            source: "", firmwareMayAddMore: false, alsoCalled: "", advanced: false,
+          }],
+        }),
+    });
+    render(<App client={client} />);
+    fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
+    const slider = await screen.findByRole("slider", { name: "Mouse speed" });
+
+    // VoiceOver's increment fires input and change, never a key or pointer up.
+    fireEvent.change(slider, { target: { value: "120" } });
+    fireEvent.blur(slider);
+    expect(await screen.findByText(/1 setting changed/u)).toBeInTheDocument();
+    const save = screen.getByText("Save to your QuadStick").closest("button")!;
+    expect(save).toBeEnabled();
+    fireEvent.click(save);
+    const confirm = await screen.findByRole("dialog", { name: "Device settings" });
+    fireEvent.click(within(confirm).getByRole("button", { name: "Save" }));
+    // After the write the line says it was saved, not that it is ready to save.
+    await screen.findByText("Saved to prefs.csv.");
+    expect(screen.queryByText("No problems. Ready to save or install.")).toBeNull();
+    await waitFor(() => expect(screen.getByText("Save to your QuadStick").closest("button")).toBeDisabled());
+  });
+});
