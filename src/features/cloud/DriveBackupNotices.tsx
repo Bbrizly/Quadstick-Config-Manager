@@ -28,7 +28,10 @@ type Question = Extract<DriveBackupEvent, { kind: "conflict" | "missing" }>;
  */
 export function DriveBackupNotices({ client, onMessage, onReview }: DriveBackupNoticesProps) {
   const { t } = useI18n();
-  const [question, setQuestion] = useState<Question | null>(null);
+  // One question at a time, in the order the pushes asked: a second
+  // profile's conflict waits its turn instead of taking the first one's place.
+  const [questions, setQuestions] = useState<readonly Question[]>([]);
+  const question = questions[0] ?? null;
   const [busy, setBusy] = useState(false);
   const say = useRef(onMessage);
   const review = useRef(onReview);
@@ -48,8 +51,7 @@ export function DriveBackupNotices({ client, onMessage, onReview }: DriveBackupN
       if (disposed) return;
       if (event.kind === "pushed") say.current(tr.current("Main_BackedUpToGoogleDrive"));
       else if (event.kind === "pending") say.current(tr.current("Backup_BackupPending"));
-      // A newer question replaces an unanswered one: its id is the live one.
-      else setQuestion(event);
+      else setQuestions((queued) => [...queued, event]);
     }).then((subscription) => {
       if (disposed) subscription.dispose();
       else dispose = () => subscription.dispose();
@@ -66,12 +68,12 @@ export function DriveBackupNotices({ client, onMessage, onReview }: DriveBackupN
     setBusy(true);
     try {
       const result = await resolve.call(client, question.resolutionId, choice);
-      setQuestion(null);
+      setQuestions((queued) => queued.slice(1));
       if (result.kind === "review") review.current(result.review);
       else if (result.result.kind === "pushed") say.current(t("Main_BackedUpToGoogleDrive"));
       else if (result.result.kind === "disabled") say.current(t("Backup_BackupWasTurnedOffFor"));
     } catch (reason) {
-      setQuestion(null);
+      setQuestions((queued) => queued.slice(1));
       say.current(localizedErrorMessage(asQcmError(reason).payload, t));
     } finally {
       setBusy(false);

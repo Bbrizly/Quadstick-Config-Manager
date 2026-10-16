@@ -38,16 +38,26 @@ pub enum BackupMode {
     RetryIfDirty,
 }
 
-/// Run one background push now, on this thread. `None`: backup is off, or a
-/// retry found nothing dirty.
+/// Run one background push now, on this thread. `None`: backup is off, a
+/// retry found nothing dirty, or a newer save of the profile superseded it.
 pub fn run_backup(
     drive: &DriveService,
     profile: DriveProfileSnapshot,
     mode: BackupMode,
 ) -> Option<DriveBackupEventDto> {
+    let ticket = drive.ticket(&profile.persistent_key);
+    run_ticketed(drive, profile, mode, ticket)
+}
+
+fn run_ticketed(
+    drive: &DriveService,
+    profile: DriveProfileSnapshot,
+    mode: BackupMode,
+    ticket: u64,
+) -> Option<DriveBackupEventDto> {
     let result = match mode {
-        BackupMode::AfterSave => drive.backup_after_save(profile),
-        BackupMode::RetryIfDirty => drive.retry_if_dirty(profile),
+        BackupMode::AfterSave => drive.backup_after_save(profile, ticket),
+        BackupMode::RetryIfDirty => drive.retry_if_dirty(profile, ticket),
     }?;
     Some(event_of(result))
 }
@@ -78,8 +88,10 @@ pub fn spawn_backup(
     deliver: impl FnOnce(DriveBackupEventDto) + Send + 'static,
 ) {
     let Some(profile) = profile else { return };
+    // The ticket is taken here, on the saving thread, so save order holds.
+    let ticket = drive.ticket(&profile.persistent_key);
     std::thread::spawn(move || {
-        if let Some(event) = run_backup(&drive, profile, mode) {
+        if let Some(event) = run_ticketed(&drive, profile, mode, ticket) {
             deliver(event);
         }
     });
@@ -327,6 +339,27 @@ mod tests {
         );
         drop(d);
         assert!(!dirty(&state));
+    }
+
+    #[test]
+    fn an_older_save_that_reaches_drive_late_never_overwrites_a_newer_one() {
+        let fake = Arc::new(Mutex::new(FakeDrive::default()));
+        let state = state_file("order");
+        let drive = service(&serve(Arc::clone(&fake)), true, &state);
+        let older = drive.ticket("/profiles/Game.csv");
+        let newer = drive.ticket("/profiles/Game.csv");
+        // The newer save's thread got to the gate first.
+        assert_eq!(
+            run_ticketed(&drive, profile("joystick"), BackupMode::AfterSave, newer),
+            Some(DriveBackupEventDto::Pushed)
+        );
+        assert_eq!(
+            run_ticketed(&drive, profile("mouse"), BackupMode::AfterSave, older),
+            None
+        );
+        let d = fake.lock().expect("fake");
+        assert_eq!(d.pushes.len(), 1);
+        assert!(d.pushes[0].contains("joystick"));
     }
 
     #[test]

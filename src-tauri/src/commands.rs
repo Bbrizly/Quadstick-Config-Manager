@@ -178,7 +178,7 @@ pub fn close_profile(
     let saving = request.get("disposition").and_then(Value::as_str) == Some("save");
     let profile = request_session(&request)
         .filter(|_| saving)
-        .and_then(|session| state.drive_snapshot(session));
+        .and_then(|session| state.drive_snapshot_before_close(session));
     let outcome = redact(state.close_profile(request))?;
     if matches!(outcome, CloseOutcomeDto::SavedAndClosed { .. }) {
         fire(&drive, &backups, profile, BackupMode::AfterSave);

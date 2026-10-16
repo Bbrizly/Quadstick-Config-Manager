@@ -153,6 +153,8 @@ pub struct DriveService {
     /// `DriveBackup.Locked`: one push at a time, so a save's background push
     /// and a Back up press never race on the same link.
     gate: Mutex<()>,
+    /// Last ticket handed out, and the newest per profile key.
+    tickets: Mutex<(u64, BTreeMap<String, u64>)>,
 }
 
 impl DriveService {
@@ -185,6 +187,7 @@ impl DriveService {
             state: Mutex::new(state),
             pending: Mutex::new(PendingTable::default()),
             gate: Mutex::new(()),
+            tickets: Mutex::new((0, BTreeMap::new())),
         })
     }
 
@@ -192,13 +195,37 @@ impl DriveService {
         self.gate.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
+    /// Taken on the saving thread, in save order. A background push that
+    /// finds a newer ticket for the same profile stands down, so threads that
+    /// reach the gate out of order never put an older save over a newer one.
+    pub fn ticket(&self, key: &str) -> u64 {
+        let mut tickets = self.tickets.lock().unwrap_or_else(PoisonError::into_inner);
+        tickets.0 = tickets.0.saturating_add(1);
+        let ticket = tickets.0;
+        tickets.1.insert(key.to_owned(), ticket);
+        ticket
+    }
+
+    fn is_latest(&self, key: &str, ticket: u64) -> bool {
+        self.tickets
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .1
+            .get(key)
+            .is_none_or(|latest| *latest == ticket)
+    }
+
     /// `FireBackupPush`: every save hands its bytes to Drive when backup is
-    /// on, the first one creating the sheet. `None` means backup is off.
+    /// on, the first one creating the sheet. `None` means backup is off, or a
+    /// newer save of this profile is already on its way.
     pub fn backup_after_save(
         &self,
         profile: DriveProfileSnapshot,
+        ticket: u64,
     ) -> Option<Result<DriveBackupOutcomeDto, QcmError>> {
-        self.auth.connected().then(|| self.backup(profile))
+        let _gate = self.gate();
+        (self.is_latest(&profile.persistent_key, ticket) && self.auth.connected())
+            .then(|| self.backup_locked(profile))
     }
 
     /// `RetryIfDirtyAsync`: a profile opened from a path whose last push
@@ -206,13 +233,16 @@ impl DriveService {
     pub fn retry_if_dirty(
         &self,
         profile: DriveProfileSnapshot,
+        ticket: u64,
     ) -> Option<Result<DriveBackupOutcomeDto, QcmError>> {
+        let _gate = self.gate();
         let dirty = self
             .state()
             .links
             .get(&profile.persistent_key)
             .is_some_and(|link| link.backup_dirty);
-        (dirty && self.auth.connected()).then(|| self.backup(profile))
+        (dirty && self.is_latest(&profile.persistent_key, ticket) && self.auth.connected())
+            .then(|| self.backup_locked(profile))
     }
 
     fn state(&self) -> MutexGuard<'_, DriveState> {
@@ -224,6 +254,13 @@ impl DriveService {
 
     pub fn backup(&self, profile: DriveProfileSnapshot) -> Result<DriveBackupOutcomeDto, QcmError> {
         let _gate = self.gate();
+        self.backup_locked(profile)
+    }
+
+    fn backup_locked(
+        &self,
+        profile: DriveProfileSnapshot,
+    ) -> Result<DriveBackupOutcomeDto, QcmError> {
         let existing = self.state().links.get(&profile.persistent_key).cloned();
         let Some(mut link) = existing else {
             return self.create_and_record(&profile);

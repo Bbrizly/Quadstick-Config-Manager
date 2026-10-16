@@ -327,9 +327,23 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     }
 
     /// The same snapshot for a save the native side just made, with no
-    /// revision to check. `None` for a profile Drive never backs up: no save
-    /// target, a file on the QuadStick, or a session already gone.
+    /// revision to check. Only a clean session: what is open is then exactly
+    /// what is on disk, and an edit made since the save waits for its own.
+    /// `None` too for a profile Drive never backs up: no save target, a file
+    /// on the QuadStick, or a session already gone.
     pub fn drive_snapshot(&self, raw_session: &str) -> Option<DriveProfileSnapshot> {
+        let session = session_id(raw_session).ok()?;
+        let sessions = self.sessions();
+        let open = sessions.session(session).ok()?;
+        if open.dirty() {
+            return None;
+        }
+        drive_snapshot_of(&sessions, open).ok()
+    }
+
+    /// What a save on the way out is about to write, taken before the close,
+    /// because the session is gone after it.
+    pub fn drive_snapshot_before_close(&self, raw_session: &str) -> Option<DriveProfileSnapshot> {
         let session = session_id(raw_session).ok()?;
         let sessions = self.sessions();
         let open = sessions.session(session).ok()?;
