@@ -26,7 +26,6 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
   const [deviceId, setDeviceId] = useState<string>("");
   const [plan, setPlan] = useState<InstallPlan | null>(null);
   const [receipt, setReceipt] = useState<InstallReceipt | null>(null);
-  const [stages, setStages] = useState<readonly string[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   // Once an attempt has gone native it was counted there; closing after a
@@ -48,7 +47,6 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         );
         setPlan(null);
         setReceipt(null);
-        setStages([]);
         setMessage("");
         setPrepared(false);
       })
@@ -104,7 +102,6 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
     const installed = await client.commitInstall(
       chosen.planId,
       chosen.confirmation?.confirmationId,
-      (progress) => setStages((previous) => [...previous, progress.stage]),
     );
     setReceipt(installed);
     setPlan(null);
@@ -122,7 +119,6 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
     setBusy(true);
     try {
       setReceipt(null);
-      setStages([]);
       setMessage("");
       setPrepared(true);
       const next = await client.prepareInstall(profile.sessionId, deviceId);
@@ -215,7 +211,6 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
                 setDeviceId(event.currentTarget.value);
                 setPlan(null);
                 setReceipt(null);
-                setStages([]);
               }}
             >
               {devices.map((device) => (
@@ -243,16 +238,9 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
           </section>
         )}
 
-        {busy && stages.length === 0 ? (
-          <output className="feature-status">{t("Install_BackingUpAndInstalling")}</output>
-        ) : null}
-        {stages.length > 0 ? (
-          <ol className="install-stage-list" aria-live="polite">
-            {stages.map((stage) => (
-              <li key={stage}>{stage}</li>
-            ))}
-          </ol>
-        ) : null}
+        {/* The native stages ("temp_read_back") are log words, not copy, so
+            the person reads one plain line until the result replaces it. */}
+        {busy ? <output className="feature-status">{t("Install_BackingUpAndInstalling")}</output> : null}
 
         {receipt?.backup === null || receipt?.backup === undefined ? null : (
           <p>{t("Install_BackupPath", [receipt.backup])}</p>
