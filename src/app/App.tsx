@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { AppShell, type ShellDestination } from "../components/primitives/AppShell";
 import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
+import { DriveBackupNotices } from "../features/cloud/DriveBackupNotices";
 import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/GoogleDrivePanel";
 import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
 import { CrashReportPrompt } from "../features/diagnostics/CrashReportPrompt";
@@ -780,6 +781,14 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         {content}
       </AppShell>
       <LiveRegion>{message}</LiveRegion>
+      <DriveBackupNotices
+        client={client}
+        onMessage={setMessage}
+        onReview={(review) => {
+          setWorkbookReview(review);
+          setReviewFromSheet(false);
+        }}
+      />
       {notice === "show" ? (
         <UsageNotice
           client={client}

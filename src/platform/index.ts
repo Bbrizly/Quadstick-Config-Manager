@@ -18,7 +18,7 @@ export type {
 } from "./controllerContracts";
 export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 export type {
-  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
+  DriveBackupEvent, DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
   RestoreItem, RestoreReason, RestoreSummary,
 } from "./driveContracts";
 export type {

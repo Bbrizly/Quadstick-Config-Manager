@@ -12,7 +12,7 @@ import type {
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
-  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare, RestoreSummary,
+  DriveBackupEvent, DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare, RestoreSummary,
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
@@ -139,6 +139,11 @@ export class TauriQcmClient implements QcmClient {
   disconnectGoogle(): Promise<GoogleAuthStatus> { return call("disconnect_google"); }
   backupProfileToDrive(sessionId: string, expectedRevision: number): Promise<DriveBackupOutcome> { return call("backup_profile_to_drive", { sessionId, expectedRevision }); }
   resolveDriveConflict(resolutionId: string, choice: DriveConflictChoice): Promise<DriveResolution> { return call("resolve_drive_conflict", { resolutionId, choice }); }
+  async subscribeDriveBackups(onEvent: (event: DriveBackupEvent) => void): Promise<Subscription> {
+    const channel = new Channel<DriveBackupEvent>(onEvent);
+    const native = await callArgs<NativeSubscription>("subscribe_drive_backups", { onEvent: channel });
+    return disposal("unsubscribe_drive_backups", native.subscriptionId);
+  }
   listDriveBackups(): Promise<readonly DriveFile[]> { return call("list_drive_backups"); }
   restoreDriveBackup(cloudRef: string): Promise<WorkbookImportReview> { return call("restore_drive_backup", { cloudRef }); }
   restoreDriveBackups(cloudRefs: readonly string[]): Promise<RestoreSummary> { return call("restore_drive_backups", { cloudRefs }); }
@@ -179,7 +184,7 @@ export const TAURI_COMMANDS = [
   "cancel_workbook_import", "export_profile_xlsx", "get_preference_catalog", "load_community_catalog",
   "import_community_profile", "open_community_sheet", "get_google_auth_status", "connect_google",
   "disconnect_google", "backup_profile_to_drive", "resolve_drive_conflict", "list_drive_backups",
-  "restore_drive_backup", "share_drive_profile", "list_devices", "refresh_devices",
+  "restore_drive_backup", "share_drive_profile", "subscribe_drive_backups", "unsubscribe_drive_backups", "list_devices", "refresh_devices",
   "choose_device_folder", "get_device_library", "prepare_install", "commit_install",
   "prepare_delete_device_profile", "commit_delete_device_profile", "rename_device_profile",
   "open_device_profile", "open_device_preferences", "start_live_input", "stop_live_input",

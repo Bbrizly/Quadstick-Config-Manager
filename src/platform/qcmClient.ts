@@ -11,7 +11,7 @@ import type {
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
-  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare, RestoreSummary,
+  DriveBackupEvent, DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare, RestoreSummary,
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
@@ -90,6 +90,8 @@ export interface QcmClient {
   disconnectGoogle?(): Promise<GoogleAuthStatus>;
   backupProfileToDrive?(sessionId: string, expectedRevision: number): Promise<DriveBackupOutcome>;
   resolveDriveConflict?(resolutionId: string, choice: DriveConflictChoice): Promise<DriveResolution>;
+  /** Outcomes of the push every save, replace, and open hands to Drive in the background. */
+  subscribeDriveBackups?(onEvent: (event: DriveBackupEvent) => void): Promise<Subscription>;
   listDriveBackups?(): Promise<readonly DriveFile[]>;
   restoreDriveBackup?(cloudRef: string): Promise<WorkbookImportReview>;
   /** Copy the picked backups into the profile folder and link each. */

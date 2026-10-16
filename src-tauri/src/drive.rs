@@ -125,22 +125,53 @@ pub enum ConflictChoice {
     Disable,
 }
 
+/// Where Drive gets its token, and whether backup is on at all. Google
+/// sign-in in the app; a fake in tests.
+pub trait DriveAuth: Send + Sync {
+    /// `DriveBackup` on, configured, and a token stored (`MainWindow.Backup`).
+    fn connected(&self) -> bool;
+    fn access_token(&self) -> Result<String, QcmError>;
+}
+
+impl DriveAuth for GoogleAuthService {
+    fn connected(&self) -> bool {
+        self.status().is_ok_and(|status| status.connected)
+    }
+    fn access_token(&self) -> Result<String, QcmError> {
+        GoogleAuthService::access_token(self)
+    }
+}
+
 pub struct DriveService {
-    auth: Arc<GoogleAuthService>,
+    auth: Arc<dyn DriveAuth>,
     http: Client,
+    sheets_base: String,
+    drive_base: String,
     state_path: Option<PathBuf>,
     state: Mutex<DriveState>,
     pending: Mutex<PendingTable>,
+    /// `DriveBackup.Locked`: one push at a time, so a save's background push
+    /// and a Back up press never race on the same link.
+    gate: Mutex<()>,
 }
 
 impl DriveService {
     pub fn native(auth: Arc<GoogleAuthService>) -> Result<Self, QcmError> {
+        let state_path = config_dir().map(|dir| dir.join("drive-links.json"));
+        Self::with_endpoints(auth, SHEETS_BASE, DRIVE_BASE, state_path)
+    }
+
+    pub(crate) fn with_endpoints(
+        auth: Arc<dyn DriveAuth>,
+        sheets_base: &str,
+        drive_base: &str,
+        state_path: Option<PathBuf>,
+    ) -> Result<Self, QcmError> {
         let http = Client::builder()
             .timeout(Duration::from_secs(30))
             .user_agent("QuadStickConfigManager")
             .build()
             .map_err(|error| drive_internal("build Drive HTTP client", error))?;
-        let state_path = config_dir().map(|dir| dir.join("drive-links.json"));
         let state = state_path
             .as_deref()
             .and_then(read_state)
@@ -148,10 +179,40 @@ impl DriveService {
         Ok(Self {
             auth,
             http,
+            sheets_base: sheets_base.to_owned(),
+            drive_base: drive_base.to_owned(),
             state_path,
             state: Mutex::new(state),
             pending: Mutex::new(PendingTable::default()),
+            gate: Mutex::new(()),
         })
+    }
+
+    fn gate(&self) -> MutexGuard<'_, ()> {
+        self.gate.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
+    /// `FireBackupPush`: every save hands its bytes to Drive when backup is
+    /// on, the first one creating the sheet. `None` means backup is off.
+    pub fn backup_after_save(
+        &self,
+        profile: DriveProfileSnapshot,
+    ) -> Option<Result<DriveBackupOutcomeDto, QcmError>> {
+        self.auth.connected().then(|| self.backup(profile))
+    }
+
+    /// `RetryIfDirtyAsync`: a profile opened from a path whose last push
+    /// failed tries again. `None` when there was nothing to retry.
+    pub fn retry_if_dirty(
+        &self,
+        profile: DriveProfileSnapshot,
+    ) -> Option<Result<DriveBackupOutcomeDto, QcmError>> {
+        let dirty = self
+            .state()
+            .links
+            .get(&profile.persistent_key)
+            .is_some_and(|link| link.backup_dirty);
+        (dirty && self.auth.connected()).then(|| self.backup(profile))
     }
 
     fn state(&self) -> MutexGuard<'_, DriveState> {
@@ -162,6 +223,7 @@ impl DriveService {
     }
 
     pub fn backup(&self, profile: DriveProfileSnapshot) -> Result<DriveBackupOutcomeDto, QcmError> {
+        let _gate = self.gate();
         let existing = self.state().links.get(&profile.persistent_key).cloned();
         let Some(mut link) = existing else {
             return self.create_and_record(&profile);
@@ -191,6 +253,7 @@ impl DriveService {
         choice: ConflictChoice,
     ) -> Result<DriveResolution, QcmError> {
         let id = resolution_id(raw_id)?;
+        let _gate = self.gate();
         let pending = self
             .pending()
             .conflicts
@@ -248,7 +311,7 @@ impl DriveService {
         let mut page_token: Option<String> = None;
         let mut found = Vec::new();
         loop {
-            let mut request = self.http.get(DRIVE_BASE).query(&[
+            let mut request = self.http.get(&self.drive_base).query(&[
                 ("q", q),
                 ("fields", "nextPageToken,files(id,name,modifiedTime)"),
             ]);
@@ -469,7 +532,10 @@ impl DriveService {
             let body = json!({ "role": "reader", "type": "anyone", "allowFileDiscovery": false });
             self.send_json(
                 self.http
-                    .post(format!("{DRIVE_BASE}/{}/permissions", link.spreadsheet_id))
+                    .post(format!(
+                        "{}/{}/permissions",
+                        self.drive_base, link.spreadsheet_id
+                    ))
                     .json(&body),
             )?;
             link.shared = true;
@@ -514,7 +580,7 @@ impl DriveService {
     ) -> Result<DriveBackupOutcomeDto, QcmError> {
         let title = backup_title(profile);
         let body = json!({ "properties": { "title": title } });
-        let created = self.send_json(self.http.post(SHEETS_BASE).json(&body))?;
+        let created = self.send_json(self.http.post(&self.sheets_base).json(&body))?;
         let id = created
             .get("spreadsheetId")
             .and_then(Value::as_str)
@@ -601,7 +667,7 @@ impl DriveService {
         }
         self.send_json(
             self.http
-                .post(format!("{SHEETS_BASE}/{id}/values:batchUpdate"))
+                .post(format!("{}/{id}/values:batchUpdate", self.sheets_base))
                 .json(&json!({
                     "valueInputOption": "RAW",
                     "data": data,
@@ -610,7 +676,7 @@ impl DriveService {
         if !clear_ranges.is_empty() {
             self.send_json(
                 self.http
-                    .post(format!("{SHEETS_BASE}/{id}/values:batchClear"))
+                    .post(format!("{}/{id}/values:batchClear", self.sheets_base))
                     .json(&json!({ "ranges": clear_ranges })),
             )?;
         }
@@ -620,7 +686,7 @@ impl DriveService {
     fn shape_tabs(&self, id: &str, tabs: &[DriveTab]) -> Result<(), QcmError> {
         let metadata = self.send_json(
             self.http
-                .get(format!("{SHEETS_BASE}/{id}"))
+                .get(format!("{}/{id}", self.sheets_base))
                 .query(&[("fields", "sheets.properties(sheetId,title)")]),
         )?;
         let existing = metadata
@@ -666,7 +732,7 @@ impl DriveService {
         }
         self.send_json(
             self.http
-                .post(format!("{SHEETS_BASE}/{id}:batchUpdate"))
+                .post(format!("{}/{id}:batchUpdate", self.sheets_base))
                 .json(&json!({ "requests": requests })),
         )?;
         Ok(())
@@ -675,7 +741,7 @@ impl DriveService {
     fn modified_time(&self, id: &str) -> Result<String, DriveHttpError> {
         let value = self.send_json_http(
             self.http
-                .get(format!("{DRIVE_BASE}/{id}"))
+                .get(format!("{}/{id}", self.drive_base))
                 .query(&[("fields", "modifiedTime")]),
         )?;
         value
@@ -688,7 +754,7 @@ impl DriveService {
     fn drive_name(&self, id: &str) -> Result<String, QcmError> {
         let value = self.send_json(
             self.http
-                .get(format!("{DRIVE_BASE}/{id}"))
+                .get(format!("{}/{id}", self.drive_base))
                 .query(&[("fields", "name")]),
         )?;
         Ok(value
@@ -701,7 +767,7 @@ impl DriveService {
     fn download_workbook(&self, id: &str) -> Result<Vec<u8>, QcmError> {
         let request = self
             .http
-            .get(format!("{DRIVE_BASE}/{id}/export"))
+            .get(format!("{}/{id}/export", self.drive_base))
             .query(&[("mimeType", XLSX_MIME)]);
         let response = self.send(request).map_err(DriveHttpError::into_qcm)?;
         read_bounded(response, XLSX_MAX_WORKBOOK_BYTES)

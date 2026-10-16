@@ -11,6 +11,8 @@ use crate::device_ipc::{
 };
 use crate::device_rename_ipc::RenameDeviceProfileReceiptDto;
 use crate::device_shell::{DeviceOperationError, DeviceShellState};
+use crate::drive::DriveService;
+use crate::drive_auto::{BackupMode, DriveBackupHub, fire};
 use crate::ipc::{AppSnapshotDto, CloseOutcomeDto, parse};
 use crate::preference_ipc::{PreferenceCatalogDto, preference_catalog};
 use crate::shell::ShellState;
@@ -25,6 +27,7 @@ use qcm_core::profiles::{EditorSnapshot, SaveReceiptDto};
 use qcm_core::settings::AppSettingsDto;
 use serde::Serialize;
 use serde_json::Value;
+use std::sync::Arc;
 use tauri::State;
 use tauri::ipc::Channel;
 
@@ -32,6 +35,13 @@ use crate::telemetry::{self, AppFeature, InstallFailure, ProfileSource};
 use qcm_core::ErrorCode;
 
 type Failure = Box<QcmErrorDto>;
+
+type Drive<'a> = State<'a, Arc<DriveService>>;
+type Backups<'a> = State<'a, Arc<DriveBackupHub>>;
+
+fn request_session(request: &Value) -> Option<&str> {
+    request.get("sessionId").and_then(Value::as_str)
+}
 
 fn redact<T>(result: Result<T, qcm_core::QcmError>) -> Result<T, Failure> {
     result.map_err(|error| Box::new(QcmErrorDto::from(&error)))
@@ -86,10 +96,15 @@ pub fn new_profile(
 #[tauri::command]
 pub fn choose_and_open_profile(
     state: State<'_, ShellState>,
+    drive: Drive<'_>,
+    backups: Backups<'_>,
 ) -> Result<Option<EditorSnapshot>, Failure> {
     let opened = redact(state.choose_and_open_profile())?;
-    if opened.is_some() {
+    if let Some(snapshot) = &opened {
         telemetry::global().opened(ProfileSource::File, None);
+        // A profile opened from a path retries its backup if it was left dirty.
+        let profile = state.drive_snapshot(&snapshot.session_id);
+        fire(&drive, &backups, profile, BackupMode::RetryIfDirty);
     }
     Ok(opened)
 }
@@ -121,21 +136,32 @@ pub fn undo_editor(
 #[tauri::command]
 pub fn save_profile(
     state: State<'_, ShellState>,
+    drive: Drive<'_>,
+    backups: Backups<'_>,
     request: Value,
 ) -> Result<SaveReceiptDto, Failure> {
+    let session = request_session(&request).map(str::to_owned);
     let saved = redact(state.save_profile(request))?;
     telemetry::global().saved();
+    // `FireBackupPush`: the local save is done; the push never holds it up.
+    let profile = session.and_then(|session| state.drive_snapshot(&session));
+    fire(&drive, &backups, profile, BackupMode::AfterSave);
     Ok(saved)
 }
 
 #[tauri::command]
 pub fn save_profile_as(
     state: State<'_, ShellState>,
+    drive: Drive<'_>,
+    backups: Backups<'_>,
     request: Value,
 ) -> Result<Option<SaveReceiptDto>, Failure> {
+    let session = request_session(&request).map(str::to_owned);
     let saved = redact(state.save_profile_as(request))?;
     if saved.is_some() {
         telemetry::global().saved();
+        let profile = session.and_then(|session| state.drive_snapshot(&session));
+        fire(&drive, &backups, profile, BackupMode::AfterSave);
     }
     Ok(saved)
 }
@@ -143,9 +169,21 @@ pub fn save_profile_as(
 #[tauri::command]
 pub fn close_profile(
     state: State<'_, ShellState>,
+    drive: Drive<'_>,
+    backups: Backups<'_>,
     request: Value,
 ) -> Result<CloseOutcomeDto, Failure> {
-    redact(state.close_profile(request))
+    // The session is gone once it closes, so what a save on the way out
+    // writes is taken first, and pushed only if that save happened.
+    let saving = request.get("disposition").and_then(Value::as_str) == Some("save");
+    let profile = request_session(&request)
+        .filter(|_| saving)
+        .and_then(|session| state.drive_snapshot(session));
+    let outcome = redact(state.close_profile(request))?;
+    if matches!(outcome, CloseOutcomeDto::SavedAndClosed { .. }) {
+        fire(&drive, &backups, profile, BackupMode::AfterSave);
+    }
+    Ok(outcome)
 }
 
 #[tauri::command]
@@ -439,10 +477,14 @@ pub fn list_library_profiles(
 pub fn open_library_profile(
     state: State<'_, ShellState>,
     cards: State<'_, crate::library_shell::LibraryCards>,
+    drive: Drive<'_>,
+    backups: Backups<'_>,
     request: Value,
 ) -> Result<EditorSnapshot, Failure> {
     let opened = redact(state.open_library_card(&cards, request))?;
     telemetry::global().opened(ProfileSource::Library, None);
+    let profile = state.drive_snapshot(&opened.session_id);
+    fire(&drive, &backups, profile, BackupMode::RetryIfDirty);
     Ok(opened)
 }
 

@@ -17,6 +17,7 @@ pub mod device_rename_ipc;
 pub mod device_shell;
 pub mod diagnostics;
 pub mod drive;
+pub mod drive_auto;
 pub mod drive_commands;
 pub mod follow;
 pub mod follow_commands;
@@ -70,6 +71,8 @@ pub fn registered_commands() -> &'static [&'static str] {
         "list_drive_backups",
         "restore_drive_backup",
         "share_drive_profile",
+        "subscribe_drive_backups",
+        "unsubscribe_drive_backups",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
@@ -214,6 +217,7 @@ pub fn run() {
         )))
         .manage(google)
         .manage(drive)
+        .manage(Arc::new(drive_auto::DriveBackupHub::default()))
         .manage(console_shell::native_console_shell())
         .manage(streaming::LiveRuntime::new())
         .manage(controller::BridgeRuntime::default())
@@ -248,6 +252,8 @@ pub fn run() {
             drive_commands::restore_drive_backup,
             drive_commands::restore_drive_backups,
             drive_commands::share_drive_profile,
+            drive_auto::subscribe_drive_backups,
+            drive_auto::unsubscribe_drive_backups,
             commands::list_devices,
             commands::refresh_devices,
             commands::choose_device_folder,
@@ -339,7 +345,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 90);
+        assert_eq!(commands.len(), 92);
         for expected in [
             "import_sheets_link",
             "check_latest_from_link",

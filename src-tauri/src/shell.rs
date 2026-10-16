@@ -323,19 +323,17 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             }
             .into());
         }
-        let target = open
-            .save_target_ref()
-            .ok_or(QcmError::Profile(ProfileError::NeedsSaveTarget))?;
-        if sessions.store().is_on_quadstick(target)? {
-            return Err(ProfileError::SaveTargetOnDevice.into());
-        }
-        let persistent_key = sessions.store().persistent_key(target)?;
-        Ok(DriveProfileSnapshot {
-            persistent_key,
-            display_name: target.display_name().to_string(),
-            revision: open.revision(),
-            file: open.file().clone(),
-        })
+        drive_snapshot_of(&sessions, open)
+    }
+
+    /// The same snapshot for a save the native side just made, with no
+    /// revision to check. `None` for a profile Drive never backs up: no save
+    /// target, a file on the QuadStick, or a session already gone.
+    pub fn drive_snapshot(&self, raw_session: &str) -> Option<DriveProfileSnapshot> {
+        let session = session_id(raw_session).ok()?;
+        let sessions = self.sessions();
+        let open = sessions.session(session).ok()?;
+        drive_snapshot_of(&sessions, open).ok()
     }
 
     pub fn open_workbook_copy(
@@ -415,6 +413,25 @@ where
         return;
     };
     crate::diagnostics::write_autosave_draft(open.file().to_csv_text().as_bytes());
+}
+
+fn drive_snapshot_of<L: LocalProfileStore>(
+    sessions: &ProfileSessions<Arc<L>>,
+    open: &qcm_core::profiles::ProfileSession,
+) -> Result<DriveProfileSnapshot, QcmError> {
+    let target = open
+        .save_target_ref()
+        .ok_or(QcmError::Profile(ProfileError::NeedsSaveTarget))?;
+    if sessions.store().is_on_quadstick(target)? {
+        return Err(ProfileError::SaveTargetOnDevice.into());
+    }
+    let persistent_key = sessions.store().persistent_key(target)?;
+    Ok(DriveProfileSnapshot {
+        persistent_key,
+        display_name: target.display_name().to_string(),
+        revision: open.revision(),
+        file: open.file().clone(),
+    })
 }
 
 pub type ShellState = Shell<

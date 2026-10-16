@@ -6,6 +6,13 @@ export type DriveBackupOutcome =
   | { readonly kind: "missing"; readonly resolutionId: string }
   | { readonly kind: "disabled" };
 
+/** What the background push after a save, replace, or open came to. */
+export type DriveBackupEvent =
+  | { readonly kind: "pushed" }
+  | { readonly kind: "pending" }
+  | { readonly kind: "conflict"; readonly resolutionId: string }
+  | { readonly kind: "missing"; readonly resolutionId: string };
+
 export type DriveConflictChoice =
   | "replace_with_mine"
   | "keep_online"

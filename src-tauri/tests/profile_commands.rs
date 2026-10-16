@@ -669,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 90);
+    assert_eq!(registered.len(), 92);
     for name in [
         "rename_template",
         "delete_template",
@@ -716,6 +716,8 @@ fn every_command_this_build_registers_is_on_the_list() {
         "list_drive_backups",
         "restore_drive_backup",
         "share_drive_profile",
+        "subscribe_drive_backups",
+        "unsubscribe_drive_backups",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
