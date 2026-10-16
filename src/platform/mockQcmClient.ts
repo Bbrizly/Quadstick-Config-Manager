@@ -184,8 +184,10 @@ function modesOf(grid: readonly (readonly string[])[]): Mode[] {
 function bindingsFrom(grid: readonly (readonly string[])[], start: number): number {
   let count = 0;
   for (let row = start + 3; row < grid.length; row += 1) {
-    const first = grid[row]?.[0] ?? "";
-    if (first === "" || first === "Profile Name") break;
+    // A new row has no output yet but is still a binding, as in the Rust
+    // parser; only a wholly blank row or the next header ends the mode.
+    const cells = grid[row] ?? [];
+    if (cells.every((cell) => cell.trim() === "") || cells[0] === "Profile Name") break;
     count += 1;
   }
   return count;
@@ -261,7 +263,7 @@ export class MockQcmClient implements QcmClient {
     this.#failNextSettingsWrite = true;
   }
   #failNextSettingsWrite = false;
-  #library = new Map<string, { name: string; editedMs: number; follows: boolean }>();
+  #library = new Map<string, { name: string; editedMs: number; follows: boolean; grid?: string[][] }>();
   #templates = new Map<string, string>();
   /** `custom-names.json`, by save target. */
   #customNames = new Map<string, readonly (readonly [string, string])[]>();
@@ -564,9 +566,9 @@ export class MockQcmClient implements QcmClient {
       return Promise.reject(fail(ERROR_CODES.requestOutOfRange, "library card is not one of the values this setting takes.", "retry"));
     }
     const name = `${entry.name}.csv`;
-    const grid = clone(TEMPLATE);
+    const grid = clone(entry.grid ?? TEMPLATE);
     const nameRow = grid[1];
-    if (nameRow !== undefined) nameRow[0] = name;
+    if (nameRow !== undefined && entry.grid === undefined) nameRow[0] = name;
     return Promise.resolve(this.#open({ kind: "local", name }, name, name, grid));
   }
 
@@ -1063,6 +1065,12 @@ export class MockQcmClient implements QcmClient {
       );
     }
     session.dirty = false;
+    // The save picker starts in the folder Home lists, so a save with the
+    // defaults becomes (or refreshes) a card there.
+    const stem = name.replace(/\.csv$/iu, "");
+    const card = [...this.#library.entries()].find(([, entry]) => entry.name === stem);
+    const id = card?.[0] ?? `lib-${String(this.#nextCard++)}`;
+    this.#library.set(id, { name: stem, editedMs: Date.now(), follows: card?.[1].follows ?? false, grid: clone(session.grid) });
     return Promise.resolve({
       sessionId: session.id,
       revision: session.revision,

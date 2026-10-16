@@ -68,9 +68,19 @@ impl<V: VolumeSource + Send + Sync> ProfilePicker for NativeProfilePicker<V> {
     fn pick_save_as(&self, suggested: &str) -> Result<Option<LocalProfileRef>, QcmError> {
         let chosen = rfd::FileDialog::new()
             .set_title("Save profile as")
+            .set_directory(save_start_dir())
             .set_file_name(suggested)
             .add_filter("QuadStick profile", &["csv"])
             .save_file();
         Ok(chosen.map(|path| self.library.adopt(&path)))
     }
+}
+
+/// Avalonia `SaveAsync`: Save As starts in the folder Home lists, made if
+/// missing, so a new profile saved with the defaults shows up as a card.
+fn save_start_dir() -> std::path::PathBuf {
+    let dir = crate::drive::library_dir();
+    // Best effort: the dialog falls back to its own default when this fails.
+    let _ = std::fs::create_dir_all(&dir);
+    dir
 }
