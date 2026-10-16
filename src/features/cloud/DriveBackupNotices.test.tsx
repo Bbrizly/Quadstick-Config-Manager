@@ -202,4 +202,14 @@ describe("Backup on every save", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(drive.resolved).toEqual([]);
   });
+
+  it("a void that overtakes its question means the question never shows", async () => {
+    const { drive } = await show();
+    await screen.findByRole("button", { name: /Download this profile again/u });
+    act(() => drive.emit({ kind: "superseded", resolutionId: "drive-resolution-7" }));
+    act(() => drive.emit({ kind: "conflict", resolutionId: "drive-resolution-7" }));
+    act(() => drive.emit({ kind: "pending" }));
+    await screen.findByText("Backup pending");
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
 });

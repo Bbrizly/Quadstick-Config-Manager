@@ -208,7 +208,7 @@ impl DriveService {
 
     /// Forget the unanswered conflicts of one profile; their ids, so the
     /// window can take the questions down.
-    pub fn drop_conflicts_for(&self, key: &str) -> Vec<String> {
+    fn drop_conflicts_for(&self, key: &str) -> Vec<String> {
         let mut pending = self.pending();
         let ids: Vec<u64> = pending
             .conflicts
@@ -224,7 +224,7 @@ impl DriveService {
             .collect()
     }
 
-    pub fn is_latest(&self, key: &str, ticket: u64) -> bool {
+    fn is_latest(&self, key: &str, ticket: u64) -> bool {
         self.tickets
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
@@ -236,14 +236,25 @@ impl DriveService {
     /// `FireBackupPush`: every save hands its bytes to Drive when backup is
     /// on, the first one creating the sheet. `None` means backup is off, or a
     /// newer save of this profile is already on its way.
+    ///
+    /// Inside the gate, before it asks Drive anything, it voids the profile's
+    /// unanswered conflicts (each id goes to `voided`): a Yes to an older
+    /// save's question would push older bytes. Conflicts are only made inside
+    /// the gate, so none can appear between the two steps.
     pub fn backup_after_save(
         &self,
         profile: DriveProfileSnapshot,
         ticket: u64,
+        voided: &dyn Fn(String),
     ) -> Option<Result<DriveBackupOutcomeDto, QcmError>> {
         let _gate = self.gate();
-        (self.is_latest(&profile.persistent_key, ticket) && self.auth.connected())
-            .then(|| self.backup_locked(profile))
+        if !self.is_latest(&profile.persistent_key, ticket) || !self.auth.connected() {
+            return None;
+        }
+        for id in self.drop_conflicts_for(&profile.persistent_key) {
+            voided(id);
+        }
+        Some(self.backup_locked(profile))
     }
 
     /// `RetryIfDirtyAsync`: a profile opened from a path whose last push

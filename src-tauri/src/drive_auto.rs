@@ -61,19 +61,10 @@ fn run_ticketed(
     ticket: u64,
     deliver: &dyn Fn(DriveBackupEventDto),
 ) -> Option<DriveBackupEventDto> {
-    let key = profile.persistent_key.clone();
-    if !drive.is_latest(&key, ticket) {
-        return None;
-    }
-    // An older save's unanswered conflict would push older bytes if it were
-    // answered Yes now. Only the newest save of a profile may ask.
-    if mode == BackupMode::AfterSave {
-        for resolution_id in drive.drop_conflicts_for(&key) {
-            deliver(DriveBackupEventDto::Superseded { resolution_id });
-        }
-    }
     let result = match mode {
-        BackupMode::AfterSave => drive.backup_after_save(profile, ticket),
+        BackupMode::AfterSave => drive.backup_after_save(profile, ticket, &|resolution_id| {
+            deliver(DriveBackupEventDto::Superseded { resolution_id });
+        }),
         BackupMode::RetryIfDirty => drive.retry_if_dirty(profile, ticket),
     }?;
     Some(event_of(result))

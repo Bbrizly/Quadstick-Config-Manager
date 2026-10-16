@@ -47,13 +47,17 @@ export function DriveBackupNotices({ client, onMessage, onReview }: DriveBackupN
     if (subscribe === undefined) return undefined;
     let disposed = false;
     let dispose: (() => void) | null = null;
+    const voided = new Set<string>();
     void subscribe.call(client, (event) => {
       if (disposed) return;
       if (event.kind === "pushed") say.current(tr.current("Main_BackedUpToGoogleDrive"));
       else if (event.kind === "pending") say.current(tr.current("Backup_BackupPending"));
       else if (event.kind === "superseded") {
+        // It can overtake the question it voids, which then never shows.
+        voided.add(event.resolutionId);
+        if (voided.size > 32) voided.delete(voided.values().next().value ?? "");
         setQuestions((queued) => queued.filter((q) => q.resolutionId !== event.resolutionId));
-      } else setQuestions((queued) => [...queued, event]);
+      } else if (!voided.delete(event.resolutionId)) setQuestions((queued) => [...queued, event]);
     }).then((subscription) => {
       if (disposed) subscription.dispose();
       else dispose = () => subscription.dispose();
