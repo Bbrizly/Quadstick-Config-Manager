@@ -27,13 +27,9 @@ export function DeviceFilesDialog({
       wide
       title={t("Device_FilesOnYourQuadStick")}
       onClose={onClose}
-      actions={
-        <button type="button" onClick={onClose}>
-          {t("Device_Close")}
-        </button>
-      }
     >
-      <DeviceLibraryPage client={client} onOpenProfile={onOpenProfile} inDialog />
+      {/* Close sits beside the page's Refresh, so the page draws both. */}
+      <DeviceLibraryPage client={client} onOpenProfile={onOpenProfile} onClose={onClose} inDialog />
     </Dialog>
   );
 }

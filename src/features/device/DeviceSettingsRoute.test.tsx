@@ -30,6 +30,23 @@ describe("device nav (ShowDevicePageAsync)", () => {
     expect(screen.getByRole("button", { name: "Choose the QuadStick drive" })).toBeEnabled();
   });
 
+  it("files window with no stick lays out like DeviceFilesWindow", async () => {
+    render(<App client={new MockQcmClient()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Manage the profile files/u }));
+    const files = await screen.findByRole("dialog", { name: "Files on your QuadStick" });
+    // The sentence names the modes that hide the drive, as Avalonia's does.
+    expect(await within(files).findByText(/USB emulation modes 1, 3, 5, 6, 7 hide the drive/u)).toHaveClass(
+      "device-files-summary",
+    );
+    // Refresh and Close share the foot, in that order.
+    const foot = files.querySelector(".device-files-buttons");
+    expect(foot).not.toBeNull();
+    expect(within(foot as HTMLElement).getAllByRole("button").map((b) => b.textContent)).toEqual(["Refresh", "Close"]);
+    fireEvent.click(within(foot as HTMLElement).getByRole("button", { name: "Close" }));
+    expect(screen.queryByRole("dialog", { name: "Files on your QuadStick" })).toBeNull();
+  });
+
   it("with no prefs.csv on the stick offers an empty one to fill in, like Avalonia", async () => {
     const client = new MockQcmClient();
     client.plugDevice("QUADSTICK", {});

@@ -455,8 +455,67 @@ button.link-close {
 /* In the files window the dialog's own 24 is the only inset, as in
    DeviceFilesWindow; the page's 28,22 is for the page. */
 .device-page.in-dialog {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
   margin: 0;
   padding: 0;
+}
+
+/* DeviceFilesWindow is a 760 by 700 window, and its card sits 10 in from
+   the window edge: 740 by 680. The drives scroll between the summary and
+   the buttons, which stay at the foot. */
+.dialog-panel:has(.device-page.in-dialog) {
+  display: flex;
+  flex-direction: column;
+  width: min(740px, 100%);
+  height: min(680px, calc(100vh - 2 * var(--qcm-space-xl)));
+}
+
+.dialog-panel:has(.device-page.in-dialog) > .dialog-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.device-files-explain {
+  margin-bottom: 12px;
+}
+
+.device-files-summary {
+  margin: 0 0 10px;
+  color: var(--qcm-text-secondary);
+}
+
+.device-files-groups {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 22px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.device-files-choose {
+  display: flex;
+}
+
+.device-files-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.device-files-buttons button {
+  min-width: 130px;
+}
+
+/* An empty TextBlock still takes its line, so the foot keeps its height. */
+.device-files-status {
+  display: block;
+  min-height: 1lh;
+  margin-top: 12px;
 }
 
 .device-page-copy {

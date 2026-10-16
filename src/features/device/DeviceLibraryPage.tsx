@@ -21,7 +21,13 @@ interface DeviceLibraryPageProps {
   /** Inside the files window: the page heading, settings and link live on
    * the settings page, which is where Avalonia's window opens from. */
   readonly inDialog?: boolean;
+  /** The files window's Close, drawn beside Refresh as Avalonia does. */
+  readonly onClose?: () => void;
 }
+
+/** `Validator.ModesWithNoDrive`: the USB emulation modes that leave no drive
+ * for a computer to find. The "no drive" sentence names them. */
+const MODES_WITH_NO_DRIVE = [1, 3, 5, 6, 7] as const;
 
 function csvName(value: string): string {
   const trimmed = value.trim();
@@ -29,8 +35,8 @@ function csvName(value: string): string {
   return `${trimmed}.csv`;
 }
 
-export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false }: DeviceLibraryPageProps) {
-  const { t } = useI18n();
+export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onClose }: DeviceLibraryPageProps) {
+  const { t, plural } = useI18n();
   const [presence, setPresence] = useState<DevicePresenceSnapshot | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [library, setLibrary] = useState<DeviceLibrarySnapshot | null>(null);
@@ -242,174 +248,216 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false }: D
   };
 
   const devices = presence?.devices ?? [];
+  const noDrive = t("Device_NoQuadStickDriveIsPlugged", [MODES_WITH_NO_DRIVE.join(", ")]);
+  const refreshButton = (
+    <button type="button" disabled={busy} onClick={() => void refresh()}>
+      {t("Device_Refresh")}
+    </button>
+  );
+  const chooseButton = (
+    <button type="button" disabled={busy} onClick={() => void chooseDevice()}>
+      {t("Install_ChooseTheQuadStickDrive")}
+    </button>
+  );
+  // `DeviceFilesWindow._summary`: the one muted line under the explanation.
+  const dialogSummary =
+    presence === null
+      ? t("Device_LookingForYourQuadStick")
+      : devices.length === 0
+        ? noDrive
+        : selected !== null && selectedLibrary !== null && devices.length === 1
+          ? t("Device_FilesTotalOnGroup", [
+              plural("Count_File", selectedLibrary.files.length, [selectedLibrary.files.length]),
+              selected.displayName,
+            ])
+          : "";
 
   return (
     <section
       className={inDialog ? "device-page in-dialog" : "device-page"}
       {...(inDialog ? { "aria-label": t("Device_FilesOnYourQuadStick") } : { "aria-labelledby": "device-page-title" })}
     >
-      <header className="feature-page-header">
-        <div>
-          {inDialog ? (
-            // `DeviceFilesWindow`: one line, the rest behind its "?".
-            <div className="explain-row">
-              <span>{t("Device_ManageFilesOnTheQuadStick")}</span>
-              <InfoButton
-                name={t("Device_FilesOnYourQuadStick")}
-                title={t("Device_FilesOnYourQuadStick")}
-                body={t("Device_EverythingHereReadsAndWrites")}
-              />
-            </div>
-          ) : (
-            <>
-              <h1 id="device-page-title">{t("Shell_OnYourQuadStick")}</h1>
-              <p>{t("Device_EverythingHereReadsAndWrites")}</p>
-            </>
-          )}
-        </div>
-        <div className="feature-page-actions">
-          <button type="button" disabled={busy} onClick={() => void refresh()}>
-            {t("Device_Refresh")}
-          </button>
-          <button type="button" disabled={busy} onClick={() => void chooseDevice()}>
-            {t("Install_ChooseTheQuadStickDrive")}
-          </button>
-          {client.console === undefined || inDialog ? null : (
-            <button
-              type="button"
-              aria-label={t("Link_PageButtonName")}
-              onClick={() => setLinkOpen(true)}
-            >
-              {t("Link_PageButton")}
-            </button>
-          )}
-        </div>
-      </header>
-      {client.controller === undefined || inDialog ? null : <ControllerRow controller={client.controller} />}
-
-      {message === "" ? null : <output className="feature-status">{message}</output>}
-
-      {presence === null ? (
-        <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
-      ) : devices.length === 0 ? (
-        <div className="empty-state">
-          <p>{t("Device_NoQuadStickDriveIsPlugged")}</p>
-          <p>{t("Shell_PlugInYourQuadStickTo")}</p>
-        </div>
+      {inDialog ? (
+        // `DeviceFilesWindow`: the explanation with its "?" at the right, the
+        // muted summary, the drives, then Refresh and Close at the foot.
+        <>
+          <div className="explain-row device-files-explain">
+            <span>{t("Device_ManageFilesOnTheQuadStick")}</span>
+            <InfoButton
+              name={t("Device_FilesOnYourQuadStick")}
+              title={t("Device_FilesOnYourQuadStick")}
+              body={t("Device_EverythingHereReadsAndWrites")}
+            />
+          </div>
+          {dialogSummary === "" ? null : <p className="device-files-summary">{dialogSummary}</p>}
+        </>
       ) : (
         <>
-          {devices.length > 1 ? (
-            <label className="device-picker-label">
-              <span>{t("Install_ChooseTheQuadStickDrive")}</span>
-              <select
-                value={selectedId ?? ""}
-                onChange={(event) => setSelectedId(event.currentTarget.value)}
-              >
-                {devices.map((device) => (
-                  <option key={device.deviceId} value={device.deviceId}>
-                    {device.displayName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
+          <header className="feature-page-header">
+            <div>
+              <h1 id="device-page-title">{t("Shell_OnYourQuadStick")}</h1>
+              <p>{t("Device_EverythingHereReadsAndWrites")}</p>
+            </div>
+            <div className="feature-page-actions">
+              {refreshButton}
+              {chooseButton}
+              {client.console === undefined ? null : (
+                <button
+                  type="button"
+                  aria-label={t("Link_PageButtonName")}
+                  onClick={() => setLinkOpen(true)}
+                >
+                  {t("Link_PageButton")}
+                </button>
+              )}
+            </div>
+          </header>
+          {client.controller === undefined ? null : <ControllerRow controller={client.controller} />}
+          {message === "" ? null : <output className="feature-status">{message}</output>}
+        </>
+      )}
 
-          {selected === null ? null : (
-            <section className="device-card" aria-labelledby="selected-device-name">
-              <div className="device-card-heading">
-                <div>
-                  <h2 id="selected-device-name">{selected.displayName}</h2>
-                  <p>
-                    {selected.writable
-                      ? t("Main_NoProblemsReadyToSave")
-                      : t("DevicePage_PlugInYourQuadStickTo")}
-                  </p>
+      <div className={inDialog ? "device-files-groups" : "device-page-body"}>
+        {presence === null ? (
+          inDialog ? null : <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
+        ) : devices.length === 0 ? (
+          inDialog ? (
+            // Where Avalonia's `DriveAccessButton` sits: under the summary, and
+            // only while no drive is found.
+            <div className="device-files-choose">{chooseButton}</div>
+          ) : (
+            <div className="empty-state">
+              <p>{noDrive}</p>
+              <p>{t("Shell_PlugInYourQuadStickTo")}</p>
+            </div>
+          )
+        ) : (
+          <>
+            {devices.length > 1 ? (
+              <label className="device-picker-label">
+                <span>{t("Install_ChooseTheQuadStickDrive")}</span>
+                <select
+                  value={selectedId ?? ""}
+                  onChange={(event) => setSelectedId(event.currentTarget.value)}
+                >
+                  {devices.map((device) => (
+                    <option key={device.deviceId} value={device.deviceId}>
+                      {device.displayName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+
+            {selected === null ? null : (
+              <section className="device-card" aria-labelledby="selected-device-name">
+                <div className="device-card-heading">
+                  <div>
+                    <h2 id="selected-device-name">{selected.displayName}</h2>
+                    <p>
+                      {selected.writable
+                        ? t("Main_NoProblemsReadyToSave")
+                        : t("DevicePage_PlugInYourQuadStickTo")}
+                    </p>
+                  </div>
+                  {inDialog ? null : (
+                    <button
+                      type="button"
+                      disabled={busy || selectedLibrary === null}
+                      onClick={() => void openPreferences()}
+                    >
+                      {t("Main_DeviceSettings")}
+                    </button>
+                  )}
                 </div>
-                {inDialog ? null : (
-                  <button
-                    type="button"
-                    disabled={busy || selectedLibrary === null}
-                    onClick={() => void openPreferences()}
-                  >
-                    {t("Main_DeviceSettings")}
-                  </button>
-                )}
-              </div>
 
-              {selectedLibrary === null ? (
-                <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
-              ) : selectedLibrary.files.length === 0 ? (
-                <p>{t("Device_ThisDriveHasNoCsv")}</p>
-              ) : (
-                <>
-                  <ul className="device-file-list">
-                    {selectedLibrary.files.map((file) => (
-                      <li key={file.name} className="device-file-row">
-                        <div className="device-file-copy">
-                          <strong>
-                            {t("Device_EntryNumberEntryFileName", [file.fileNumber, file.name])}
-                          </strong>
-                          {file.protected ? (
-                            <span>{t("Device_ProtectedItCannotBeDeleted")}</span>
-                          ) : null}
-                        </div>
-                        <div className="device-file-actions">
-                          <button
-                            type="button"
-                            disabled={busy}
-                            aria-label={t("Device_OpenFileNameFromGroup", [
-                              file.name,
-                              selected.displayName,
-                            ])}
-                            onClick={() => void openProfile(file.name)}
-                          >
-                            {t("Shell_Open")}
-                          </button>
-                          {client.renameDeviceProfile === undefined ? null : (
+                {selectedLibrary === null ? (
+                  <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
+                ) : selectedLibrary.files.length === 0 ? (
+                  <p>{t("Device_ThisDriveHasNoCsv")}</p>
+                ) : (
+                  <>
+                    <ul className="device-file-list">
+                      {selectedLibrary.files.map((file) => (
+                        <li key={file.name} className="device-file-row">
+                          <div className="device-file-copy">
+                            <strong>
+                              {t("Device_EntryNumberEntryFileName", [file.fileNumber, file.name])}
+                            </strong>
+                            {file.protected ? (
+                              <span>{t("Device_ProtectedItCannotBeDeleted")}</span>
+                            ) : null}
+                          </div>
+                          <div className="device-file-actions">
+                            <button
+                              type="button"
+                              disabled={busy}
+                              aria-label={t("Device_OpenFileNameFromGroup", [
+                                file.name,
+                                selected.displayName,
+                              ])}
+                              onClick={() => void openProfile(file.name)}
+                            >
+                              {t("Shell_Open")}
+                            </button>
+                            {client.renameDeviceProfile === undefined ? null : (
+                              <button
+                                type="button"
+                                disabled={busy || file.protected}
+                                onClick={() => startRename(file.name)}
+                              >
+                                {t("Main_Rename")}
+                              </button>
+                            )}
                             <button
                               type="button"
                               disabled={busy || file.protected}
-                              onClick={() => startRename(file.name)}
+                              aria-label={t("Device_DeleteFileNameFromThe", [
+                                file.name,
+                                selected.displayName,
+                              ])}
+                              onClick={() => void prepareDelete(file.name)}
                             >
-                              {t("Main_Rename")}
+                              {t("Main_Delete")}
                             </button>
-                          )}
-                          <button
-                            type="button"
-                            disabled={busy || file.protected}
-                            aria-label={t("Device_DeleteFileNameFromThe", [
-                              file.name,
-                              selected.displayName,
-                            ])}
-                            onClick={() => void prepareDelete(file.name)}
-                          >
-                            {t("Main_Delete")}
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <section className="device-guide" aria-labelledby="device-guide-title">
-                    <h3 id="device-guide-title">{t("Device_FileSelectionOrderAndLights")}</h3>
-                    <p>{t("Device_PushingTheProfileSwitchSteps")}</p>
-                    <ol>
-                      {selectedLibrary.files.map((file) => (
-                        <li key={`guide-${file.name}`}>
-                          <strong>{file.name}</strong>
-                          {file.lights.length === 0
-                            ? ` — ${t("Device_NoLightPatternIsDocumented")}`
-                            : ` — ${file.lights.join(", ")}`}
+                          </div>
                         </li>
                       ))}
-                    </ol>
-                  </section>
-                </>
-              )}
-            </section>
-          )}
-        </>
-      )}
+                    </ul>
+
+                    <section className="device-guide" aria-labelledby="device-guide-title">
+                      <h3 id="device-guide-title">{t("Device_FileSelectionOrderAndLights")}</h3>
+                      <p>{t("Device_PushingTheProfileSwitchSteps")}</p>
+                      <ol>
+                        {selectedLibrary.files.map((file) => (
+                          <li key={`guide-${file.name}`}>
+                            <strong>{file.name}</strong>
+                            {file.lights.length === 0
+                              ? ` — ${t("Device_NoLightPatternIsDocumented")}`
+                              : ` — ${file.lights.join(", ")}`}
+                          </li>
+                        ))}
+                      </ol>
+                    </section>
+                  </>
+                )}
+              </section>
+            )}
+          </>
+        )}
+      </div>
+
+      {inDialog ? (
+        <footer className="device-files-foot">
+          <div className="device-files-buttons">
+            {refreshButton}
+            <button type="button" onClick={onClose}>
+              {t("Device_Close")}
+            </button>
+          </div>
+          <output className="device-files-status">{message}</output>
+        </footer>
+      ) : null}
 
       <Dialog
         open={renameFrom !== null}
