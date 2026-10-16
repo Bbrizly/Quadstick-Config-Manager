@@ -54,14 +54,7 @@ pub fn import_community_profile(
     let request: CommunityImportRequest =
         redact(parse(request, "import_community_profile request"))?;
     let bytes = redact(community.download_workbook(&request))?;
-    let display_name = request
-        .csv_name
-        .strip_suffix(".csv")
-        .or_else(|| request.csv_name.strip_suffix(".CSV"))
-        .map_or_else(
-            || format!("{}.xlsx", request.csv_name),
-            |stem| format!("{stem}.xlsx"),
-        );
+    let display_name = format!("{}.xlsx", crate::drive::csv_stem(&request.csv_name));
     redact(workbook.import_bytes(&display_name, bytes, ProfileSource::Sheets))
 }
 

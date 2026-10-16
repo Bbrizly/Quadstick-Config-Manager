@@ -865,11 +865,7 @@ fn column_name(mut index: usize) -> String {
     name
 }
 fn xlsx_name(name: &str) -> String {
-    let stem = name
-        .strip_suffix(".csv")
-        .or_else(|| name.strip_suffix(".CSV"))
-        .unwrap_or(name)
-        .trim();
+    let stem = csv_stem(name).trim();
     format!(
         "{}.xlsx",
         if stem.is_empty() {
@@ -978,6 +974,36 @@ fn trim_dot_space(text: &str) -> &str {
     text.trim_end_matches(['.', ' '])
 }
 
+/// The name without a trailing `.csv` in any case, as
+/// `Path.GetFileNameWithoutExtension` gives it for a profile.
+#[must_use]
+pub fn csv_stem(name: &str) -> &str {
+    without_extension(name, ".csv")
+}
+
+/// `name` without a trailing ASCII `extension` (dot included), any case.
+#[must_use]
+pub fn without_extension<'a>(name: &'a str, extension: &str) -> &'a str {
+    let cut = name.len().saturating_sub(extension.len());
+    match name.get(cut..) {
+        Some(tail) if tail.eq_ignore_ascii_case(extension) => &name[..cut],
+        _ => name,
+    }
+}
+
+/// The longest prefix of whole characters that fits in `units` UTF-16 code
+/// units: the device slot is measured that way (`SafeFileName` uses C#
+/// string length), so an emoji counts twice.
+fn take_utf16(text: &str, units: usize) -> String {
+    let mut used = 0;
+    text.chars()
+        .take_while(|c| {
+            used += c.len_utf16();
+            used <= units
+        })
+        .collect()
+}
+
 /// `SafeFileName.ForCsv`: a sheet name as a CSV name safe on macOS and
 /// Windows and short enough for firmware 2373 (31 characters).
 #[must_use]
@@ -986,11 +1012,7 @@ pub fn safe_csv_name(name: &str) -> String {
     if trimmed.is_empty() {
         return "Untitled.csv".to_owned();
     }
-    let trimmed = if trimmed.to_ascii_lowercase().ends_with(".csv") {
-        &trimmed[..trimmed.len() - 4]
-    } else {
-        trimmed
-    };
+    let trimmed = csv_stem(trimmed);
     let cleaned: String = trimmed
         .chars()
         .map(|c| if bad_name_char(c) { '_' } else { c })
@@ -1005,8 +1027,8 @@ pub fn safe_csv_name(name: &str) -> String {
             Some(dot) => format!("{}_file{}", &base[..dot], &base[dot..]),
         };
     }
-    if base.chars().count() > MAX_BASE {
-        let cut: String = base.chars().take(MAX_BASE).collect();
+    if base.encode_utf16().count() > MAX_BASE {
+        let cut = take_utf16(&base, MAX_BASE);
         base = trim_dot_space(&cut).to_owned();
     }
     if base.is_empty() {
@@ -1026,7 +1048,7 @@ pub fn safe_csv_name_free(name: &str, taken: &BTreeSet<String>) -> String {
     for n in 2u32.. {
         let suffix = format!(" ({n})");
         let room = MAX_BASE.saturating_sub(suffix.len());
-        let cut: String = stem.chars().take(room).collect();
+        let cut = take_utf16(stem, room);
         let mut head = trim_dot_space(&cut).to_owned();
         if head.is_empty() {
             head = "Untitled".to_owned();
@@ -1111,7 +1133,7 @@ fn drive_internal(what: &'static str, error: impl std::fmt::Display) -> QcmError
 
 #[cfg(test)]
 mod tests {
-    use super::{linux_documents_dir, safe_csv_name, safe_csv_name_free};
+    use super::{csv_stem, linux_documents_dir, safe_csv_name, safe_csv_name_free, xlsx_name};
     use std::collections::BTreeSet;
     use std::path::{Path, PathBuf};
 
@@ -1202,6 +1224,32 @@ mod tests {
         assert_eq!(safe_csv_name("trailing. "), "trailing.csv");
         let long = safe_csv_name("abcdefghijklmnopqrstuvwxyz0123456789");
         assert_eq!(long.chars().count(), 31);
+    }
+
+    // The device slot is 31 UTF-16 units, the unit the validator measures.
+    // A tab named with emoji must still come out installable, whole
+    // characters only.
+    #[test]
+    fn names_with_emoji_are_cut_to_the_device_slot_in_utf16_units() {
+        let name = safe_csv_name(&"\u{1F3AE}".repeat(30));
+        assert!(!qcm_config::is_too_long_for_device(&name), "{name}");
+        assert!(name.ends_with(".csv"));
+        let mut taken = BTreeSet::new();
+        taken.insert(name.to_lowercase());
+        let next = safe_csv_name_free(&"\u{1F3AE}".repeat(30), &taken);
+        assert!(!qcm_config::is_too_long_for_device(&next), "{next}");
+        assert_eq!(
+            safe_csv_name("Caf\u{e9} \u{540d}\u{524d}"),
+            "Caf\u{e9} \u{540d}\u{524d}.csv"
+        );
+    }
+
+    #[test]
+    fn xlsx_names_drop_csv_in_any_case() {
+        assert_eq!(xlsx_name("Racing.Csv"), "Racing.xlsx");
+        assert_eq!(xlsx_name("Racing.CSV"), "Racing.xlsx");
+        assert_eq!(csv_stem("\u{540d}\u{524d}.cSv"), "\u{540d}\u{524d}");
+        assert_eq!(csv_stem("plain"), "plain");
     }
 
     #[test]

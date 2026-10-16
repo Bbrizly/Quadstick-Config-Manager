@@ -324,10 +324,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         }
         if let Ok(Some(bytes)) = &plan.on_disk {
             let name = plan.target.display_name().as_str();
-            let stem = name
-                .strip_suffix(".csv")
-                .or_else(|| name.strip_suffix(".CSV"))
-                .unwrap_or(name);
+            let stem = crate::drive::csv_stem(name);
             crate::diagnostics::write_rescue_before_latest(stem, bytes)?;
         }
         sessions.store().write(&plan.target, &plan.text)?;

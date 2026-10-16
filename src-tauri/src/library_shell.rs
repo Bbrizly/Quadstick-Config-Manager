@@ -506,6 +506,54 @@ mod tests {
         let _ = fs::remove_dir_all(&dir);
     }
 
+    // Names people actually give files: spaces, accents, CJK, emoji, an
+    // upper-case extension, and one near the 255-byte file-system limit.
+    #[test]
+    fn the_library_lists_odd_file_names_by_their_bare_name() {
+        let dir = std::env::temp_dir().join(format!("qcm-names-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        let long = "x".repeat(240);
+        let names = [
+            "My Racing.csv".to_owned(),
+            "Caf\u{e9}.CSV".to_owned(),
+            "\u{540d}\u{524d}.Csv".to_owned(),
+            "\u{1F3AE} game.csv".to_owned(),
+            format!("{long}.csv"),
+        ];
+        for name in &names {
+            fs::write(dir.join(name), "Profile Name,,X\nX.csv\n").unwrap();
+        }
+        let files = profile_files(&dir);
+        assert_eq!(files.len(), names.len());
+        let cards = LibraryCards::default();
+        let ids = cards.remember("lib-", &files);
+        let mut shown: Vec<String> = files
+            .iter()
+            .zip(ids)
+            .map(|(path, id)| {
+                let card = card_facts(id, path, false);
+                assert!(card.readable, "{}", card.name);
+                card.name
+            })
+            .collect();
+        shown.sort();
+        let mut want = vec![
+            "My Racing".to_owned(),
+            "Caf\u{e9}".to_owned(),
+            "\u{540d}\u{524d}".to_owned(),
+            "\u{1F3AE} game".to_owned(),
+            long,
+        ];
+        want.sort();
+        assert_eq!(shown, want);
+        assert_eq!(
+            safe_template_name("\u{540d}\u{524d}.Csv"),
+            "\u{540d}\u{524d}.csv"
+        );
+        let _ = fs::remove_dir_all(&dir);
+    }
+
     #[test]
     fn templates_rename_without_overwriting_and_delete_only_by_template_id() {
         let dir = std::env::temp_dir().join(format!("qcm-templates-{}", std::process::id()));

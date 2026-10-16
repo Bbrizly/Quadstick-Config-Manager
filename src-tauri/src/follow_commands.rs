@@ -71,10 +71,7 @@ pub enum SheetsImportDto {
 /// The name the review shows, from the profile's own file-name cell.
 fn display_name(file: &qcm_config::ProfileFile) -> String {
     let name = file.document.csv_file_name().unwrap_or("").trim();
-    let stem = name
-        .strip_suffix(".csv")
-        .or_else(|| name.strip_suffix(".CSV"))
-        .unwrap_or(name);
+    let stem = crate::drive::csv_stem(name);
     format!(
         "{}.xlsx",
         if stem.is_empty() {

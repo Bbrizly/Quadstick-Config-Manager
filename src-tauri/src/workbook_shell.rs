@@ -451,11 +451,7 @@ fn review(id: u64, pending: &PendingWorkbook) -> WorkbookImportReviewDto {
 }
 
 fn csv_name(workbook: &str) -> String {
-    let stem = workbook
-        .strip_suffix(".xlsx")
-        .or_else(|| workbook.strip_suffix(".XLSX"))
-        .unwrap_or(workbook)
-        .trim();
+    let stem = crate::drive::without_extension(workbook, ".xlsx").trim();
     format!(
         "{}.csv",
         if stem.is_empty() {
@@ -467,11 +463,7 @@ fn csv_name(workbook: &str) -> String {
 }
 
 fn xlsx_name(profile: &str) -> String {
-    let stem = profile
-        .strip_suffix(".csv")
-        .or_else(|| profile.strip_suffix(".CSV"))
-        .unwrap_or(profile)
-        .trim();
+    let stem = crate::drive::csv_stem(profile).trim();
     format!("{}.xlsx", if stem.is_empty() { "Profile" } else { stem })
 }
 
