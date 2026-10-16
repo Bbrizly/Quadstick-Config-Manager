@@ -349,6 +349,39 @@
   <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
     <value>Anything from {0} to {1}.</value>
   </data>
+  <data name="DevicePage_Bridge" xml:space="preserve">
+    <value>Xbox controller bridge</value>
+  </data>
+  <data name="DevicePage_BridgeHelp" xml:space="preserve">
+    <value>In emulation mode 2 the QuadStick is a plain gamepad, a keyboard and a mouse. Games that only take an Xbox controller do not see that gamepad. While this switch is on and this app is open, the bridge copies the gamepad onto a virtual Xbox 360 controller, and the keyboard, mouse and drive keep working. It copies, it does not remap: the profile on the stick still decides what each sip and puff does. Close the app or turn the switch off, and every button on the virtual controller is let go first.
+
+If the app says it is not allowed, install the rule file that came with the download, then unplug the QuadStick and plug it back in:
+
+sudo install -m644 70-quadstick.rules /etc/udev/rules.d/
+sudo udevadm control --reload
+sudo udevadm trigger</value>
+  </data>
+  <data name="DevicePage_BridgeLine" xml:space="preserve">
+    <value>Lets games that only take an Xbox controller use a QuadStick in emulation mode 2.</value>
+  </data>
+  <data name="DevicePage_BridgeNoAccess" xml:space="preserve">
+    <value>This computer does not let the app read the QuadStick. Install the rule file, then replug the stick. The question mark says how.</value>
+  </data>
+  <data name="DevicePage_BridgeNoPad" xml:space="preserve">
+    <value>This computer does not let the app make a virtual controller. Install the rule file, then replug the stick. The question mark says how.</value>
+  </data>
+  <data name="DevicePage_BridgeOn" xml:space="preserve">
+    <value>On. Games see an Xbox 360 controller.</value>
+  </data>
+  <data name="DevicePage_BridgeStopped" xml:space="preserve">
+    <value>The bridge stopped. Turn the switch off and on again.</value>
+  </data>
+  <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
+    <value>This computer cannot make a virtual controller yet.</value>
+  </data>
+  <data name="DevicePage_BridgeWaiting" xml:space="preserve">
+    <value>Waiting for a QuadStick in emulation mode 2.</value>
+  </data>
   <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
     <value>{0} setting changed. It is not on your QuadStick until you press Save.</value>
   </data>
@@ -399,6 +432,46 @@
   </data>
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>Looking for your QuadStick...</value>
+  </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Games on a Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>A Mac cannot run the Xbox controller bridge yet, because making a virtual controller needs a permission from Apple. Mode 7 does not need it: the QuadStick reports itself as a DualShock 4 wireless controller, which macOS and Steam support over USB.
+
+Mode 7 is a gamepad only. There is no keyboard, no mouse and no drive, so this app cannot see the stick while it is on. Put it in the game profile's preferences sheet, not in the device settings: switching to another profile then brings the drive, keyboard and mouse back. Switching modes inside the same profile does not.</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>On a Mac, set emulation mode 7 in the game profile's preferences sheet, and games see a PlayStation 4 controller.</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Gamepad in mode 0</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Copied. Paste it into Terminal and press Return.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Copy the command</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Copy the undo command</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>This Mac did not take the change, so nothing was changed.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL is the controller library many games are built on. It only treats a device as a gamepad when it knows its layout, and no copy of SDL knows the QuadStick's. This tells it, for every app opened from now on and again at each login, so quit and reopen a game that is already running. It needs nothing from Apple and changes nothing on the stick.
+
+Games that do not use SDL will not see the gamepad. For those, use mode 7. Turning this off takes the change back.</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Lets games built on SDL, as many Mac games are, see the QuadStick as a gamepad in emulation mode 0, with the keyboard, mouse and drive still working.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>On. Games opened from now on see a gamepad.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>The App Store version cannot make this change itself. Copy the command, paste it into Terminal and press Return. Then quit and reopen the game.</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
     <value>The device boots into this file, so the app will not write one of the drive-hiding modes to your QuadStick. Set it in a game profile instead.</value>
@@ -745,6 +818,75 @@
   <data name="Drive_RestoreSkipped" xml:space="preserve">
     <value>{0} skipped: </value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Follows a Google Sheet link</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>This profile changed while the sheet was downloading, so nothing was replaced. Save it, then get the latest again.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Could not get the latest: {0} Your copy was not changed.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>This profile no longer follows its link.</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Get the latest from the link</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Download this profile again from the Google Sheet it was imported from, and see what changed before anything is replaced</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Keep mine</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Kept your copy. Nothing was changed.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Your copy on this computer could not be read, so it cannot be compared.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>New in the sheet: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} added, {2} removed</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>No longer in the sheet: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>This profile was not imported from a Google Sheets link, so there is nothing to get.</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Other cells differ, such as preferences, names or notes.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Replace my copy</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Replaced with the latest from the link. Your old copy is in the rescue folder.</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>The Google Sheet is different from your copy. If you replace it, your copy goes to the rescue folder first.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Replace your copy with the latest?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>This profile has changes that are not saved. They are saved first, then compared with the sheet. Nothing is replaced unless you say so.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Save your changes first?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Forget the link</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Stop following the Google Sheet this profile was imported from</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Already up to date. The sheet matches your copy.</value>
+  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>A wrong default.csv can disable flash-drive access. Recovery requires a physical force-erase. The app backs it up first. Continue?</value>
   </data>
@@ -823,6 +965,105 @@
   <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
     <value>That folder does not look like a QuadStick (no default.csv at its root).</value>
   </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>Stopped. The QuadStick was restarted, so your own profile and settings are back.</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>Connected to a QuadStick, firmware {0}.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>Connecting…</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>Could not open {0}: {1}</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>Reach a QuadStick through its own console: paired over Bluetooth, or with a serial cable.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>This works with a QuadStick paired in your computer's Bluetooth settings while its Bluetooth is in SPP mode, or with a 3.3V USB serial cable in the digital inputs 1 and 2 jack. While Bluetooth is in SPP mode the QuadStick is not a Bluetooth gamepad; over USB it still is. A profile that uses digital_in_1 or digital_in_2 switches the cable port off.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>Hands off the mouthpiece while the sensors are zeroed.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>Measure sip and puff strength</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>This loads a test profile with only hard sip and hard puff on it, asks for seven puffs and seven sips, then restarts the QuadStick, which puts your own profile and settings back. If anything goes wrong, unplug the QuadStick and plug it back in. That puts everything back too.</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>Measure strength?</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>Plug the QuadStick in by USB as well. The test watches its buttons over USB, and in Xbox 360 mode (emulation mode 3) it cannot see them.</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>No serial ports found. Pair the QuadStick in your computer's Bluetooth settings, or plug the cable in, then press Refresh.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>Something answered on that port, but it is not a QuadStick.</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>The QuadStick could not be reached to restart it, so the test profile may still be on it. Unplug it and plug it back in: that puts your own profile and settings back.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>Replace prefs.csv?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv holds the QuadStick's own settings, so it changes every profile at once. The copy it has now is saved first.</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth or cable</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Connect to the QuadStick over Bluetooth or a serial cable</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>Puff as hard as you can. Try {0} of 7.</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>Strongest puff: {0} of the sensor's range. Strongest sip: {1}. Your hard threshold is {2}.</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>Send a profile…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>Sending {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} is on the QuadStick and loaded. What it had before is saved at {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} is on the QuadStick and loaded.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>Sip as hard as you can. Try {0} of 7.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick over Bluetooth or cable</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>under {0}%</value>
+  </data>
   <data name="Main_AButton" xml:space="preserve">
     <value>A button</value>
   </data>
@@ -878,18 +1119,6 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_AddARowToThe" xml:space="preserve">
     <value>Add a row to the custom output names table</value>
   </data>
-  <data name="Main_AddAnotherOutput" xml:space="preserve">
-    <value>Add another output</value>
-  </data>
-  <data name="Main_AddAnotherOutputToMapping" xml:space="preserve">
-    <value>Add another output to mapping {0}; the outputs on one mapping are pressed together</value>
-  </data>
-  <data name="Main_RemoveThisOutputFromMapping" xml:space="preserve">
-    <value>Remove {0} from this mapping</value>
-  </data>
-  <data name="Main_TheseArePressedTogether" xml:space="preserve">
-    <value>These are pressed together as one combo.</value>
-  </data>
   <data name="Main_AddAnotherInput" xml:space="preserve">
     <value>Add another input</value>
   </data>
@@ -898,6 +1127,12 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_AddAnotherInputToRow" xml:space="preserve">
     <value>Add another input to row {0}</value>
+  </data>
+  <data name="Main_AddAnotherOutput" xml:space="preserve">
+    <value>Add another output</value>
+  </data>
+  <data name="Main_AddAnotherOutputToMapping" xml:space="preserve">
+    <value>Add another output to mapping {0}; the outputs on one mapping are pressed together</value>
   </data>
   <data name="Main_AddName" xml:space="preserve">
     <value>+ Add name</value>
@@ -1246,11 +1481,11 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_ImportFromGoogleDrive" xml:space="preserve">
     <value>Import from Google Drive</value>
   </data>
-  <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
-    <value>Imported {0} from {1}. Save to keep it as a profile.</value>
-  </data>
   <data name="Main_ImportIsACopy" xml:space="preserve">
     <value>This is a copy. Saving writes a file on this computer, and the Google Sheet you opened stays as it was.</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
+    <value>Imported {0} from {1}. Save to keep it as a profile.</value>
   </data>
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>Imported {0} from the spreadsheet.</value>
@@ -1728,6 +1963,9 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   <data name="Main_RemoveThisMapping" xml:space="preserve">
     <value>Remove this mapping</value>
   </data>
+  <data name="Main_RemoveThisOutputFromMapping" xml:space="preserve">
+    <value>Remove {0} from this mapping</value>
+  </data>
   <data name="Main_Rename" xml:space="preserve">
     <value>Rename</value>
   </data>
@@ -1993,6 +2231,9 @@ Sending converts this into the crash reporter's own format. It also adds your an
   </data>
   <data name="Main_ThenJoin" xml:space="preserve">
     <value>, then </value>
+  </data>
+  <data name="Main_TheseArePressedTogether" xml:space="preserve">
+    <value>These are pressed together as one combo.</value>
   </data>
   <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
     <value>These rows are kept in the file and can still be edited. Pick a part to open its mappings.</value>
@@ -2473,6 +2714,19 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Prefs_ActiveWhileThisProfileIs" xml:space="preserve">
     <value>Active while this profile is loaded</value>
+  </data>
+  <data name="Prefs_Adapters" xml:space="preserve">
+    <value>Modes for console adapters</value>
+  </data>
+  <data name="Prefs_AdaptersHelp" xml:space="preserve">
+    <value>If you use an adapter to play on a different console, the QuadStick has to be in the right mode for it.
+
+Mayflash Magic-X, Magic-S and Magic-NS, and the Brook XE 2 and Brook XB 3: mode 0.
+
+Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two adapter turned on. QMP calls that setting the Titan 2 PS4 flag.</value>
+  </data>
+  <data name="Prefs_AdaptersLine" xml:space="preserve">
+    <value>Playing through a console adapter? It only works in the mode it expects.</value>
   </data>
   <data name="Prefs_CarefulDefLabelDefRisk" xml:space="preserve">
     <value>Careful, {0}: {1}</value>
@@ -3492,6 +3746,9 @@ This app keeps a copy of the last version the device would accept, taken wheneve
   <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
     <value>Step through the parts one at a time</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick plugged in but not listed? The Mac App Store version can open its drive only after you choose it once. After that it finds it on its own.</value>
+  </data>
   <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
     <value>Switch the words used in device view between plain English and the raw list-view names</value>
   </data>
@@ -3537,6 +3794,9 @@ This app keeps a copy of the last version the device would accept, taken wheneve
   <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
     <value>Every profile starts from a template.</value>
   </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
   <data name="Tour_NewProfile" xml:space="preserve">
     <value>New profile</value>
   </data>
@@ -3576,11 +3836,17 @@ This app keeps a copy of the last version the device would accept, taken wheneve
   <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
     <value>This shows you how to make and install a profile. You can skip anytime.</value>
   </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
   <data name="Tour_WhenItSReadySend" xml:space="preserve">
     <value>When it's ready, send it to your QuadStick.</value>
   </data>
   <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
     <value>You can replay this anytime from Settings ▸ Help.</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>Your QuadStick</value>
   </data>
   <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
     <value>Could not check for updates (GitHub answered {0}). You are on {1}.</value>
@@ -3605,262 +3871,5 @@ This app keeps a copy of the last version the device would accept, taken wheneve
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>You are on {0}, which is the latest.</value>
-  </data>
-  <data name="DevicePage_Bridge" xml:space="preserve">
-    <value>Xbox controller bridge</value>
-  </data>
-  <data name="DevicePage_BridgeLine" xml:space="preserve">
-    <value>Lets games that only take an Xbox controller use a QuadStick in emulation mode 2.</value>
-  </data>
-  <data name="DevicePage_BridgeHelp" xml:space="preserve">
-    <value>In emulation mode 2 the QuadStick is a plain gamepad, a keyboard and a mouse. Games that only take an Xbox controller do not see that gamepad. While this switch is on and this app is open, the bridge copies the gamepad onto a virtual Xbox 360 controller, and the keyboard, mouse and drive keep working. It copies, it does not remap: the profile on the stick still decides what each sip and puff does. Close the app or turn the switch off, and every button on the virtual controller is let go first.
-
-If the app says it is not allowed, install the rule file that came with the download, then unplug the QuadStick and plug it back in:
-
-sudo install -m644 70-quadstick.rules /etc/udev/rules.d/
-sudo udevadm control --reload
-sudo udevadm trigger</value>
-  </data>
-  <data name="DevicePage_BridgeWaiting" xml:space="preserve">
-    <value>Waiting for a QuadStick in emulation mode 2.</value>
-  </data>
-  <data name="DevicePage_BridgeOn" xml:space="preserve">
-    <value>On. Games see an Xbox 360 controller.</value>
-  </data>
-  <data name="DevicePage_BridgeNoAccess" xml:space="preserve">
-    <value>This computer does not let the app read the QuadStick. Install the rule file, then replug the stick. The question mark says how.</value>
-  </data>
-  <data name="DevicePage_BridgeNoPad" xml:space="preserve">
-    <value>This computer does not let the app make a virtual controller. Install the rule file, then replug the stick. The question mark says how.</value>
-  </data>
-  <data name="DevicePage_BridgeStopped" xml:space="preserve">
-    <value>The bridge stopped. Turn the switch off and on again.</value>
-  </data>
-  <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
-    <value>This computer cannot make a virtual controller yet.</value>
-  </data>
-  <data name="DevicePage_MacGames" xml:space="preserve">
-    <value>Games on a Mac</value>
-  </data>
-  <data name="DevicePage_MacGamesLine" xml:space="preserve">
-    <value>On a Mac, set emulation mode 7 in the game profile's preferences sheet, and games see a PlayStation 4 controller.</value>
-  </data>
-  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
-    <value>A Mac cannot run the Xbox controller bridge yet, because making a virtual controller needs a permission from Apple. Mode 7 does not need it: the QuadStick reports itself as a DualShock 4 wireless controller, which macOS and Steam support over USB.
-
-Mode 7 is a gamepad only. There is no keyboard, no mouse and no drive, so this app cannot see the stick while it is on. Put it in the game profile's preferences sheet, not in the device settings: switching to another profile then brings the drive, keyboard and mouse back. Switching modes inside the same profile does not.</value>
-  </data>
-  <data name="DevicePage_MacPad" xml:space="preserve">
-    <value>Gamepad in mode 0</value>
-  </data>
-  <data name="DevicePage_MacPadLine" xml:space="preserve">
-    <value>Lets games built on SDL, as many Mac games are, see the QuadStick as a gamepad in emulation mode 0, with the keyboard, mouse and drive still working.</value>
-  </data>
-  <data name="DevicePage_MacPadHelp" xml:space="preserve">
-    <value>SDL is the controller library many games are built on. It only treats a device as a gamepad when it knows its layout, and no copy of SDL knows the QuadStick's. This tells it, for every app opened from now on and again at each login, so quit and reopen a game that is already running. It needs nothing from Apple and changes nothing on the stick.
-
-Games that do not use SDL will not see the gamepad. For those, use mode 7. Turning this off takes the change back.</value>
-  </data>
-  <data name="DevicePage_MacPadOn" xml:space="preserve">
-    <value>On. Games opened from now on see a gamepad.</value>
-  </data>
-  <data name="DevicePage_MacPadFailed" xml:space="preserve">
-    <value>This Mac did not take the change, so nothing was changed.</value>
-  </data>
-  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
-    <value>The App Store version cannot make this change itself. Copy the command, paste it into Terminal and press Return. Then quit and reopen the game.</value>
-  </data>
-  <data name="DevicePage_MacPadCopy" xml:space="preserve">
-    <value>Copy the command</value>
-  </data>
-  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
-    <value>Copy the undo command</value>
-  </data>
-  <data name="DevicePage_MacPadCopied" xml:space="preserve">
-    <value>Copied. Paste it into Terminal and press Return.</value>
-  </data>
-  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
-    <value>QuadStick plugged in but not listed? The Mac App Store version can open its drive only after you choose it once. After that it finds it on its own.</value>
-  </data>
-  <data name="Prefs_AdaptersLine" xml:space="preserve">
-    <value>Playing through a console adapter? It only works in the mode it expects.</value>
-  </data>
-  <data name="Prefs_Adapters" xml:space="preserve">
-    <value>Modes for console adapters</value>
-  </data>
-  <data name="Prefs_AdaptersHelp" xml:space="preserve">
-    <value>If you use an adapter to play on a different console, the QuadStick has to be in the right mode for it.
-
-Mayflash Magic-X, Magic-S and Magic-NS, and the Brook XE 2 and Brook XB 3: mode 0.
-
-Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two adapter turned on. QMP calls that setting the Titan 2 PS4 flag.</value>
-  </data>
-  <data name="Link_Title" xml:space="preserve">
-    <value>QuadStick over Bluetooth or cable</value>
-  </data>
-  <data name="Link_Explain" xml:space="preserve">
-    <value>Reach a QuadStick through its own console: paired over Bluetooth, or with a serial cable.</value>
-  </data>
-  <data name="Link_ExplainMore" xml:space="preserve">
-    <value>This works with a QuadStick paired in your computer's Bluetooth settings while its Bluetooth is in SPP mode, or with a 3.3V USB serial cable in the digital inputs 1 and 2 jack. While Bluetooth is in SPP mode the QuadStick is not a Bluetooth gamepad; over USB it still is. A profile that uses digital_in_1 or digital_in_2 switches the cable port off.</value>
-  </data>
-  <data name="Link_Port" xml:space="preserve">
-    <value>Port</value>
-  </data>
-  <data name="Link_Refresh" xml:space="preserve">
-    <value>Refresh</value>
-  </data>
-  <data name="Link_Connect" xml:space="preserve">
-    <value>Connect</value>
-  </data>
-  <data name="Link_NoPorts" xml:space="preserve">
-    <value>No serial ports found. Pair the QuadStick in your computer's Bluetooth settings, or plug the cable in, then press Refresh.</value>
-  </data>
-  <data name="Link_Connecting" xml:space="preserve">
-    <value>Connecting…</value>
-  </data>
-  <data name="Link_Connected" xml:space="preserve">
-    <value>Connected to a QuadStick, firmware {0}.</value>
-  </data>
-  <data name="Link_NotAQuadStick" xml:space="preserve">
-    <value>Something answered on that port, but it is not a QuadStick.</value>
-  </data>
-  <data name="Link_CouldNotOpen" xml:space="preserve">
-    <value>Could not open {0}: {1}</value>
-  </data>
-  <data name="Link_SendProfile" xml:space="preserve">
-    <value>Send a profile…</value>
-  </data>
-  <data name="Link_Sending" xml:space="preserve">
-    <value>Sending {0}…</value>
-  </data>
-  <data name="Link_Sent" xml:space="preserve">
-    <value>{0} is on the QuadStick and loaded. What it had before is saved at {1}.</value>
-  </data>
-  <data name="Link_SentNew" xml:space="preserve">
-    <value>{0} is on the QuadStick and loaded.</value>
-  </data>
-  <data name="Link_OverwritePrefs" xml:space="preserve">
-    <value>Replace prefs.csv?</value>
-  </data>
-  <data name="Link_OverwritePrefsMore" xml:space="preserve">
-    <value>prefs.csv holds the QuadStick's own settings, so it changes every profile at once. The copy it has now is saved first.</value>
-  </data>
-  <data name="Link_Measure" xml:space="preserve">
-    <value>Measure sip and puff strength</value>
-  </data>
-  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
-    <value>Measure strength?</value>
-  </data>
-  <data name="Link_MeasureConfirm" xml:space="preserve">
-    <value>This loads a test profile with only hard sip and hard puff on it, asks for seven puffs and seven sips, then restarts the QuadStick, which puts your own profile and settings back. If anything goes wrong, unplug the QuadStick and plug it back in. That puts everything back too.</value>
-  </data>
-  <data name="Link_NeedsUsb" xml:space="preserve">
-    <value>Plug the QuadStick in by USB as well. The test watches its buttons over USB, and in Xbox 360 mode (emulation mode 3) it cannot see them.</value>
-  </data>
-  <data name="Link_HandsOff" xml:space="preserve">
-    <value>Hands off the mouthpiece while the sensors are zeroed.</value>
-  </data>
-  <data name="Link_PuffNow" xml:space="preserve">
-    <value>Puff as hard as you can. Try {0} of 7.</value>
-  </data>
-  <data name="Link_SipNow" xml:space="preserve">
-    <value>Sip as hard as you can. Try {0} of 7.</value>
-  </data>
-  <data name="Link_Result" xml:space="preserve">
-    <value>Strongest puff: {0} of the sensor's range. Strongest sip: {1}. Your hard threshold is {2}.</value>
-  </data>
-  <data name="Link_UnderLowest" xml:space="preserve">
-    <value>under {0}%</value>
-  </data>
-  <data name="Link_PercentValue" xml:space="preserve">
-    <value>{0}%</value>
-  </data>
-  <data name="Link_Cancelled" xml:space="preserve">
-    <value>Stopped. The QuadStick was restarted, so your own profile and settings are back.</value>
-  </data>
-  <data name="Link_NotPutBack" xml:space="preserve">
-    <value>The QuadStick could not be reached to restart it, so the test profile may still be on it. Unplug it and plug it back in: that puts your own profile and settings back.</value>
-  </data>
-  <data name="Link_Stop" xml:space="preserve">
-    <value>Stop</value>
-  </data>
-  <data name="Link_Close" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="Link_PageButton" xml:space="preserve">
-    <value>Bluetooth or cable</value>
-  </data>
-  <data name="Link_PageButtonName" xml:space="preserve">
-    <value>Connect to the QuadStick over Bluetooth or a serial cable</value>
-  </data>
-  <data name="Follow_GetLatest" xml:space="preserve">
-    <value>Get the latest from the link</value>
-  </data>
-  <data name="Follow_GetLatestHelp" xml:space="preserve">
-    <value>Download this profile again from the Google Sheet it was imported from, and see what changed before anything is replaced</value>
-  </data>
-  <data name="Follow_StopFollowing" xml:space="preserve">
-    <value>Forget the link</value>
-  </data>
-  <data name="Follow_StopFollowingHelp" xml:space="preserve">
-    <value>Stop following the Google Sheet this profile was imported from</value>
-  </data>
-  <data name="Follow_CardNote" xml:space="preserve">
-    <value>Follows a Google Sheet link</value>
-  </data>
-  <data name="Follow_NotFollowed" xml:space="preserve">
-    <value>This profile was not imported from a Google Sheets link, so there is nothing to get.</value>
-  </data>
-  <data name="Follow_SaveFirstTitle" xml:space="preserve">
-    <value>Save your changes first?</value>
-  </data>
-  <data name="Follow_SaveFirstBody" xml:space="preserve">
-    <value>This profile has changes that are not saved. They are saved first, then compared with the sheet. Nothing is replaced unless you say so.</value>
-  </data>
-  <data name="Follow_UpToDate" xml:space="preserve">
-    <value>Already up to date. The sheet matches your copy.</value>
-  </data>
-  <data name="Follow_CouldNotGet" xml:space="preserve">
-    <value>Could not get the latest: {0} Your copy was not changed.</value>
-  </data>
-  <data name="Follow_ReviewTitle" xml:space="preserve">
-    <value>Replace your copy with the latest?</value>
-  </data>
-  <data name="Follow_ReviewBody" xml:space="preserve">
-    <value>The Google Sheet is different from your copy. If you replace it, your copy goes to the rescue folder first.</value>
-  </data>
-  <data name="Follow_ModeAdded" xml:space="preserve">
-    <value>New in the sheet: {0}</value>
-  </data>
-  <data name="Follow_ModeRemoved" xml:space="preserve">
-    <value>No longer in the sheet: {0}</value>
-  </data>
-  <data name="Follow_ModeChanged" xml:space="preserve">
-    <value>{0}: {1} added, {2} removed</value>
-  </data>
-  <data name="Follow_OtherChanged" xml:space="preserve">
-    <value>Other cells differ, such as preferences, names or notes.</value>
-  </data>
-  <data name="Follow_LocalUnreadable" xml:space="preserve">
-    <value>Your copy on this computer could not be read, so it cannot be compared.</value>
-  </data>
-  <data name="Follow_Replace" xml:space="preserve">
-    <value>Replace my copy</value>
-  </data>
-  <data name="Follow_Keep" xml:space="preserve">
-    <value>Keep mine</value>
-  </data>
-  <data name="Follow_Kept" xml:space="preserve">
-    <value>Kept your copy. Nothing was changed.</value>
-  </data>
-  <data name="Follow_Replaced" xml:space="preserve">
-    <value>Replaced with the latest from the link. Your old copy is in the rescue folder.</value>
-  </data>
-  <data name="Follow_Forgotten" xml:space="preserve">
-    <value>This profile no longer follows its link.</value>
-  </data>
-  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
-    <value>This profile changed while the sheet was downloading, so nothing was replaced. Save it, then get the latest again.</value>
   </data>
 </root>

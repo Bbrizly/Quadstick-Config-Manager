@@ -400,6 +400,46 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>A procurar o seu QuadStick...</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Jogos no Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Um Mac ainda não consegue executar a ponte de controle Xbox, porque criar um controle virtual precisa de uma permissão da Apple. O modo 7 não precisa: o QuadStick apresenta-se como um DualShock 4 wireless, que o macOS e o Steam suportam por USB.
+
+O modo 7 é apenas um comando. Não há teclado, mouse nem unidade, por isso este aplicativo não vê o stick enquanto está ativo. Coloque-o na folha de preferências do perfil do jogo, não nas configurações do dispositivo: mudar para outro perfil traz de volta a unidade, o teclado e o mouse. Mudar de modo dentro do mesmo perfil não.</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>No Mac, defina o modo de emulação USB 7 na folha de preferências do perfil do jogo e os jogos verão um comando de PlayStation 4.</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Comando em modo 0</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Copiado. Cole-o no Terminal e pressione Return.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Copiar o comando</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Copiar o comando para anular</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>Este Mac não aceitou a alteração, por isso nada foi alterado.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>O SDL é a biblioteca de controles em que muitos jogos se baseiam. Só trata um dispositivo como controle se conhecer o seu layout, e nenhuma versão do SDL conhece a do QuadStick. Isto indica a você, para cada aplicativo aberto a partir de agora e outra vez em cada login, por isso feche e abra de novo um jogo que já esteja a correr. Não precisa de nada da Apple e não altera nada no comando.
+
+Os jogos que não usam SDL não verão o controle. Para esses, use o modo 7. Desligar anula a alteração.</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Permite que jogos feitos com SDL, como muitos jogos de Mac, vejam o QuadStick como um controle no modo de emulação 0, sem perder o teclado, o mouse e a unidade.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>Ligado. Os jogos abertos a partir de agora veem um comando.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>A versão da App Store não consegue fazer esta alteração sozinha. Copie o comando, cole-o no Terminal e pressione Return. Depois feche e abra de novo o jogo.</value>
+  </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
     <value>O dispositivo inicia a partir deste arquivo, por isso a aplicação não escreve no seu QuadStick nenhum dos modos que escondem a unidade. Defina-o num perfil de jogo.</value>
   </data>
@@ -745,6 +785,75 @@
   <data name="Drive_RestoreSkipped" xml:space="preserve">
     <value>{0} ignorados: </value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Segue um link do Google Sheets</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Este perfil mudou enquanto a planilha era baixada, então nada foi substituído. Salve-o e obtenha a versão mais recente de novo.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Não foi possível obter a versão mais recente: {0} Sua cópia não foi alterada.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Este perfil não segue mais o link.</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Obter a versão mais recente do link</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Baixar este perfil de novo da planilha Google de onde foi importado e ver o que mudou antes de substituir qualquer coisa</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Manter a minha</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Sua cópia foi mantida. Nada foi alterado.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Não foi possível ler sua cópia neste computador, então ela não pode ser comparada.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Novo na planilha: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} adicionadas, {2} removidas</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>Não está mais na planilha: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Este perfil não foi importado de um link do Google Sheets, então não há nada para obter.</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Outras células são diferentes, como preferências, nomes ou notas.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Substituir minha cópia</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Substituído pela versão mais recente do link. Sua cópia anterior está na pasta de resgate.</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>A planilha Google é diferente da sua cópia. Se você substituir, sua cópia vai primeiro para a pasta de resgate.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Substituir sua cópia pela versão mais recente?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Este perfil tem alterações não salvas. Elas são salvas primeiro e depois comparadas com a planilha. Nada é substituído sem sua confirmação.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Salvar suas alterações primeiro?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Esquecer o link</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Deixar de seguir a planilha Google de onde este perfil foi importado</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Já está atualizado. A planilha é igual à sua cópia.</value>
+  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>Um default.csv errado pode desativar o acesso à unidade flash, e a recuperação exige uma limpeza forçada física. Um backup será feito antes. Continuar?</value>
   </data>
@@ -810,6 +919,105 @@
   </data>
   <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
     <value>Essa pasta não parece ser um QuadStick (sem default.csv na raiz).</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>Parado. O QuadStick foi reiniciado, por isso o seu próprio perfil e as suas configurações voltaram.</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>Ligar</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>Ligado a um QuadStick, firmware {0}.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>A ligar…</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>Não foi possível abrir {0}: {1}</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>Conecte-se a um QuadStick através do seu próprio console: emparelhado por Bluetooth ou com um cabo serial.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>Isto funciona com um QuadStick emparelhado nas configurações de Bluetooth do seu computador enquanto o Bluetooth dele está no modo SPP, ou com um cabo serial USB de 3.3V no conector das entradas digitais 1 e 2. Enquanto o Bluetooth está no modo SPP, o QuadStick não é um controle Bluetooth; por USB continua sendo. Um perfil que usa digital_in_1 ou digital_in_2 desliga a porta do cabo.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>Tire as mãos do bocal enquanto os sensores são postos a zero.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>Medir a força de aspirar e soprar</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>Isto carrega um perfil de teste só com aspiração forte e sopro forte, pede sete sopros e sete aspirações, e depois reinicia o QuadStick, o que restaura o seu próprio perfil e as suas configurações. Se algo der errado, desligue o QuadStick e ligue-o de novo. Isso também restaura tudo.</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>Medir a força?</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>Ligue também o QuadStick por USB. O teste observa os botões dele por USB e, no modo Xbox 360 (modo de emulação 3), não os consegue ver.</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>Não foram encontradas portas seriais. Emparelhe o QuadStick nas configurações de Bluetooth do seu computador, ou conecte o cabo, e depois clique em Atualizar.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>Algo respondeu nessa porta, mas não é um QuadStick.</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Não foi possível alcançar o QuadStick para reiniciá-lo, então o perfil de teste pode continuar nele. Desconecte e conecte de novo: isso traz de volta o seu próprio perfil e as suas configurações.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>Substituir prefs.csv?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv salva as configurações do próprio QuadStick, por isso altera todos os perfis de uma vez. A cópia atual é salva primeiro.</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth ou cabo</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Ligar ao QuadStick por Bluetooth ou cabo serial</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>Porta</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>Sopre o mais forte que conseguir. Tentativa {0} de 7.</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>Atualizar</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>Sopro mais forte: {0} do intervalo do sensor. Aspiração mais forte: {1}. O seu limiar forte é {2}.</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>Enviar um perfil…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>A enviar {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} está no QuadStick e carregado. O que ele tinha antes foi salvo em {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} está no QuadStick e carregado.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>Aspire o mais forte que conseguir. Tentativa {0} de 7.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>Parar</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick por Bluetooth ou cabo</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>abaixo de {0}%</value>
   </data>
   <data name="Main_AButton" xml:space="preserve">
     <value>A button</value>
@@ -3403,6 +3611,9 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
     <value>Percorrer as partes uma de cada vez</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick conectado mas não aparece? A versão da Mac App Store só consegue abrir a unidade depois de a escolher uma vez. Depois disso, encontra-a sozinha.</value>
+  </data>
   <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
     <value>Alternar as palavras usadas na vista de dispositivo entre inglês simples e os nomes brutos da vista de lista</value>
   </data>
@@ -3448,6 +3659,9 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
     <value>Todo perfil começa a partir de um modelo.</value>
   </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>Instalar</value>
+  </data>
   <data name="Tour_NewProfile" xml:space="preserve">
     <value>Novo perfil</value>
   </data>
@@ -3487,11 +3701,17 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
     <value>Isto mostra a você como criar e instalar um perfil. Pode saltar a qualquer momento.</value>
   </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>Boas-vindas</value>
+  </data>
   <data name="Tour_WhenItSReadySend" xml:space="preserve">
     <value>Quando estiver pronto, envie-o para o seu QuadStick.</value>
   </data>
   <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
     <value>Pode repetir isto a qualquer momento em Configurações ▸ Ajuda.</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>Seu QuadStick</value>
   </data>
   <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
     <value>Não foi possível verificar atualizações (o GitHub respondeu {0}). Você está na versão {1}.</value>
@@ -3516,216 +3736,5 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Você está na versão {0}, que é a mais recente.</value>
-  </data>
-  <data name="DevicePage_MacGames" xml:space="preserve">
-    <value>Jogos no Mac</value>
-  </data>
-  <data name="DevicePage_MacGamesLine" xml:space="preserve">
-    <value>No Mac, defina o modo de emulação USB 7 na folha de preferências do perfil do jogo e os jogos verão um comando de PlayStation 4.</value>
-  </data>
-  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
-    <value>Um Mac ainda não consegue executar a ponte de controle Xbox, porque criar um controle virtual precisa de uma permissão da Apple. O modo 7 não precisa: o QuadStick apresenta-se como um DualShock 4 wireless, que o macOS e o Steam suportam por USB.
-
-O modo 7 é apenas um comando. Não há teclado, mouse nem unidade, por isso este aplicativo não vê o stick enquanto está ativo. Coloque-o na folha de preferências do perfil do jogo, não nas configurações do dispositivo: mudar para outro perfil traz de volta a unidade, o teclado e o mouse. Mudar de modo dentro do mesmo perfil não.</value>
-  </data>
-  <data name="DevicePage_MacPad" xml:space="preserve">
-    <value>Comando em modo 0</value>
-  </data>
-  <data name="DevicePage_MacPadLine" xml:space="preserve">
-    <value>Permite que jogos feitos com SDL, como muitos jogos de Mac, vejam o QuadStick como um controle no modo de emulação 0, sem perder o teclado, o mouse e a unidade.</value>
-  </data>
-  <data name="DevicePage_MacPadHelp" xml:space="preserve">
-    <value>O SDL é a biblioteca de controles em que muitos jogos se baseiam. Só trata um dispositivo como controle se conhecer o seu layout, e nenhuma versão do SDL conhece a do QuadStick. Isto indica a você, para cada aplicativo aberto a partir de agora e outra vez em cada login, por isso feche e abra de novo um jogo que já esteja a correr. Não precisa de nada da Apple e não altera nada no comando.
-
-Os jogos que não usam SDL não verão o controle. Para esses, use o modo 7. Desligar anula a alteração.</value>
-  </data>
-  <data name="DevicePage_MacPadOn" xml:space="preserve">
-    <value>Ligado. Os jogos abertos a partir de agora veem um comando.</value>
-  </data>
-  <data name="DevicePage_MacPadFailed" xml:space="preserve">
-    <value>Este Mac não aceitou a alteração, por isso nada foi alterado.</value>
-  </data>
-  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
-    <value>A versão da App Store não consegue fazer esta alteração sozinha. Copie o comando, cole-o no Terminal e pressione Return. Depois feche e abra de novo o jogo.</value>
-  </data>
-  <data name="DevicePage_MacPadCopy" xml:space="preserve">
-    <value>Copiar o comando</value>
-  </data>
-  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
-    <value>Copiar o comando para anular</value>
-  </data>
-  <data name="DevicePage_MacPadCopied" xml:space="preserve">
-    <value>Copiado. Cole-o no Terminal e pressione Return.</value>
-  </data>
-  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
-    <value>QuadStick conectado mas não aparece? A versão da Mac App Store só consegue abrir a unidade depois de a escolher uma vez. Depois disso, encontra-a sozinha.</value>
-  </data>
-  <data name="Link_Title" xml:space="preserve">
-    <value>QuadStick por Bluetooth ou cabo</value>
-  </data>
-  <data name="Link_Explain" xml:space="preserve">
-    <value>Conecte-se a um QuadStick através do seu próprio console: emparelhado por Bluetooth ou com um cabo serial.</value>
-  </data>
-  <data name="Link_ExplainMore" xml:space="preserve">
-    <value>Isto funciona com um QuadStick emparelhado nas configurações de Bluetooth do seu computador enquanto o Bluetooth dele está no modo SPP, ou com um cabo serial USB de 3.3V no conector das entradas digitais 1 e 2. Enquanto o Bluetooth está no modo SPP, o QuadStick não é um controle Bluetooth; por USB continua sendo. Um perfil que usa digital_in_1 ou digital_in_2 desliga a porta do cabo.</value>
-  </data>
-  <data name="Link_Port" xml:space="preserve">
-    <value>Porta</value>
-  </data>
-  <data name="Link_Refresh" xml:space="preserve">
-    <value>Atualizar</value>
-  </data>
-  <data name="Link_Connect" xml:space="preserve">
-    <value>Ligar</value>
-  </data>
-  <data name="Link_NoPorts" xml:space="preserve">
-    <value>Não foram encontradas portas seriais. Emparelhe o QuadStick nas configurações de Bluetooth do seu computador, ou conecte o cabo, e depois clique em Atualizar.</value>
-  </data>
-  <data name="Link_Connecting" xml:space="preserve">
-    <value>A ligar…</value>
-  </data>
-  <data name="Link_Connected" xml:space="preserve">
-    <value>Ligado a um QuadStick, firmware {0}.</value>
-  </data>
-  <data name="Link_NotAQuadStick" xml:space="preserve">
-    <value>Algo respondeu nessa porta, mas não é um QuadStick.</value>
-  </data>
-  <data name="Link_CouldNotOpen" xml:space="preserve">
-    <value>Não foi possível abrir {0}: {1}</value>
-  </data>
-  <data name="Link_SendProfile" xml:space="preserve">
-    <value>Enviar um perfil…</value>
-  </data>
-  <data name="Link_Sending" xml:space="preserve">
-    <value>A enviar {0}…</value>
-  </data>
-  <data name="Link_Sent" xml:space="preserve">
-    <value>{0} está no QuadStick e carregado. O que ele tinha antes foi salvo em {1}.</value>
-  </data>
-  <data name="Link_SentNew" xml:space="preserve">
-    <value>{0} está no QuadStick e carregado.</value>
-  </data>
-  <data name="Link_OverwritePrefs" xml:space="preserve">
-    <value>Substituir prefs.csv?</value>
-  </data>
-  <data name="Link_OverwritePrefsMore" xml:space="preserve">
-    <value>prefs.csv salva as configurações do próprio QuadStick, por isso altera todos os perfis de uma vez. A cópia atual é salva primeiro.</value>
-  </data>
-  <data name="Link_Measure" xml:space="preserve">
-    <value>Medir a força de aspirar e soprar</value>
-  </data>
-  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
-    <value>Medir a força?</value>
-  </data>
-  <data name="Link_MeasureConfirm" xml:space="preserve">
-    <value>Isto carrega um perfil de teste só com aspiração forte e sopro forte, pede sete sopros e sete aspirações, e depois reinicia o QuadStick, o que restaura o seu próprio perfil e as suas configurações. Se algo der errado, desligue o QuadStick e ligue-o de novo. Isso também restaura tudo.</value>
-  </data>
-  <data name="Link_NeedsUsb" xml:space="preserve">
-    <value>Ligue também o QuadStick por USB. O teste observa os botões dele por USB e, no modo Xbox 360 (modo de emulação 3), não os consegue ver.</value>
-  </data>
-  <data name="Link_HandsOff" xml:space="preserve">
-    <value>Tire as mãos do bocal enquanto os sensores são postos a zero.</value>
-  </data>
-  <data name="Link_PuffNow" xml:space="preserve">
-    <value>Sopre o mais forte que conseguir. Tentativa {0} de 7.</value>
-  </data>
-  <data name="Link_SipNow" xml:space="preserve">
-    <value>Aspire o mais forte que conseguir. Tentativa {0} de 7.</value>
-  </data>
-  <data name="Link_Result" xml:space="preserve">
-    <value>Sopro mais forte: {0} do intervalo do sensor. Aspiração mais forte: {1}. O seu limiar forte é {2}.</value>
-  </data>
-  <data name="Link_UnderLowest" xml:space="preserve">
-    <value>abaixo de {0}%</value>
-  </data>
-  <data name="Link_PercentValue" xml:space="preserve">
-    <value>{0}%</value>
-  </data>
-  <data name="Link_Cancelled" xml:space="preserve">
-    <value>Parado. O QuadStick foi reiniciado, por isso o seu próprio perfil e as suas configurações voltaram.</value>
-  </data>
-  <data name="Link_NotPutBack" xml:space="preserve">
-    <value>Não foi possível alcançar o QuadStick para reiniciá-lo, então o perfil de teste pode continuar nele. Desconecte e conecte de novo: isso traz de volta o seu próprio perfil e as suas configurações.</value>
-  </data>
-  <data name="Link_Stop" xml:space="preserve">
-    <value>Parar</value>
-  </data>
-  <data name="Link_Close" xml:space="preserve">
-    <value>Fechar</value>
-  </data>
-  <data name="Link_PageButton" xml:space="preserve">
-    <value>Bluetooth ou cabo</value>
-  </data>
-  <data name="Link_PageButtonName" xml:space="preserve">
-    <value>Ligar ao QuadStick por Bluetooth ou cabo serial</value>
-  </data>
-  <data name="Follow_GetLatest" xml:space="preserve">
-    <value>Obter a versão mais recente do link</value>
-  </data>
-  <data name="Follow_GetLatestHelp" xml:space="preserve">
-    <value>Baixar este perfil de novo da planilha Google de onde foi importado e ver o que mudou antes de substituir qualquer coisa</value>
-  </data>
-  <data name="Follow_StopFollowing" xml:space="preserve">
-    <value>Esquecer o link</value>
-  </data>
-  <data name="Follow_StopFollowingHelp" xml:space="preserve">
-    <value>Deixar de seguir a planilha Google de onde este perfil foi importado</value>
-  </data>
-  <data name="Follow_CardNote" xml:space="preserve">
-    <value>Segue um link do Google Sheets</value>
-  </data>
-  <data name="Follow_NotFollowed" xml:space="preserve">
-    <value>Este perfil não foi importado de um link do Google Sheets, então não há nada para obter.</value>
-  </data>
-  <data name="Follow_SaveFirstTitle" xml:space="preserve">
-    <value>Salvar suas alterações primeiro?</value>
-  </data>
-  <data name="Follow_SaveFirstBody" xml:space="preserve">
-    <value>Este perfil tem alterações não salvas. Elas são salvas primeiro e depois comparadas com a planilha. Nada é substituído sem sua confirmação.</value>
-  </data>
-  <data name="Follow_UpToDate" xml:space="preserve">
-    <value>Já está atualizado. A planilha é igual à sua cópia.</value>
-  </data>
-  <data name="Follow_CouldNotGet" xml:space="preserve">
-    <value>Não foi possível obter a versão mais recente: {0} Sua cópia não foi alterada.</value>
-  </data>
-  <data name="Follow_ReviewTitle" xml:space="preserve">
-    <value>Substituir sua cópia pela versão mais recente?</value>
-  </data>
-  <data name="Follow_ReviewBody" xml:space="preserve">
-    <value>A planilha Google é diferente da sua cópia. Se você substituir, sua cópia vai primeiro para a pasta de resgate.</value>
-  </data>
-  <data name="Follow_ModeAdded" xml:space="preserve">
-    <value>Novo na planilha: {0}</value>
-  </data>
-  <data name="Follow_ModeRemoved" xml:space="preserve">
-    <value>Não está mais na planilha: {0}</value>
-  </data>
-  <data name="Follow_ModeChanged" xml:space="preserve">
-    <value>{0}: {1} adicionadas, {2} removidas</value>
-  </data>
-  <data name="Follow_OtherChanged" xml:space="preserve">
-    <value>Outras células são diferentes, como preferências, nomes ou notas.</value>
-  </data>
-  <data name="Follow_LocalUnreadable" xml:space="preserve">
-    <value>Não foi possível ler sua cópia neste computador, então ela não pode ser comparada.</value>
-  </data>
-  <data name="Follow_Replace" xml:space="preserve">
-    <value>Substituir minha cópia</value>
-  </data>
-  <data name="Follow_Keep" xml:space="preserve">
-    <value>Manter a minha</value>
-  </data>
-  <data name="Follow_Kept" xml:space="preserve">
-    <value>Sua cópia foi mantida. Nada foi alterado.</value>
-  </data>
-  <data name="Follow_Replaced" xml:space="preserve">
-    <value>Substituído pela versão mais recente do link. Sua cópia anterior está na pasta de resgate.</value>
-  </data>
-  <data name="Follow_Forgotten" xml:space="preserve">
-    <value>Este perfil não segue mais o link.</value>
-  </data>
-  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
-    <value>Este perfil mudou enquanto a planilha era baixada, então nada foi substituído. Salve-o e obtenha a versão mais recente de novo.</value>
   </data>
 </root>

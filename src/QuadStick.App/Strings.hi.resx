@@ -400,6 +400,46 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>आपका QuadStick खोजा जा रहा है...</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Mac पर गेम</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Mac अभी Xbox कंट्रोलर ब्रिज नहीं चला सकता, क्योंकि वर्चुअल कंट्रोलर बनाने के लिए Apple की अनुमति चाहिए। मोड 7 को इसकी ज़रूरत नहीं: QuadStick खुद को वायरलेस DualShock 4 बताता है, जिसे macOS और Steam USB पर सपोर्ट करते हैं।
+
+मोड 7 सिर्फ़ गेमपैड है। इसमें कीबोर्ड, माउस और ड्राइव नहीं होते, इसलिए चालू रहते यह ऐप स्टिक को नहीं देख पाता। इसे डिवाइस सेटिंग्स में नहीं, गेम प्रोफ़ाइल की प्रेफ़रेंसेस शीट में रखें: तब दूसरी प्रोफ़ाइल पर जाने से ड्राइव, कीबोर्ड और माउस वापस आ जाते हैं। उसी प्रोफ़ाइल के अंदर मोड बदलने से नहीं आते।</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>Mac पर, गेम प्रोफ़ाइल की प्रेफ़रेंसेस शीट में USB एम्युलेशन मोड 7 सेट करें, तो गेम को PlayStation 4 कंट्रोलर दिखेगा।</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>मोड 0 में गेमपैड</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>कॉपी हो गया। Terminal में पेस्ट करें और Return दबाएँ।</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>कमांड कॉपी करें</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>वापस लेने का कमांड कॉपी करें</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>इस Mac ने बदलाव स्वीकार नहीं किया, इसलिए कुछ नहीं बदला गया।</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL कंट्रोलर लाइब्रेरी है जिस पर कई गेम बने हैं। यह किसी डिवाइस को तभी गेमपैड मानती है जब उसे उसका लेआउट पता हो, और SDL के किसी भी संस्करण को QuadStick का लेआउट पता नहीं है। यह सेटिंग उसे बताती है, अब से खोले गए हर ऐप के लिए और हर लॉगिन पर फिर से, इसलिए पहले से चल रहे गेम को बंद करके फिर से खोलें। इसके लिए Apple से कुछ नहीं चाहिए और स्टिक पर कुछ नहीं बदलता।
+
+जो गेम SDL का उपयोग नहीं करते, उन्हें गेमपैड नहीं दिखेगा। उनके लिए मोड 7 का उपयोग करें। इसे बंद करने से बदलाव वापस हो जाता है।</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>SDL पर बने गेम, जैसे कई Mac गेम, इम्यूलेशन मोड 0 में QuadStick को गेमपैड के रूप में देख पाते हैं, और कीबोर्ड, माउस और ड्राइव चलते रहते हैं।</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>चालू। अब से खोले गए गेम एक गेमपैड देखते हैं।</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>App Store संस्करण यह बदलाव खुद नहीं कर सकता। कमांड कॉपी करें, Terminal में पेस्ट करें और Return दबाएँ। फिर गेम बंद करके फिर से खोलें।</value>
+  </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
     <value>डिवाइस इसी फ़ाइल से बूट होता है, इसलिए ड्राइव छिपाने वाला कोई भी मोड आपके QuadStick पर नहीं लिखा जाएगा। इसके बजाय किसी गेम प्रोफ़ाइल में सेट करें।</value>
   </data>
@@ -745,6 +785,75 @@
   <data name="Drive_RestoreSkipped" xml:space="preserve">
     <value>{0} छोड़ी गईं: </value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>एक Google Sheet लिंक फ़ॉलो करती है</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>शीट डाउनलोड होते समय यह प्रोफ़ाइल बदल गई, इसलिए कुछ नहीं बदला गया। इसे सेव करें, फिर नया वर्शन दोबारा लाएं।</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>नया वर्शन नहीं लाया जा सका: {0} आपकी कॉपी नहीं बदली गई।</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>यह प्रोफ़ाइल अब अपना लिंक फ़ॉलो नहीं करती।</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>लिंक से नया वर्शन लाएं</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>यह प्रोफ़ाइल उस Google Sheet से फिर से डाउनलोड करें जिससे इसे इंपोर्ट किया गया था, और कुछ भी बदलने से पहले देखें कि क्या बदला है</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>मेरी रखें</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>आपकी कॉपी रखी गई। कुछ नहीं बदला।</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>इस कंप्यूटर पर आपकी कॉपी पढ़ी नहीं जा सकी, इसलिए उसे मिलाया नहीं जा सकता।</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>शीट में नया: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} जोड़े गए, {2} हटाए गए</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>अब शीट में नहीं: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>यह प्रोफ़ाइल Google Sheets लिंक से इंपोर्ट नहीं हुई थी, इसलिए लाने के लिए कुछ नहीं है।</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>दूसरे सेल अलग हैं, जैसे प्राथमिकताएं, नाम या नोट्स।</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>मेरी कॉपी बदलें</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>लिंक के नए वर्शन से बदल दिया गया। आपकी पुरानी कॉपी rescue फोल्डर में है।</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Google Sheet आपकी कॉपी से अलग है। अगर आप बदलते हैं, तो आपकी कॉपी पहले rescue फोल्डर में जाएगी।</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>अपनी कॉपी को नए वर्शन से बदलें?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>इस प्रोफ़ाइल में बिना सेव किए बदलाव हैं। पहले उन्हें सेव किया जाएगा, फिर शीट से मिलाया जाएगा। आपकी मंज़ूरी के बिना कुछ नहीं बदला जाएगा।</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>पहले अपने बदलाव सेव करें?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>लिंक भूल जाएं</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>जिस Google Sheet से यह प्रोफ़ाइल इंपोर्ट हुई थी, उसे फ़ॉलो करना बंद करें</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>पहले से नया है। शीट आपकी कॉपी से मेल खाती है।</value>
+  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>गलत default.csv फ्लैश-ड्राइव एक्सेस को बंद कर सकती है, और उसे ठीक करने के लिए भौतिक फ़ोर्स-इरेज़ की ज़रूरत होती है। पहले एक बैकअप बनाया जाएगा। आगे बढ़ें?</value>
   </data>
@@ -810,6 +919,105 @@
   </data>
   <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
     <value>वह फ़ोल्डर QuadStick जैसा नहीं दिखता (इसकी रूट में default.csv नहीं है)।</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>रुक गया। QuadStick रीस्टार्ट हो गया, इसलिए आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ गई हैं।</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>बंद करें</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>कनेक्ट करें</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>QuadStick से जुड़ गया, फ़र्मवेयर {0}।</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>कनेक्ट हो रहा है…</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>{0} नहीं खुल सका: {1}</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>QuadStick के अपने कंसोल से जुड़ें: Bluetooth से पेयर करके, या सीरियल केबल से।</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>यह उस QuadStick के साथ काम करता है जो आपके कंप्यूटर की Bluetooth सेटिंग में पेयर है और जिसका Bluetooth SPP मोड में है, या डिजिटल इनपुट 1 और 2 वाले जैक में लगी 3.3V USB सीरियल केबल के साथ। जब Bluetooth SPP मोड में होता है, तब QuadStick Bluetooth गेमपैड नहीं रहता; USB पर वह अब भी गेमपैड है। जो प्रोफ़ाइल digital_in_1 या digital_in_2 इस्तेमाल करती है, वह केबल पोर्ट को बंद कर देती है।</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>सेंसर शून्य किए जाते समय माउथपीस से हाथ हटा लें।</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>चूसने और फूँकने की ताक़त मापें</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>यह एक टेस्ट प्रोफ़ाइल लोड करता है जिसमें सिर्फ़ ज़ोर से चूसना और ज़ोर से फूँकना है, सात बार फूँकने और सात बार चूसने को कहता है, फिर QuadStick को रीस्टार्ट करता है, जिससे आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ जाती हैं। कुछ गड़बड़ हो तो QuadStick को निकालकर दोबारा लगा दें। इससे भी सब कुछ वापस आ जाता है।</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>ताक़त मापें?</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>QuadStick को USB से भी लगाएं। टेस्ट USB से उसके बटन देखता है, और Xbox 360 मोड (इम्यूलेशन मोड 3) में उन्हें नहीं देख पाता।</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>कोई सीरियल पोर्ट नहीं मिला। QuadStick को अपने कंप्यूटर की Bluetooth सेटिंग में पेयर करें, या केबल लगाएं, फिर रीफ़्रेश करें दबाएं।</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>उस पोर्ट पर कुछ जवाब आया, लेकिन वह QuadStick नहीं है।</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>QuadStick को रीस्टार्ट करने के लिए उस तक नहीं पहुंचा जा सका, इसलिए टेस्ट प्रोफ़ाइल शायद अब भी उस पर है। इसे निकालकर फिर से लगाएं: इससे आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ जाती हैं।</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>prefs.csv बदलें?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv में QuadStick की अपनी सेटिंग हैं, इसलिए यह सभी प्रोफ़ाइलों को एक साथ बदलती है। इसकी मौजूदा कॉपी पहले सहेज ली जाती है।</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth या केबल</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Bluetooth या सीरियल केबल से QuadStick से जुड़ें</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>पोर्ट</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>जितना ज़ोर से हो सके फूँकें। कोशिश {0} / 7।</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>रीफ़्रेश करें</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>सबसे तेज़ फूँक: सेंसर की रेंज का {0}। सबसे तेज़ चूसना: {1}। आपकी तेज़ सीमा {2} है।</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>प्रोफ़ाइल भेजें…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>{0} भेजा जा रहा है…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} QuadStick पर है और लोड हो गई है। पहले जो था वह {1} में सहेजा गया है।</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} QuadStick पर है और लोड हो गई है।</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>जितना ज़ोर से हो सके चूसें। कोशिश {0} / 7।</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>रोकें</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>Bluetooth या केबल से QuadStick</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>{0}% से कम</value>
   </data>
   <data name="Main_AButton" xml:space="preserve">
     <value>A button</value>
@@ -3403,6 +3611,9 @@
   <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
     <value>हिस्सों में एक-एक करके आगे बढ़ें</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick लगा है पर सूची में नहीं है? Mac App Store वाला संस्करण उसकी ड्राइव तभी खोल सकता है जब आप उसे एक बार चुन लें। उसके बाद वह उसे अपने आप ढूँढ लेता है।</value>
+  </data>
   <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
     <value>डिवाइस व्यू में इस्तेमाल किए गए शब्दों को सामान्य अंग्रेज़ी और रॉ लिस्ट-व्यू नामों के बीच बदलें</value>
   </data>
@@ -3448,6 +3659,9 @@
   <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
     <value>हर प्रोफ़ाइल एक टेम्पलेट से शुरू होती है।</value>
   </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>इंस्टॉल करें</value>
+  </data>
   <data name="Tour_NewProfile" xml:space="preserve">
     <value>नई प्रोफ़ाइल</value>
   </data>
@@ -3487,11 +3701,17 @@
   <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
     <value>यह आपको दिखाता है कि प्रोफ़ाइल कैसे बनाएं और इंस्टॉल करें। आप कभी भी छोड़ सकते हैं।</value>
   </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>स्वागत है</value>
+  </data>
   <data name="Tour_WhenItSReadySend" xml:space="preserve">
     <value>जब यह तैयार हो, तो इसे अपने QuadStick पर भेजें।</value>
   </data>
   <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
     <value>आप इसे कभी भी Settings ▸ Help से फिर से चला सकते हैं।</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>आपका QuadStick</value>
   </data>
   <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
     <value>अपडेट की जाँच नहीं हो सकी (GitHub ने जवाब दिया {0})। आप {1} पर हैं।</value>
@@ -3516,216 +3736,5 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>आप {0} पर हैं, जो सबसे नया है।</value>
-  </data>
-  <data name="DevicePage_MacGames" xml:space="preserve">
-    <value>Mac पर गेम</value>
-  </data>
-  <data name="DevicePage_MacGamesLine" xml:space="preserve">
-    <value>Mac पर, गेम प्रोफ़ाइल की प्रेफ़रेंसेस शीट में USB एम्युलेशन मोड 7 सेट करें, तो गेम को PlayStation 4 कंट्रोलर दिखेगा।</value>
-  </data>
-  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
-    <value>Mac अभी Xbox कंट्रोलर ब्रिज नहीं चला सकता, क्योंकि वर्चुअल कंट्रोलर बनाने के लिए Apple की अनुमति चाहिए। मोड 7 को इसकी ज़रूरत नहीं: QuadStick खुद को वायरलेस DualShock 4 बताता है, जिसे macOS और Steam USB पर सपोर्ट करते हैं।
-
-मोड 7 सिर्फ़ गेमपैड है। इसमें कीबोर्ड, माउस और ड्राइव नहीं होते, इसलिए चालू रहते यह ऐप स्टिक को नहीं देख पाता। इसे डिवाइस सेटिंग्स में नहीं, गेम प्रोफ़ाइल की प्रेफ़रेंसेस शीट में रखें: तब दूसरी प्रोफ़ाइल पर जाने से ड्राइव, कीबोर्ड और माउस वापस आ जाते हैं। उसी प्रोफ़ाइल के अंदर मोड बदलने से नहीं आते।</value>
-  </data>
-  <data name="DevicePage_MacPad" xml:space="preserve">
-    <value>मोड 0 में गेमपैड</value>
-  </data>
-  <data name="DevicePage_MacPadLine" xml:space="preserve">
-    <value>SDL पर बने गेम, जैसे कई Mac गेम, इम्यूलेशन मोड 0 में QuadStick को गेमपैड के रूप में देख पाते हैं, और कीबोर्ड, माउस और ड्राइव चलते रहते हैं।</value>
-  </data>
-  <data name="DevicePage_MacPadHelp" xml:space="preserve">
-    <value>SDL कंट्रोलर लाइब्रेरी है जिस पर कई गेम बने हैं। यह किसी डिवाइस को तभी गेमपैड मानती है जब उसे उसका लेआउट पता हो, और SDL के किसी भी संस्करण को QuadStick का लेआउट पता नहीं है। यह सेटिंग उसे बताती है, अब से खोले गए हर ऐप के लिए और हर लॉगिन पर फिर से, इसलिए पहले से चल रहे गेम को बंद करके फिर से खोलें। इसके लिए Apple से कुछ नहीं चाहिए और स्टिक पर कुछ नहीं बदलता।
-
-जो गेम SDL का उपयोग नहीं करते, उन्हें गेमपैड नहीं दिखेगा। उनके लिए मोड 7 का उपयोग करें। इसे बंद करने से बदलाव वापस हो जाता है।</value>
-  </data>
-  <data name="DevicePage_MacPadOn" xml:space="preserve">
-    <value>चालू। अब से खोले गए गेम एक गेमपैड देखते हैं।</value>
-  </data>
-  <data name="DevicePage_MacPadFailed" xml:space="preserve">
-    <value>इस Mac ने बदलाव स्वीकार नहीं किया, इसलिए कुछ नहीं बदला गया।</value>
-  </data>
-  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
-    <value>App Store संस्करण यह बदलाव खुद नहीं कर सकता। कमांड कॉपी करें, Terminal में पेस्ट करें और Return दबाएँ। फिर गेम बंद करके फिर से खोलें।</value>
-  </data>
-  <data name="DevicePage_MacPadCopy" xml:space="preserve">
-    <value>कमांड कॉपी करें</value>
-  </data>
-  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
-    <value>वापस लेने का कमांड कॉपी करें</value>
-  </data>
-  <data name="DevicePage_MacPadCopied" xml:space="preserve">
-    <value>कॉपी हो गया। Terminal में पेस्ट करें और Return दबाएँ।</value>
-  </data>
-  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
-    <value>QuadStick लगा है पर सूची में नहीं है? Mac App Store वाला संस्करण उसकी ड्राइव तभी खोल सकता है जब आप उसे एक बार चुन लें। उसके बाद वह उसे अपने आप ढूँढ लेता है।</value>
-  </data>
-  <data name="Link_Title" xml:space="preserve">
-    <value>Bluetooth या केबल से QuadStick</value>
-  </data>
-  <data name="Link_Explain" xml:space="preserve">
-    <value>QuadStick के अपने कंसोल से जुड़ें: Bluetooth से पेयर करके, या सीरियल केबल से।</value>
-  </data>
-  <data name="Link_ExplainMore" xml:space="preserve">
-    <value>यह उस QuadStick के साथ काम करता है जो आपके कंप्यूटर की Bluetooth सेटिंग में पेयर है और जिसका Bluetooth SPP मोड में है, या डिजिटल इनपुट 1 और 2 वाले जैक में लगी 3.3V USB सीरियल केबल के साथ। जब Bluetooth SPP मोड में होता है, तब QuadStick Bluetooth गेमपैड नहीं रहता; USB पर वह अब भी गेमपैड है। जो प्रोफ़ाइल digital_in_1 या digital_in_2 इस्तेमाल करती है, वह केबल पोर्ट को बंद कर देती है।</value>
-  </data>
-  <data name="Link_Port" xml:space="preserve">
-    <value>पोर्ट</value>
-  </data>
-  <data name="Link_Refresh" xml:space="preserve">
-    <value>रीफ़्रेश करें</value>
-  </data>
-  <data name="Link_Connect" xml:space="preserve">
-    <value>कनेक्ट करें</value>
-  </data>
-  <data name="Link_NoPorts" xml:space="preserve">
-    <value>कोई सीरियल पोर्ट नहीं मिला। QuadStick को अपने कंप्यूटर की Bluetooth सेटिंग में पेयर करें, या केबल लगाएं, फिर रीफ़्रेश करें दबाएं।</value>
-  </data>
-  <data name="Link_Connecting" xml:space="preserve">
-    <value>कनेक्ट हो रहा है…</value>
-  </data>
-  <data name="Link_Connected" xml:space="preserve">
-    <value>QuadStick से जुड़ गया, फ़र्मवेयर {0}।</value>
-  </data>
-  <data name="Link_NotAQuadStick" xml:space="preserve">
-    <value>उस पोर्ट पर कुछ जवाब आया, लेकिन वह QuadStick नहीं है।</value>
-  </data>
-  <data name="Link_CouldNotOpen" xml:space="preserve">
-    <value>{0} नहीं खुल सका: {1}</value>
-  </data>
-  <data name="Link_SendProfile" xml:space="preserve">
-    <value>प्रोफ़ाइल भेजें…</value>
-  </data>
-  <data name="Link_Sending" xml:space="preserve">
-    <value>{0} भेजा जा रहा है…</value>
-  </data>
-  <data name="Link_Sent" xml:space="preserve">
-    <value>{0} QuadStick पर है और लोड हो गई है। पहले जो था वह {1} में सहेजा गया है।</value>
-  </data>
-  <data name="Link_SentNew" xml:space="preserve">
-    <value>{0} QuadStick पर है और लोड हो गई है।</value>
-  </data>
-  <data name="Link_OverwritePrefs" xml:space="preserve">
-    <value>prefs.csv बदलें?</value>
-  </data>
-  <data name="Link_OverwritePrefsMore" xml:space="preserve">
-    <value>prefs.csv में QuadStick की अपनी सेटिंग हैं, इसलिए यह सभी प्रोफ़ाइलों को एक साथ बदलती है। इसकी मौजूदा कॉपी पहले सहेज ली जाती है।</value>
-  </data>
-  <data name="Link_Measure" xml:space="preserve">
-    <value>चूसने और फूँकने की ताक़त मापें</value>
-  </data>
-  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
-    <value>ताक़त मापें?</value>
-  </data>
-  <data name="Link_MeasureConfirm" xml:space="preserve">
-    <value>यह एक टेस्ट प्रोफ़ाइल लोड करता है जिसमें सिर्फ़ ज़ोर से चूसना और ज़ोर से फूँकना है, सात बार फूँकने और सात बार चूसने को कहता है, फिर QuadStick को रीस्टार्ट करता है, जिससे आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ जाती हैं। कुछ गड़बड़ हो तो QuadStick को निकालकर दोबारा लगा दें। इससे भी सब कुछ वापस आ जाता है।</value>
-  </data>
-  <data name="Link_NeedsUsb" xml:space="preserve">
-    <value>QuadStick को USB से भी लगाएं। टेस्ट USB से उसके बटन देखता है, और Xbox 360 मोड (इम्यूलेशन मोड 3) में उन्हें नहीं देख पाता।</value>
-  </data>
-  <data name="Link_HandsOff" xml:space="preserve">
-    <value>सेंसर शून्य किए जाते समय माउथपीस से हाथ हटा लें।</value>
-  </data>
-  <data name="Link_PuffNow" xml:space="preserve">
-    <value>जितना ज़ोर से हो सके फूँकें। कोशिश {0} / 7।</value>
-  </data>
-  <data name="Link_SipNow" xml:space="preserve">
-    <value>जितना ज़ोर से हो सके चूसें। कोशिश {0} / 7।</value>
-  </data>
-  <data name="Link_Result" xml:space="preserve">
-    <value>सबसे तेज़ फूँक: सेंसर की रेंज का {0}। सबसे तेज़ चूसना: {1}। आपकी तेज़ सीमा {2} है।</value>
-  </data>
-  <data name="Link_UnderLowest" xml:space="preserve">
-    <value>{0}% से कम</value>
-  </data>
-  <data name="Link_PercentValue" xml:space="preserve">
-    <value>{0}%</value>
-  </data>
-  <data name="Link_Cancelled" xml:space="preserve">
-    <value>रुक गया। QuadStick रीस्टार्ट हो गया, इसलिए आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ गई हैं।</value>
-  </data>
-  <data name="Link_NotPutBack" xml:space="preserve">
-    <value>QuadStick को रीस्टार्ट करने के लिए उस तक नहीं पहुंचा जा सका, इसलिए टेस्ट प्रोफ़ाइल शायद अब भी उस पर है। इसे निकालकर फिर से लगाएं: इससे आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ जाती हैं।</value>
-  </data>
-  <data name="Link_Stop" xml:space="preserve">
-    <value>रोकें</value>
-  </data>
-  <data name="Link_Close" xml:space="preserve">
-    <value>बंद करें</value>
-  </data>
-  <data name="Link_PageButton" xml:space="preserve">
-    <value>Bluetooth या केबल</value>
-  </data>
-  <data name="Link_PageButtonName" xml:space="preserve">
-    <value>Bluetooth या सीरियल केबल से QuadStick से जुड़ें</value>
-  </data>
-  <data name="Follow_GetLatest" xml:space="preserve">
-    <value>लिंक से नया वर्शन लाएं</value>
-  </data>
-  <data name="Follow_GetLatestHelp" xml:space="preserve">
-    <value>यह प्रोफ़ाइल उस Google Sheet से फिर से डाउनलोड करें जिससे इसे इंपोर्ट किया गया था, और कुछ भी बदलने से पहले देखें कि क्या बदला है</value>
-  </data>
-  <data name="Follow_StopFollowing" xml:space="preserve">
-    <value>लिंक भूल जाएं</value>
-  </data>
-  <data name="Follow_StopFollowingHelp" xml:space="preserve">
-    <value>जिस Google Sheet से यह प्रोफ़ाइल इंपोर्ट हुई थी, उसे फ़ॉलो करना बंद करें</value>
-  </data>
-  <data name="Follow_CardNote" xml:space="preserve">
-    <value>एक Google Sheet लिंक फ़ॉलो करती है</value>
-  </data>
-  <data name="Follow_NotFollowed" xml:space="preserve">
-    <value>यह प्रोफ़ाइल Google Sheets लिंक से इंपोर्ट नहीं हुई थी, इसलिए लाने के लिए कुछ नहीं है।</value>
-  </data>
-  <data name="Follow_SaveFirstTitle" xml:space="preserve">
-    <value>पहले अपने बदलाव सेव करें?</value>
-  </data>
-  <data name="Follow_SaveFirstBody" xml:space="preserve">
-    <value>इस प्रोफ़ाइल में बिना सेव किए बदलाव हैं। पहले उन्हें सेव किया जाएगा, फिर शीट से मिलाया जाएगा। आपकी मंज़ूरी के बिना कुछ नहीं बदला जाएगा।</value>
-  </data>
-  <data name="Follow_UpToDate" xml:space="preserve">
-    <value>पहले से नया है। शीट आपकी कॉपी से मेल खाती है।</value>
-  </data>
-  <data name="Follow_CouldNotGet" xml:space="preserve">
-    <value>नया वर्शन नहीं लाया जा सका: {0} आपकी कॉपी नहीं बदली गई।</value>
-  </data>
-  <data name="Follow_ReviewTitle" xml:space="preserve">
-    <value>अपनी कॉपी को नए वर्शन से बदलें?</value>
-  </data>
-  <data name="Follow_ReviewBody" xml:space="preserve">
-    <value>Google Sheet आपकी कॉपी से अलग है। अगर आप बदलते हैं, तो आपकी कॉपी पहले rescue फोल्डर में जाएगी।</value>
-  </data>
-  <data name="Follow_ModeAdded" xml:space="preserve">
-    <value>शीट में नया: {0}</value>
-  </data>
-  <data name="Follow_ModeRemoved" xml:space="preserve">
-    <value>अब शीट में नहीं: {0}</value>
-  </data>
-  <data name="Follow_ModeChanged" xml:space="preserve">
-    <value>{0}: {1} जोड़े गए, {2} हटाए गए</value>
-  </data>
-  <data name="Follow_OtherChanged" xml:space="preserve">
-    <value>दूसरे सेल अलग हैं, जैसे प्राथमिकताएं, नाम या नोट्स।</value>
-  </data>
-  <data name="Follow_LocalUnreadable" xml:space="preserve">
-    <value>इस कंप्यूटर पर आपकी कॉपी पढ़ी नहीं जा सकी, इसलिए उसे मिलाया नहीं जा सकता।</value>
-  </data>
-  <data name="Follow_Replace" xml:space="preserve">
-    <value>मेरी कॉपी बदलें</value>
-  </data>
-  <data name="Follow_Keep" xml:space="preserve">
-    <value>मेरी रखें</value>
-  </data>
-  <data name="Follow_Kept" xml:space="preserve">
-    <value>आपकी कॉपी रखी गई। कुछ नहीं बदला।</value>
-  </data>
-  <data name="Follow_Replaced" xml:space="preserve">
-    <value>लिंक के नए वर्शन से बदल दिया गया। आपकी पुरानी कॉपी rescue फोल्डर में है।</value>
-  </data>
-  <data name="Follow_Forgotten" xml:space="preserve">
-    <value>यह प्रोफ़ाइल अब अपना लिंक फ़ॉलो नहीं करती।</value>
-  </data>
-  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
-    <value>शीट डाउनलोड होते समय यह प्रोफ़ाइल बदल गई, इसलिए कुछ नहीं बदला गया। इसे सेव करें, फिर नया वर्शन दोबारा लाएं।</value>
   </data>
 </root>

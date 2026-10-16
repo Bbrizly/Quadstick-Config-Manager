@@ -400,6 +400,46 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>جارٍ البحث عن QuadStick...</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>الألعاب على Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>لا يستطيع Mac تشغيل جسر وحدة تحكم Xbox بعد، لأن إنشاء وحدة تحكم افتراضية يحتاج إذنًا من Apple. الوضع 7 لا يحتاجه: يعرّف QuadStick نفسه كوحدة DualShock 4 لاسلكية، ويدعمها macOS وSteam عبر USB.
+
+الوضع 7 وحدة تحكم ألعاب فقط. لا لوحة مفاتيح ولا فأرة ولا محرك أقراص، لذلك لا يرى هذا التطبيق العصا ما دام مفعّلًا. ضعه في ورقة التفضيلات لملف اللعبة، لا في إعدادات الجهاز: عندها يعيد الانتقال إلى ملف آخر محرك الأقراص ولوحة المفاتيح والفأرة. أما تبديل الأوضاع داخل الملف نفسه فلا يفعل ذلك.</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>على Mac، اضبط وضع محاكاة USB رقم 7 في ورقة التفضيلات لملف اللعبة، فترى الألعاب وحدة تحكم PlayStation 4.</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>يد تحكم في الوضع 0</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>تم النسخ. الصقه في Terminal واضغط Return.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>نسخ الأمر</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>نسخ أمر التراجع</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>لم يقبل جهاز Mac هذا التغيير، لذلك لم يتغير شيء.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL هي مكتبة أذرع التحكم التي تُبنى عليها ألعاب كثيرة. لا تعامل جهازًا كيد تحكم إلا إذا عرفت ترتيب أزراره، ولا تعرف أي نسخة من SDL ترتيب QuadStick. هذا الإعداد يخبرها به، لكل تطبيق يُفتح من الآن ومن جديد عند كل تسجيل دخول، لذا أغلق اللعبة التي تعمل الآن وافتحها من جديد. لا يحتاج إلى شيء من Apple ولا يغيّر شيئًا في العصا.
+
+الألعاب التي لا تستخدم SDL لن ترى يد التحكم. استخدم الوضع 7 لها. إيقاف هذا الإعداد يتراجع عن التغيير.</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>يتيح للألعاب المبنية على SDL، مثل كثير من ألعاب Mac، أن ترى QuadStick كيد تحكم في وضع المحاكاة 0، مع بقاء لوحة المفاتيح والفأرة ومحرك الأقراص تعمل.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>مفعّل. الألعاب التي تُفتح من الآن ترى يد تحكم.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>لا تستطيع نسخة App Store إجراء هذا التغيير بنفسها. انسخ الأمر، والصقه في Terminal، واضغط Return. ثم أغلق اللعبة وافتحها من جديد.</value>
+  </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
     <value>يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب أي وضع من أوضاع إخفاء القرص إلى QuadStick الخاص بك. اضبطه في ملف لعبة بدلاً من ذلك.</value>
   </data>
@@ -745,6 +785,75 @@
   <data name="Drive_RestoreSkipped" xml:space="preserve">
     <value>{0} تم تخطيها: </value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>يتابع رابط جدول Google</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>تغيّر هذا الملف الشخصي أثناء تنزيل الجدول، لذا لم يُستبدل شيء. احفظه، ثم اجلب أحدث نسخة مرة أخرى.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>تعذّر جلب أحدث نسخة: {0} لم تتغير نسختك.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>لم يعد هذا الملف الشخصي يتابع رابطه.</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>جلب أحدث نسخة من الرابط</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>تنزيل هذا الملف الشخصي مرة أخرى من جدول Google الذي استُورد منه، ومعرفة ما تغيّر قبل استبدال أي شيء</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>الاحتفاظ بنسختي</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>تم الاحتفاظ بنسختك. لم يتغير شيء.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>تعذّرت قراءة نسختك على هذا الكمبيوتر، لذا لا يمكن مقارنتها.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>جديد في الجدول: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: أُضيف {1}، وأُزيل {2}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>لم يعد في الجدول: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>لم يُستورد هذا الملف الشخصي من رابط Google Sheets، لذا لا يوجد ما يُجلب.</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>هناك خلايا أخرى مختلفة، مثل التفضيلات أو الأسماء أو الملاحظات.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>استبدال نسختي</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>تم الاستبدال بأحدث نسخة من الرابط. نسختك القديمة في مجلد الإنقاذ.</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>جدول Google مختلف عن نسختك. إذا استبدلتها، ستنتقل نسختك أولاً إلى مجلد الإنقاذ.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>هل تريد استبدال نسختك بأحدث نسخة؟</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>يحتوي هذا الملف الشخصي على تغييرات غير محفوظة. ستُحفظ أولاً ثم تُقارن بالجدول. لن يُستبدل شيء دون موافقتك.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>هل تريد حفظ تغييراتك أولاً؟</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>نسيان الرابط</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>التوقف عن متابعة جدول Google الذي استُورد منه هذا الملف الشخصي</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>محدّث بالفعل. الجدول مطابق لنسختك.</value>
+  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>default.csv خاطئ قد يُعطّل الوصول إلى محرك الأقراص المحمول، والاستعادة تتطلب مسحًا إجباريًا ماديًا. سيتم إجراء نسخة احتياطية أولًا. متابعة؟</value>
   </data>
@@ -810,6 +919,105 @@
   </data>
   <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
     <value>هذا المجلد لا يبدو أنه لـ QuadStick (لا يوجد default.csv في جذره).</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>تم الإيقاف. أُعيد تشغيل QuadStick، لذا عاد ملف التعريف الخاص بك وإعداداتك.</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>اتصال</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>تم الاتصال بجهاز QuadStick، البرنامج الثابت {0}.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>جارٍ الاتصال…</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>تعذّر فتح {0}: {1}</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>اتصل بجهاز QuadStick عبر وحدة التحكم الخاصة به: مقترنًا عبر Bluetooth، أو بكابل تسلسلي.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>يعمل هذا مع جهاز QuadStick مقترن في إعدادات Bluetooth بحاسوبك بينما يكون Bluetooth فيه في وضع SPP، أو مع كابل USB تسلسلي بجهد 3.3V في مقبس المدخلين الرقميين 1 و2. وبينما يكون Bluetooth في وضع SPP، لا يكون QuadStick وحدة تحكم Bluetooth؛ أما عبر USB فيبقى كذلك. ملف التعريف الذي يستخدم digital_in_1 أو digital_in_2 يوقف منفذ الكابل.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>ارفع يديك عن قطعة الفم بينما تُصفَّر المستشعرات.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>قياس قوة الشفط والنفخ</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>يحمّل هذا ملف تعريف اختبار فيه شفط قوي ونفخ قوي فقط، ويطلب منك سبع نفخات وسبع شفطات، ثم يعيد تشغيل QuadStick، فيعود ملف التعريف الخاص بك وإعداداتك. إذا حدث أي خطأ، افصل QuadStick ثم أعد توصيله. وهذا أيضًا يعيد كل شيء.</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>قياس القوة؟</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>وصّل QuadStick عبر USB أيضًا. يراقب الاختبار أزراره عبر USB، وفي وضع Xbox 360 (وضع المحاكاة 3) لا يستطيع رؤيتها.</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>لم يتم العثور على منافذ تسلسلية. اقرن QuadStick في إعدادات Bluetooth بحاسوبك، أو وصّل الكابل، ثم اضغط تحديث.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>ردّ شيء ما على ذلك المنفذ، لكنه ليس QuadStick.</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>تعذّر الوصول إلى QuadStick لإعادة تشغيله، لذا قد يظل ملف تعريف الاختبار عليه. افصله ثم أعد توصيله: هذا يعيد ملف التعريف الخاص بك وإعداداتك.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>استبدال prefs.csv؟</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>يحتوي prefs.csv على إعدادات QuadStick نفسه، لذا فهو يغيّر كل ملفات التعريف دفعة واحدة. تُحفظ النسخة الحالية أولًا.</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth أو كابل</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>الاتصال بجهاز QuadStick عبر Bluetooth أو كابل تسلسلي</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>المنفذ</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>انفخ بأقوى ما تستطيع. المحاولة {0} من 7.</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>أقوى نفخة: {0} من نطاق المستشعر. أقوى شفطة: {1}. عتبتك القوية هي {2}.</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>إرسال ملف تعريف…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>جارٍ إرسال {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} موجود على QuadStick ومحمَّل. ما كان عليه قبل ذلك محفوظ في {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} موجود على QuadStick ومحمَّل.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>اشفط بأقوى ما تستطيع. المحاولة {0} من 7.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>إيقاف</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick عبر Bluetooth أو كابل</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>أقل من {0}%</value>
   </data>
   <data name="Main_AButton" xml:space="preserve">
     <value>A button</value>
@@ -3403,6 +3611,9 @@
   <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
     <value>التنقل بين الأجزاء واحدًا تلو الآخر</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>هل QuadStick موصول لكنه غير ظاهر؟ لا يستطيع إصدار Mac App Store فتح محرك الأقراص إلا بعد أن تختاره مرة واحدة. بعد ذلك يجده تلقائيًا.</value>
+  </data>
   <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
     <value>التبديل بين الكلمات المستخدمة في عرض الجهاز، بين الإنجليزية البسيطة وأسماء عرض القائمة الخام</value>
   </data>
@@ -3448,6 +3659,9 @@
   <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
     <value>كل ملف شخصي يبدأ من قالب.</value>
   </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>التثبيت</value>
+  </data>
   <data name="Tour_NewProfile" xml:space="preserve">
     <value>ملف شخصي جديد</value>
   </data>
@@ -3487,11 +3701,17 @@
   <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
     <value>هذا يوضح لك كيفية إنشاء ملف شخصي وتثبيته. يمكنك التخطي في أي وقت.</value>
   </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>مرحبًا</value>
+  </data>
   <data name="Tour_WhenItSReadySend" xml:space="preserve">
     <value>عندما يصبح جاهزًا، أرسله إلى QuadStick الخاص بك.</value>
   </data>
   <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
     <value>يمكنك إعادة تشغيل هذا في أي وقت من الإعدادات ▸ المساعدة.</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>جهاز QuadStick الخاص بك</value>
   </data>
   <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
     <value>تعذّر التحقق من التحديثات (أجاب GitHub بـ {0}). أنت تستخدم {1}.</value>
@@ -3516,216 +3736,5 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>أنت تستخدم {0}، وهو الأحدث.</value>
-  </data>
-  <data name="DevicePage_MacGames" xml:space="preserve">
-    <value>الألعاب على Mac</value>
-  </data>
-  <data name="DevicePage_MacGamesLine" xml:space="preserve">
-    <value>على Mac، اضبط وضع محاكاة USB رقم 7 في ورقة التفضيلات لملف اللعبة، فترى الألعاب وحدة تحكم PlayStation 4.</value>
-  </data>
-  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
-    <value>لا يستطيع Mac تشغيل جسر وحدة تحكم Xbox بعد، لأن إنشاء وحدة تحكم افتراضية يحتاج إذنًا من Apple. الوضع 7 لا يحتاجه: يعرّف QuadStick نفسه كوحدة DualShock 4 لاسلكية، ويدعمها macOS وSteam عبر USB.
-
-الوضع 7 وحدة تحكم ألعاب فقط. لا لوحة مفاتيح ولا فأرة ولا محرك أقراص، لذلك لا يرى هذا التطبيق العصا ما دام مفعّلًا. ضعه في ورقة التفضيلات لملف اللعبة، لا في إعدادات الجهاز: عندها يعيد الانتقال إلى ملف آخر محرك الأقراص ولوحة المفاتيح والفأرة. أما تبديل الأوضاع داخل الملف نفسه فلا يفعل ذلك.</value>
-  </data>
-  <data name="DevicePage_MacPad" xml:space="preserve">
-    <value>يد تحكم في الوضع 0</value>
-  </data>
-  <data name="DevicePage_MacPadLine" xml:space="preserve">
-    <value>يتيح للألعاب المبنية على SDL، مثل كثير من ألعاب Mac، أن ترى QuadStick كيد تحكم في وضع المحاكاة 0، مع بقاء لوحة المفاتيح والفأرة ومحرك الأقراص تعمل.</value>
-  </data>
-  <data name="DevicePage_MacPadHelp" xml:space="preserve">
-    <value>SDL هي مكتبة أذرع التحكم التي تُبنى عليها ألعاب كثيرة. لا تعامل جهازًا كيد تحكم إلا إذا عرفت ترتيب أزراره، ولا تعرف أي نسخة من SDL ترتيب QuadStick. هذا الإعداد يخبرها به، لكل تطبيق يُفتح من الآن ومن جديد عند كل تسجيل دخول، لذا أغلق اللعبة التي تعمل الآن وافتحها من جديد. لا يحتاج إلى شيء من Apple ولا يغيّر شيئًا في العصا.
-
-الألعاب التي لا تستخدم SDL لن ترى يد التحكم. استخدم الوضع 7 لها. إيقاف هذا الإعداد يتراجع عن التغيير.</value>
-  </data>
-  <data name="DevicePage_MacPadOn" xml:space="preserve">
-    <value>مفعّل. الألعاب التي تُفتح من الآن ترى يد تحكم.</value>
-  </data>
-  <data name="DevicePage_MacPadFailed" xml:space="preserve">
-    <value>لم يقبل جهاز Mac هذا التغيير، لذلك لم يتغير شيء.</value>
-  </data>
-  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
-    <value>لا تستطيع نسخة App Store إجراء هذا التغيير بنفسها. انسخ الأمر، والصقه في Terminal، واضغط Return. ثم أغلق اللعبة وافتحها من جديد.</value>
-  </data>
-  <data name="DevicePage_MacPadCopy" xml:space="preserve">
-    <value>نسخ الأمر</value>
-  </data>
-  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
-    <value>نسخ أمر التراجع</value>
-  </data>
-  <data name="DevicePage_MacPadCopied" xml:space="preserve">
-    <value>تم النسخ. الصقه في Terminal واضغط Return.</value>
-  </data>
-  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
-    <value>هل QuadStick موصول لكنه غير ظاهر؟ لا يستطيع إصدار Mac App Store فتح محرك الأقراص إلا بعد أن تختاره مرة واحدة. بعد ذلك يجده تلقائيًا.</value>
-  </data>
-  <data name="Link_Title" xml:space="preserve">
-    <value>QuadStick عبر Bluetooth أو كابل</value>
-  </data>
-  <data name="Link_Explain" xml:space="preserve">
-    <value>اتصل بجهاز QuadStick عبر وحدة التحكم الخاصة به: مقترنًا عبر Bluetooth، أو بكابل تسلسلي.</value>
-  </data>
-  <data name="Link_ExplainMore" xml:space="preserve">
-    <value>يعمل هذا مع جهاز QuadStick مقترن في إعدادات Bluetooth بحاسوبك بينما يكون Bluetooth فيه في وضع SPP، أو مع كابل USB تسلسلي بجهد 3.3V في مقبس المدخلين الرقميين 1 و2. وبينما يكون Bluetooth في وضع SPP، لا يكون QuadStick وحدة تحكم Bluetooth؛ أما عبر USB فيبقى كذلك. ملف التعريف الذي يستخدم digital_in_1 أو digital_in_2 يوقف منفذ الكابل.</value>
-  </data>
-  <data name="Link_Port" xml:space="preserve">
-    <value>المنفذ</value>
-  </data>
-  <data name="Link_Refresh" xml:space="preserve">
-    <value>تحديث</value>
-  </data>
-  <data name="Link_Connect" xml:space="preserve">
-    <value>اتصال</value>
-  </data>
-  <data name="Link_NoPorts" xml:space="preserve">
-    <value>لم يتم العثور على منافذ تسلسلية. اقرن QuadStick في إعدادات Bluetooth بحاسوبك، أو وصّل الكابل، ثم اضغط تحديث.</value>
-  </data>
-  <data name="Link_Connecting" xml:space="preserve">
-    <value>جارٍ الاتصال…</value>
-  </data>
-  <data name="Link_Connected" xml:space="preserve">
-    <value>تم الاتصال بجهاز QuadStick، البرنامج الثابت {0}.</value>
-  </data>
-  <data name="Link_NotAQuadStick" xml:space="preserve">
-    <value>ردّ شيء ما على ذلك المنفذ، لكنه ليس QuadStick.</value>
-  </data>
-  <data name="Link_CouldNotOpen" xml:space="preserve">
-    <value>تعذّر فتح {0}: {1}</value>
-  </data>
-  <data name="Link_SendProfile" xml:space="preserve">
-    <value>إرسال ملف تعريف…</value>
-  </data>
-  <data name="Link_Sending" xml:space="preserve">
-    <value>جارٍ إرسال {0}…</value>
-  </data>
-  <data name="Link_Sent" xml:space="preserve">
-    <value>{0} موجود على QuadStick ومحمَّل. ما كان عليه قبل ذلك محفوظ في {1}.</value>
-  </data>
-  <data name="Link_SentNew" xml:space="preserve">
-    <value>{0} موجود على QuadStick ومحمَّل.</value>
-  </data>
-  <data name="Link_OverwritePrefs" xml:space="preserve">
-    <value>استبدال prefs.csv؟</value>
-  </data>
-  <data name="Link_OverwritePrefsMore" xml:space="preserve">
-    <value>يحتوي prefs.csv على إعدادات QuadStick نفسه، لذا فهو يغيّر كل ملفات التعريف دفعة واحدة. تُحفظ النسخة الحالية أولًا.</value>
-  </data>
-  <data name="Link_Measure" xml:space="preserve">
-    <value>قياس قوة الشفط والنفخ</value>
-  </data>
-  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
-    <value>قياس القوة؟</value>
-  </data>
-  <data name="Link_MeasureConfirm" xml:space="preserve">
-    <value>يحمّل هذا ملف تعريف اختبار فيه شفط قوي ونفخ قوي فقط، ويطلب منك سبع نفخات وسبع شفطات، ثم يعيد تشغيل QuadStick، فيعود ملف التعريف الخاص بك وإعداداتك. إذا حدث أي خطأ، افصل QuadStick ثم أعد توصيله. وهذا أيضًا يعيد كل شيء.</value>
-  </data>
-  <data name="Link_NeedsUsb" xml:space="preserve">
-    <value>وصّل QuadStick عبر USB أيضًا. يراقب الاختبار أزراره عبر USB، وفي وضع Xbox 360 (وضع المحاكاة 3) لا يستطيع رؤيتها.</value>
-  </data>
-  <data name="Link_HandsOff" xml:space="preserve">
-    <value>ارفع يديك عن قطعة الفم بينما تُصفَّر المستشعرات.</value>
-  </data>
-  <data name="Link_PuffNow" xml:space="preserve">
-    <value>انفخ بأقوى ما تستطيع. المحاولة {0} من 7.</value>
-  </data>
-  <data name="Link_SipNow" xml:space="preserve">
-    <value>اشفط بأقوى ما تستطيع. المحاولة {0} من 7.</value>
-  </data>
-  <data name="Link_Result" xml:space="preserve">
-    <value>أقوى نفخة: {0} من نطاق المستشعر. أقوى شفطة: {1}. عتبتك القوية هي {2}.</value>
-  </data>
-  <data name="Link_UnderLowest" xml:space="preserve">
-    <value>أقل من {0}%</value>
-  </data>
-  <data name="Link_PercentValue" xml:space="preserve">
-    <value>{0}%</value>
-  </data>
-  <data name="Link_Cancelled" xml:space="preserve">
-    <value>تم الإيقاف. أُعيد تشغيل QuadStick، لذا عاد ملف التعريف الخاص بك وإعداداتك.</value>
-  </data>
-  <data name="Link_NotPutBack" xml:space="preserve">
-    <value>تعذّر الوصول إلى QuadStick لإعادة تشغيله، لذا قد يظل ملف تعريف الاختبار عليه. افصله ثم أعد توصيله: هذا يعيد ملف التعريف الخاص بك وإعداداتك.</value>
-  </data>
-  <data name="Link_Stop" xml:space="preserve">
-    <value>إيقاف</value>
-  </data>
-  <data name="Link_Close" xml:space="preserve">
-    <value>إغلاق</value>
-  </data>
-  <data name="Link_PageButton" xml:space="preserve">
-    <value>Bluetooth أو كابل</value>
-  </data>
-  <data name="Link_PageButtonName" xml:space="preserve">
-    <value>الاتصال بجهاز QuadStick عبر Bluetooth أو كابل تسلسلي</value>
-  </data>
-  <data name="Follow_GetLatest" xml:space="preserve">
-    <value>جلب أحدث نسخة من الرابط</value>
-  </data>
-  <data name="Follow_GetLatestHelp" xml:space="preserve">
-    <value>تنزيل هذا الملف الشخصي مرة أخرى من جدول Google الذي استُورد منه، ومعرفة ما تغيّر قبل استبدال أي شيء</value>
-  </data>
-  <data name="Follow_StopFollowing" xml:space="preserve">
-    <value>نسيان الرابط</value>
-  </data>
-  <data name="Follow_StopFollowingHelp" xml:space="preserve">
-    <value>التوقف عن متابعة جدول Google الذي استُورد منه هذا الملف الشخصي</value>
-  </data>
-  <data name="Follow_CardNote" xml:space="preserve">
-    <value>يتابع رابط جدول Google</value>
-  </data>
-  <data name="Follow_NotFollowed" xml:space="preserve">
-    <value>لم يُستورد هذا الملف الشخصي من رابط Google Sheets، لذا لا يوجد ما يُجلب.</value>
-  </data>
-  <data name="Follow_SaveFirstTitle" xml:space="preserve">
-    <value>هل تريد حفظ تغييراتك أولاً؟</value>
-  </data>
-  <data name="Follow_SaveFirstBody" xml:space="preserve">
-    <value>يحتوي هذا الملف الشخصي على تغييرات غير محفوظة. ستُحفظ أولاً ثم تُقارن بالجدول. لن يُستبدل شيء دون موافقتك.</value>
-  </data>
-  <data name="Follow_UpToDate" xml:space="preserve">
-    <value>محدّث بالفعل. الجدول مطابق لنسختك.</value>
-  </data>
-  <data name="Follow_CouldNotGet" xml:space="preserve">
-    <value>تعذّر جلب أحدث نسخة: {0} لم تتغير نسختك.</value>
-  </data>
-  <data name="Follow_ReviewTitle" xml:space="preserve">
-    <value>هل تريد استبدال نسختك بأحدث نسخة؟</value>
-  </data>
-  <data name="Follow_ReviewBody" xml:space="preserve">
-    <value>جدول Google مختلف عن نسختك. إذا استبدلتها، ستنتقل نسختك أولاً إلى مجلد الإنقاذ.</value>
-  </data>
-  <data name="Follow_ModeAdded" xml:space="preserve">
-    <value>جديد في الجدول: {0}</value>
-  </data>
-  <data name="Follow_ModeRemoved" xml:space="preserve">
-    <value>لم يعد في الجدول: {0}</value>
-  </data>
-  <data name="Follow_ModeChanged" xml:space="preserve">
-    <value>{0}: أُضيف {1}، وأُزيل {2}</value>
-  </data>
-  <data name="Follow_OtherChanged" xml:space="preserve">
-    <value>هناك خلايا أخرى مختلفة، مثل التفضيلات أو الأسماء أو الملاحظات.</value>
-  </data>
-  <data name="Follow_LocalUnreadable" xml:space="preserve">
-    <value>تعذّرت قراءة نسختك على هذا الكمبيوتر، لذا لا يمكن مقارنتها.</value>
-  </data>
-  <data name="Follow_Replace" xml:space="preserve">
-    <value>استبدال نسختي</value>
-  </data>
-  <data name="Follow_Keep" xml:space="preserve">
-    <value>الاحتفاظ بنسختي</value>
-  </data>
-  <data name="Follow_Kept" xml:space="preserve">
-    <value>تم الاحتفاظ بنسختك. لم يتغير شيء.</value>
-  </data>
-  <data name="Follow_Replaced" xml:space="preserve">
-    <value>تم الاستبدال بأحدث نسخة من الرابط. نسختك القديمة في مجلد الإنقاذ.</value>
-  </data>
-  <data name="Follow_Forgotten" xml:space="preserve">
-    <value>لم يعد هذا الملف الشخصي يتابع رابطه.</value>
-  </data>
-  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
-    <value>تغيّر هذا الملف الشخصي أثناء تنزيل الجدول، لذا لم يُستبدل شيء. احفظه، ثم اجلب أحدث نسخة مرة أخرى.</value>
   </data>
 </root>

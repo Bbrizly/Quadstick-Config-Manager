@@ -400,6 +400,46 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>正在查找你的 QuadStick...</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>在 Mac 上玩游戏</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Mac 暂时无法运行 Xbox 手柄桥接，因为创建虚拟手柄需要 Apple 的许可。模式 7 不需要：QuadStick 会把自己报告为无线 DualShock 4，macOS 和 Steam 都支持通过 USB 使用它。
+
+模式 7 只有手柄。没有键盘、鼠标和驱动器，所以开启期间本应用看不到摇杆。请把它放在游戏配置文件的 Preferences 表中，而不是设备设置里：这样切换到其他配置文件时，驱动器、键盘和鼠标就会回来。在同一个配置文件内切换模式则不会。</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>在 Mac 上，在游戏配置文件的 Preferences 表中把 USB 仿真模式设为 7，游戏就会看到一个 PlayStation 4 手柄。</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>模式 0 下的游戏手柄</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>已复制。请粘贴到“终端”中并按回车键。</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>复制命令</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>复制撤销命令</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>这台 Mac 没有接受更改，因此没有任何改动。</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL 是许多游戏使用的控制器库。它只把知道按键布局的设备当作游戏手柄，而没有哪个版本的 SDL 知道 QuadStick 的布局。此设置会告诉它，对今后打开的每个应用生效，并在每次登录时再次生效，所以正在运行的游戏需要退出后重新打开。它不需要 Apple 的许可，也不会改动摇杆上的任何内容。
+
+不使用 SDL 的游戏看不到这个手柄。这类游戏请使用模式 7。关闭此开关即可撤销更改。</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>让基于 SDL 的游戏 (许多 Mac 游戏都是) 把仿真模式 0 下的 QuadStick 识别为游戏手柄，键盘、鼠标和驱动器照常可用。</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>已开启。今后打开的游戏会看到一个游戏手柄。</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>App Store 版本无法自行完成此更改。请复制命令，粘贴到“终端”中并按回车键，然后退出并重新打开游戏。</value>
+  </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
     <value>设备从这个文件启动，所以隐藏驱动器的模式不会被写入你的 QuadStick。请改在游戏配置文件里设置。</value>
   </data>
@@ -745,6 +785,75 @@
   <data name="Drive_RestoreSkipped" xml:space="preserve">
     <value>{0} 已跳过: </value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>关注一个 Google 表格链接</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>下载表格期间此配置文件发生了变化，因此没有替换任何内容。请先保存，然后再次获取最新版本。</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>无法获取最新版本：{0} 您的副本未被更改。</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>此配置文件不再关注其链接。</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>从链接获取最新版本</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>从导入此配置文件的 Google 表格重新下载，在替换任何内容之前先查看有哪些变化</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>保留我的</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>已保留您的副本。没有任何更改。</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>无法读取此电脑上的副本，因此无法比较。</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>表格中新增：{0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}：新增 {1}，移除 {2}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>表格中已没有：{0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>此配置文件不是从 Google 表格链接导入的，所以没有可获取的内容。</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>其他单元格不同，例如偏好设置、名称或备注。</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>替换我的副本</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>已替换为链接中的最新版本。您的旧副本在救援文件夹中。</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Google 表格与您的副本不同。如果替换，您的副本会先放入救援文件夹。</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>用最新版本替换您的副本？</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>此配置文件有未保存的更改。会先保存，再与表格比较。未经您同意不会替换任何内容。</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>先保存您的更改？</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>忘记链接</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>不再关注导入此配置文件的 Google 表格</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>已是最新。表格与您的副本一致。</value>
+  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>错误的 default.csv 可能导致闪存驱动器访问失效，恢复需要进行物理强制擦除。系统将先创建备份。是否继续？</value>
   </data>
@@ -810,6 +919,105 @@
   </data>
   <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
     <value>该文件夹看起来不是 QuadStick（其根目录下没有 default.csv）。</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>已停止。QuadStick 已重启，你自己的配置文件和设置已恢复。</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>连接</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>已连接到 QuadStick，固件 {0}。</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>正在连接…</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>无法打开 {0}：{1}</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>通过 QuadStick 自带的控制台连接：蓝牙配对，或使用串口线缆。</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>这适用于在电脑蓝牙设置中配对的 QuadStick（其蓝牙处于 SPP 模式），或插在数字输入 1 和 2 插孔中的 3.3V USB 串口线缆。蓝牙处于 SPP 模式时，QuadStick 不是蓝牙游戏手柄；通过 USB 时它仍然是。使用 digital_in_1 或 digital_in_2 的配置文件会关闭线缆端口。</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>传感器归零期间，请不要碰吹嘴。</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>测量吸气和吹气力度</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>这会加载一个只有用力吸气和用力吹气的测试配置文件，要求你吹气七次、吸气七次，然后重启 QuadStick，你自己的配置文件和设置会恢复。如果出了问题，拔下 QuadStick 再插回去，这也会让一切恢复。</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>测量力度？</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>请同时用 USB 连接 QuadStick。测试通过 USB 观察它的按键，在 Xbox 360 模式（仿真模式 3）下无法看到按键。</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>未找到串口。请在电脑的蓝牙设置中配对 QuadStick，或插好线缆，然后点击刷新。</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>该端口有设备响应，但它不是 QuadStick。</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>无法连接 QuadStick 来重启它，测试配置文件可能仍在上面。请拔下后重新插上：这样你自己的配置文件和设置就会恢复。</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>替换 prefs.csv？</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv 保存 QuadStick 自身的设置，所以它会同时改变所有配置文件。当前的副本会先保存。</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>蓝牙或线缆</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>通过蓝牙或串口线缆连接 QuadStick</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>端口</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>请尽全力吹气。第 {0} 次，共 7 次。</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>最强吹气：传感器范围的 {0}。最强吸气：{1}。你的用力阈值是 {2}。</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>发送配置文件…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>正在发送 {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} 已在 QuadStick 上并已加载。之前的内容已保存在 {1}。</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} 已在 QuadStick 上并已加载。</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>请尽全力吸气。第 {0} 次，共 7 次。</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>通过蓝牙或线缆连接 QuadStick</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>低于 {0}%</value>
   </data>
   <data name="Main_AButton" xml:space="preserve">
     <value>A button</value>
@@ -3403,6 +3611,9 @@
   <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
     <value>逐个浏览各个部件</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick 已插入却没有列出？Mac App Store 版本需要你先选择一次它的驱动器才能打开。之后它会自动找到。</value>
+  </data>
   <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
     <value>在设备视图中，将所用词语在通俗说法与列表视图的原始名称之间切换</value>
   </data>
@@ -3448,6 +3659,9 @@
   <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
     <value>每个配置文件都从一个模板开始。</value>
   </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>安装</value>
+  </data>
   <data name="Tour_NewProfile" xml:space="preserve">
     <value>新建配置文件</value>
   </data>
@@ -3487,11 +3701,17 @@
   <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
     <value>这会向您展示如何制作并安装配置文件。您可以随时跳过。</value>
   </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>欢迎</value>
+  </data>
   <data name="Tour_WhenItSReadySend" xml:space="preserve">
     <value>准备好后，将其发送到您的 QuadStick。</value>
   </data>
   <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
     <value>您可以随时从“设置 ▸ 帮助”重新播放此内容。</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>你的 QuadStick</value>
   </data>
   <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
     <value>无法检查更新（GitHub 返回了 {0}）。您当前使用的是 {1}。</value>
@@ -3516,216 +3736,5 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>您当前使用的是 {0}，这是最新版本。</value>
-  </data>
-  <data name="DevicePage_MacGames" xml:space="preserve">
-    <value>在 Mac 上玩游戏</value>
-  </data>
-  <data name="DevicePage_MacGamesLine" xml:space="preserve">
-    <value>在 Mac 上，在游戏配置文件的 Preferences 表中把 USB 仿真模式设为 7，游戏就会看到一个 PlayStation 4 手柄。</value>
-  </data>
-  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
-    <value>Mac 暂时无法运行 Xbox 手柄桥接，因为创建虚拟手柄需要 Apple 的许可。模式 7 不需要：QuadStick 会把自己报告为无线 DualShock 4，macOS 和 Steam 都支持通过 USB 使用它。
-
-模式 7 只有手柄。没有键盘、鼠标和驱动器，所以开启期间本应用看不到摇杆。请把它放在游戏配置文件的 Preferences 表中，而不是设备设置里：这样切换到其他配置文件时，驱动器、键盘和鼠标就会回来。在同一个配置文件内切换模式则不会。</value>
-  </data>
-  <data name="DevicePage_MacPad" xml:space="preserve">
-    <value>模式 0 下的游戏手柄</value>
-  </data>
-  <data name="DevicePage_MacPadLine" xml:space="preserve">
-    <value>让基于 SDL 的游戏 (许多 Mac 游戏都是) 把仿真模式 0 下的 QuadStick 识别为游戏手柄，键盘、鼠标和驱动器照常可用。</value>
-  </data>
-  <data name="DevicePage_MacPadHelp" xml:space="preserve">
-    <value>SDL 是许多游戏使用的控制器库。它只把知道按键布局的设备当作游戏手柄，而没有哪个版本的 SDL 知道 QuadStick 的布局。此设置会告诉它，对今后打开的每个应用生效，并在每次登录时再次生效，所以正在运行的游戏需要退出后重新打开。它不需要 Apple 的许可，也不会改动摇杆上的任何内容。
-
-不使用 SDL 的游戏看不到这个手柄。这类游戏请使用模式 7。关闭此开关即可撤销更改。</value>
-  </data>
-  <data name="DevicePage_MacPadOn" xml:space="preserve">
-    <value>已开启。今后打开的游戏会看到一个游戏手柄。</value>
-  </data>
-  <data name="DevicePage_MacPadFailed" xml:space="preserve">
-    <value>这台 Mac 没有接受更改，因此没有任何改动。</value>
-  </data>
-  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
-    <value>App Store 版本无法自行完成此更改。请复制命令，粘贴到“终端”中并按回车键，然后退出并重新打开游戏。</value>
-  </data>
-  <data name="DevicePage_MacPadCopy" xml:space="preserve">
-    <value>复制命令</value>
-  </data>
-  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
-    <value>复制撤销命令</value>
-  </data>
-  <data name="DevicePage_MacPadCopied" xml:space="preserve">
-    <value>已复制。请粘贴到“终端”中并按回车键。</value>
-  </data>
-  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
-    <value>QuadStick 已插入却没有列出？Mac App Store 版本需要你先选择一次它的驱动器才能打开。之后它会自动找到。</value>
-  </data>
-  <data name="Link_Title" xml:space="preserve">
-    <value>通过蓝牙或线缆连接 QuadStick</value>
-  </data>
-  <data name="Link_Explain" xml:space="preserve">
-    <value>通过 QuadStick 自带的控制台连接：蓝牙配对，或使用串口线缆。</value>
-  </data>
-  <data name="Link_ExplainMore" xml:space="preserve">
-    <value>这适用于在电脑蓝牙设置中配对的 QuadStick（其蓝牙处于 SPP 模式），或插在数字输入 1 和 2 插孔中的 3.3V USB 串口线缆。蓝牙处于 SPP 模式时，QuadStick 不是蓝牙游戏手柄；通过 USB 时它仍然是。使用 digital_in_1 或 digital_in_2 的配置文件会关闭线缆端口。</value>
-  </data>
-  <data name="Link_Port" xml:space="preserve">
-    <value>端口</value>
-  </data>
-  <data name="Link_Refresh" xml:space="preserve">
-    <value>刷新</value>
-  </data>
-  <data name="Link_Connect" xml:space="preserve">
-    <value>连接</value>
-  </data>
-  <data name="Link_NoPorts" xml:space="preserve">
-    <value>未找到串口。请在电脑的蓝牙设置中配对 QuadStick，或插好线缆，然后点击刷新。</value>
-  </data>
-  <data name="Link_Connecting" xml:space="preserve">
-    <value>正在连接…</value>
-  </data>
-  <data name="Link_Connected" xml:space="preserve">
-    <value>已连接到 QuadStick，固件 {0}。</value>
-  </data>
-  <data name="Link_NotAQuadStick" xml:space="preserve">
-    <value>该端口有设备响应，但它不是 QuadStick。</value>
-  </data>
-  <data name="Link_CouldNotOpen" xml:space="preserve">
-    <value>无法打开 {0}：{1}</value>
-  </data>
-  <data name="Link_SendProfile" xml:space="preserve">
-    <value>发送配置文件…</value>
-  </data>
-  <data name="Link_Sending" xml:space="preserve">
-    <value>正在发送 {0}…</value>
-  </data>
-  <data name="Link_Sent" xml:space="preserve">
-    <value>{0} 已在 QuadStick 上并已加载。之前的内容已保存在 {1}。</value>
-  </data>
-  <data name="Link_SentNew" xml:space="preserve">
-    <value>{0} 已在 QuadStick 上并已加载。</value>
-  </data>
-  <data name="Link_OverwritePrefs" xml:space="preserve">
-    <value>替换 prefs.csv？</value>
-  </data>
-  <data name="Link_OverwritePrefsMore" xml:space="preserve">
-    <value>prefs.csv 保存 QuadStick 自身的设置，所以它会同时改变所有配置文件。当前的副本会先保存。</value>
-  </data>
-  <data name="Link_Measure" xml:space="preserve">
-    <value>测量吸气和吹气力度</value>
-  </data>
-  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
-    <value>测量力度？</value>
-  </data>
-  <data name="Link_MeasureConfirm" xml:space="preserve">
-    <value>这会加载一个只有用力吸气和用力吹气的测试配置文件，要求你吹气七次、吸气七次，然后重启 QuadStick，你自己的配置文件和设置会恢复。如果出了问题，拔下 QuadStick 再插回去，这也会让一切恢复。</value>
-  </data>
-  <data name="Link_NeedsUsb" xml:space="preserve">
-    <value>请同时用 USB 连接 QuadStick。测试通过 USB 观察它的按键，在 Xbox 360 模式（仿真模式 3）下无法看到按键。</value>
-  </data>
-  <data name="Link_HandsOff" xml:space="preserve">
-    <value>传感器归零期间，请不要碰吹嘴。</value>
-  </data>
-  <data name="Link_PuffNow" xml:space="preserve">
-    <value>请尽全力吹气。第 {0} 次，共 7 次。</value>
-  </data>
-  <data name="Link_SipNow" xml:space="preserve">
-    <value>请尽全力吸气。第 {0} 次，共 7 次。</value>
-  </data>
-  <data name="Link_Result" xml:space="preserve">
-    <value>最强吹气：传感器范围的 {0}。最强吸气：{1}。你的用力阈值是 {2}。</value>
-  </data>
-  <data name="Link_UnderLowest" xml:space="preserve">
-    <value>低于 {0}%</value>
-  </data>
-  <data name="Link_PercentValue" xml:space="preserve">
-    <value>{0}%</value>
-  </data>
-  <data name="Link_Cancelled" xml:space="preserve">
-    <value>已停止。QuadStick 已重启，你自己的配置文件和设置已恢复。</value>
-  </data>
-  <data name="Link_NotPutBack" xml:space="preserve">
-    <value>无法连接 QuadStick 来重启它，测试配置文件可能仍在上面。请拔下后重新插上：这样你自己的配置文件和设置就会恢复。</value>
-  </data>
-  <data name="Link_Stop" xml:space="preserve">
-    <value>停止</value>
-  </data>
-  <data name="Link_Close" xml:space="preserve">
-    <value>关闭</value>
-  </data>
-  <data name="Link_PageButton" xml:space="preserve">
-    <value>蓝牙或线缆</value>
-  </data>
-  <data name="Link_PageButtonName" xml:space="preserve">
-    <value>通过蓝牙或串口线缆连接 QuadStick</value>
-  </data>
-  <data name="Follow_GetLatest" xml:space="preserve">
-    <value>从链接获取最新版本</value>
-  </data>
-  <data name="Follow_GetLatestHelp" xml:space="preserve">
-    <value>从导入此配置文件的 Google 表格重新下载，在替换任何内容之前先查看有哪些变化</value>
-  </data>
-  <data name="Follow_StopFollowing" xml:space="preserve">
-    <value>忘记链接</value>
-  </data>
-  <data name="Follow_StopFollowingHelp" xml:space="preserve">
-    <value>不再关注导入此配置文件的 Google 表格</value>
-  </data>
-  <data name="Follow_CardNote" xml:space="preserve">
-    <value>关注一个 Google 表格链接</value>
-  </data>
-  <data name="Follow_NotFollowed" xml:space="preserve">
-    <value>此配置文件不是从 Google 表格链接导入的，所以没有可获取的内容。</value>
-  </data>
-  <data name="Follow_SaveFirstTitle" xml:space="preserve">
-    <value>先保存您的更改？</value>
-  </data>
-  <data name="Follow_SaveFirstBody" xml:space="preserve">
-    <value>此配置文件有未保存的更改。会先保存，再与表格比较。未经您同意不会替换任何内容。</value>
-  </data>
-  <data name="Follow_UpToDate" xml:space="preserve">
-    <value>已是最新。表格与您的副本一致。</value>
-  </data>
-  <data name="Follow_CouldNotGet" xml:space="preserve">
-    <value>无法获取最新版本：{0} 您的副本未被更改。</value>
-  </data>
-  <data name="Follow_ReviewTitle" xml:space="preserve">
-    <value>用最新版本替换您的副本？</value>
-  </data>
-  <data name="Follow_ReviewBody" xml:space="preserve">
-    <value>Google 表格与您的副本不同。如果替换，您的副本会先放入救援文件夹。</value>
-  </data>
-  <data name="Follow_ModeAdded" xml:space="preserve">
-    <value>表格中新增：{0}</value>
-  </data>
-  <data name="Follow_ModeRemoved" xml:space="preserve">
-    <value>表格中已没有：{0}</value>
-  </data>
-  <data name="Follow_ModeChanged" xml:space="preserve">
-    <value>{0}：新增 {1}，移除 {2}</value>
-  </data>
-  <data name="Follow_OtherChanged" xml:space="preserve">
-    <value>其他单元格不同，例如偏好设置、名称或备注。</value>
-  </data>
-  <data name="Follow_LocalUnreadable" xml:space="preserve">
-    <value>无法读取此电脑上的副本，因此无法比较。</value>
-  </data>
-  <data name="Follow_Replace" xml:space="preserve">
-    <value>替换我的副本</value>
-  </data>
-  <data name="Follow_Keep" xml:space="preserve">
-    <value>保留我的</value>
-  </data>
-  <data name="Follow_Kept" xml:space="preserve">
-    <value>已保留您的副本。没有任何更改。</value>
-  </data>
-  <data name="Follow_Replaced" xml:space="preserve">
-    <value>已替换为链接中的最新版本。您的旧副本在救援文件夹中。</value>
-  </data>
-  <data name="Follow_Forgotten" xml:space="preserve">
-    <value>此配置文件不再关注其链接。</value>
-  </data>
-  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
-    <value>下载表格期间此配置文件发生了变化，因此没有替换任何内容。请先保存，然后再次获取最新版本。</value>
   </data>
 </root>
