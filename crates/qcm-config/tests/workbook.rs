@@ -237,19 +237,25 @@ fn export_never_writes_a_character_xml_cannot_carry() {
 // refused as an error, never a panic and never an empty profile.
 #[test]
 fn a_file_that_is_not_a_whole_workbook_is_refused() {
-    let whole = workbook(&[("Racing", "sheet1.xml")], &[("sheet1.xml", &mode_tab("Racing"))]);
+    let whole = workbook(
+        &[("Racing", "sheet1.xml")],
+        &[("sheet1.xml", &mode_tab("Racing"))],
+    );
     assert!(import_xlsx(&whole).is_ok());
     let mut bad: Vec<Vec<u8>> = vec![
         Vec::new(),
         b"<!doctype html><html><body>Sign in</body></html>".to_vec(),
         b"Profile Name,,Racing\nRacing.csv\n".to_vec(),
-        (0..4096u32).map(|i| (i.wrapping_mul(2_654_435_761) >> 24) as u8).collect(),
+        (0..4096u32)
+            .map(|i| (i.wrapping_mul(2_654_435_761) >> 24) as u8)
+            .collect(),
     ];
     for cut in [4, 30, whole.len() / 2, whole.len() - 22] {
         bad.push(whole[..cut].to_vec());
     }
     let mut zip = ZipWriter::new(Cursor::new(Vec::new()));
-    zip.start_file("notes.txt", SimpleFileOptions::default()).unwrap();
+    zip.start_file("notes.txt", SimpleFileOptions::default())
+        .unwrap();
     write!(zip, "not a workbook").unwrap();
     bad.push(zip.finish().unwrap().into_inner());
     for (index, bytes) in bad.iter().enumerate() {

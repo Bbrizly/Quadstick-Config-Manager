@@ -52,10 +52,5 @@ describe("editor at the device limit", () => {
       expect((await client.getProfileSnapshot(opened.sessionId)).dirty).toBe(true);
     });
     expect(editMs).toBeLessThan(EDIT_BOUND_MS);
-    if (process.env["QCM_TIMINGS"] === "1") {
-      process.stdout.write(
-        `editor 16x128: render ${renderMs.toFixed(0)} ms, rows ${rowsMs.toFixed(0)} ms, edit ${editMs.toFixed(0)} ms\n`,
-      );
-    }
   });
 });
