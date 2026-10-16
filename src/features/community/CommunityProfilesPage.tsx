@@ -37,6 +37,8 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
   const [importing, setImporting] = useState(false);
   const [opening, setOpening] = useState(false);
   const [status, setStatus] = useState("");
+  // Nothing downloaded and nothing saved (`CommunityCatalogException`).
+  const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
     if (load === undefined) return;
@@ -49,8 +51,10 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
         setSelectedId(next.profiles[0]?.sheetId ?? "");
         setStatus("");
       })
-      .catch((reason: unknown) => {
-        if (!disposed) setStatus(localizedErrorMessage(asQcmError(reason).payload, t));
+      .catch(() => {
+        if (disposed) return;
+        setUnavailable(true);
+        setStatus(t("Community_CheckYourInternetConnectionAnd"));
       })
       .finally(() => {
         if (!disposed) setLoading(false);
@@ -73,10 +77,13 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
     try {
       const next = await load.call(client, true);
       setCatalog(next);
+      setUnavailable(false);
       setSelectedId(next.profiles[0]?.sheetId ?? "");
       setStatus(next.fromCache ? t("Community_CouldNotReachQuadstickCom") : "");
-    } catch (reason) {
-      setStatus(localizedErrorMessage(asQcmError(reason).payload, t));
+    } catch {
+      setCatalog(null);
+      setUnavailable(true);
+      setStatus(t("Community_CheckYourInternetConnectionAnd"));
     } finally {
       setLoading(false);
     }
@@ -117,7 +124,9 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
   };
 
   const summary = (() => {
-    if (catalog === null) return t("Community_LoadingTheCommunityList");
+    if (catalog === null) {
+      return unavailable ? t("Community_TheCommunityListCouldNot") : t("Community_LoadingTheCommunityList");
+    }
     const count = catalog.profiles.length;
     if (count === 0) {
       return catalog.fromCache
