@@ -15,6 +15,12 @@ export interface DialogProps {
 export function Dialog({ open, title, onClose, children, actions, wide = false }: DialogProps) {
   const panelRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  // Callers pass a fresh onClose each render; the effect must not rerun for
+  // it, or focus jumps back to the first button mid-task.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!open) {
@@ -35,7 +41,7 @@ export function Dialog({ open, title, onClose, children, actions, wide = false }
       if (panel.querySelector(".dialog-panel") !== null) return;
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
       trapTabKey(event, panel);
@@ -46,7 +52,7 @@ export function Dialog({ open, title, onClose, children, actions, wide = false }
       document.removeEventListener("keydown", onKeyDown, true);
       restoreFocus(previous);
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) {
     return null;
