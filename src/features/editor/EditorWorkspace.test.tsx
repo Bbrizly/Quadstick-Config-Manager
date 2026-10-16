@@ -20,6 +20,15 @@ function renderEditor(client: MockQcmClient, snapshot: EditorSnapshot) {
   );
 }
 
+// The mock changes its state before its promise resolves, so the client can
+// look done while the editor is still busy with the reply. A click in that gap
+// is dropped (the editor ignores input while busy), which on a loaded machine
+// failed the undo test about one run in ten. Wait for the editor to be idle.
+const idle = () =>
+  waitFor(() => {
+    expect(screen.getByRole("button", { name: "Save this profile. Shortcut Control S" })).toBeEnabled();
+  });
+
 describe("TASK-038 editor workspace", () => {
   it("edits through EditorOp, undoes with the keyboard, then saves canonical state", async () => {
     const client = new MockQcmClient();
@@ -48,6 +57,7 @@ describe("TASK-038 editor workspace", () => {
       const current = await client.getProfileSnapshot(opened.sessionId);
       expect(current.grid[3]?.[0]).toBe("cross");
     });
+    await idle();
 
     fireEvent.click(screen.getByRole("button", { name: "Warning: Output for row 4: cross" }));
     const outputAgain = screen.getByLabelText("Warning: Output for row 4");
@@ -57,6 +67,7 @@ describe("TASK-038 editor workspace", () => {
       const current = await client.getProfileSnapshot(opened.sessionId);
       expect(current.dirty).toBe(true);
     });
+    await idle();
 
     fireEvent.click(screen.getByRole("button", { name: "Save this profile. Shortcut Control S" }));
     await waitFor(async () => {
