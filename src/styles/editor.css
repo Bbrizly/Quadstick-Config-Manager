@@ -15,7 +15,9 @@
   justify-content: space-between;
   gap: var(--qcm-space-lg);
   flex-wrap: wrap;
-  padding: 10px 16px;
+  /* Border.editorchrome is 10 all round, and every command under it keeps
+     6 below (WrapPanel.toolbar) inside a DockPanel with 4 more. */
+  padding: 10px 16px 20px;
   background: var(--qcm-surface);
   border-bottom: var(--qcm-hairline) solid var(--qcm-border);
 }
@@ -140,8 +142,10 @@
   flex-direction: column;
 }
 
+/* The heading's DockPanel keeps 8 below it; the list adds none. */
 .modes-panel-body .mode-list {
   flex: 1 1 auto;
+  margin-top: 0;
 }
 
 .sidebar-view {
@@ -162,8 +166,17 @@
 .device-canvas,
 .mapping-panel {
   min-width: 0;
-  padding: var(--qcm-space-md);
   overflow: auto;
+}
+
+/* DeviceStageScroll Margin="12,28,12,12". */
+.device-canvas {
+  padding: 28px 12px 12px;
+}
+
+/* MappingPanel Padding="16". */
+.mapping-panel {
+  padding: 16px;
 }
 
 .mapping-panel {
@@ -184,9 +197,11 @@
   gap: 9px;
 }
 
-.editor-actions .add-row {
+/* Button.addrow: CommandButton tall, 16 either side. */
+.editor-actions .add-row,
+.editorchrome .add-row {
   min-height: var(--qcm-command-button);
-  padding: 8px 16px;
+  padding: 0 16px;
   font-weight: 600;
 }
 
@@ -401,8 +416,11 @@
   padding: 6px 12px;
 }
 
+/* One small muted TextBlock, no margin of its own. */
 .mapping-panel .empty-copy {
+  margin: 0;
   white-space: pre-line;
+  font-size: var(--qcm-small-size);
 }
 
 .panel-heading-row h2,
@@ -420,11 +438,12 @@
   gap: 4px;
 }
 
-/* Avalonia ModeList: one plain line per mode, the picked one tinted with a
-   2px accent edge. Renaming and moving live behind the pencil. */
+/* Avalonia ModeList (ToggleButton.zone): a 2px surface edge, the picked one
+   tinted with a 3px accent edge, same outer size. Renaming and moving live
+   behind the pencil. */
 .mode-row {
   display: grid;
-  border: var(--qcm-hairline) solid var(--qcm-border);
+  border: 2px solid var(--qcm-border);
   border-radius: var(--qcm-radius-field);
   background: var(--qcm-surface);
   transition: background 100ms ease, border-color 100ms ease;
@@ -439,8 +458,8 @@ button.mode-select {
   align-items: center;
   width: 100%;
   min-width: 0;
-  min-height: 30px;
-  padding: 3px 10px;
+  min-height: 27px;
+  padding: 2px 9px;
   border: 0;
   border-radius: inherit;
   background: transparent;
@@ -459,9 +478,13 @@ button.mode-select:disabled {
 }
 
 .mode-row:has(.mode-select[aria-current="true"]) {
-  margin: -1px;
   background: var(--qcm-input-tint);
-  border: 2px solid var(--qcm-accent);
+  border: 3px solid var(--qcm-accent);
+}
+
+.mode-row:has(.mode-select[aria-current="true"]) button.mode-select {
+  min-height: 27px;
+  padding: 1px 8px;
 }
 
 .mode-number::after {
@@ -789,11 +812,13 @@ button.problems-toggle.status-error {
   right: 8px;
   color: var(--qcm-text-secondary);
   font-size: var(--qcm-subhead-size);
+  /* InnerRightContent inherits the box's Bold. */
+  font-weight: 700;
   pointer-events: none;
 }
 
 .unused-button {
-  min-height: 46px;
+  min-height: var(--qcm-control-height);
   padding: 6px 16px;
 }
 
@@ -1055,7 +1080,7 @@ button.mode-help h2 {
 
 button.sidebar-toggle {
   min-width: 0;
-  min-height: 52px;
+  min-height: var(--qcm-control-height);
   padding: 4px 6px;
   font-size: var(--qcm-sidebar-toggle-text);
   font-weight: 700;
@@ -1089,14 +1114,19 @@ button.sidebar-toggle.format.active {
 }
 
 /* `BindingColumns`: number, output 2.6*, function 1.45*, inputs 2.95*, the
-   add/delete pair, note 1.4*, up, down. */
+   add/delete pair, note 1.4*, up, down. As in `At`, the 8px gap is a margin
+   inside every column after the first, so the star columns share the width
+   with their gaps in them, and the fixed ones are content + 8. */
 .rows-grid-line {
   display: grid;
-  grid-template-columns: 38px minmax(0, 2.6fr) minmax(0, 1.45fr) minmax(0, 2.95fr) 96px minmax(0, 1.4fr) 48px 48px;
+  grid-template-columns: 38px minmax(0, 2.6fr) minmax(0, 1.45fr) minmax(0, 2.95fr) 94px minmax(0, 1.4fr) 48px 48px;
   align-items: center;
-  column-gap: 8px;
-  padding: 4px 0;
+  padding: 0 0 2px;
   border-bottom: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.rows-grid-line > :not(:first-child) {
+  margin-inline-start: 8px;
 }
 
 .rows-grid-head {
@@ -1105,9 +1135,13 @@ button.sidebar-toggle.format.active {
   padding-top: 0;
 }
 
+/* `Swatch`: a block, text at the top, 6 by 4 padding. The visualizer's
+   inline-flex swatch (centred, 8 by 2) must not reach these. */
 .rows-grid-head .tint-swatch {
+  display: block;
+  padding: 4px 6px;
+  border-radius: 5px;
   overflow-wrap: break-word;
-  line-height: 1.15;
 }
 
 .rows-grid-line:focus {
@@ -1153,7 +1187,7 @@ button.row-select[aria-pressed="true"] {
 .grid-cell {
   display: flex;
   align-items: center;
-  min-height: 52px;
+  min-height: 51px;
   border: 3px solid transparent;
   border-radius: 6px;
 }
@@ -1181,7 +1215,7 @@ button.row-select[aria-pressed="true"] {
 button.grid-cell-face {
   flex: 1;
   min-width: 0;
-  min-height: 46px;
+  min-height: 45px;
   padding: 4px 12px;
   border: 0;
   border-radius: 4px;

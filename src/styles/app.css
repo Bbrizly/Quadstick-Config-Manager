@@ -16,12 +16,19 @@ body,
   margin: 0;
 }
 
+:root[data-os="mac"] {
+  --qcm-line-height: 1;
+}
+
 body {
   background: var(--qcm-bg);
   color: var(--qcm-text);
   font-family: var(--qcm-font);
   font-size: var(--qcm-body-size);
-  line-height: 1.5;
+  /* Avalonia sets no line height: a TextBlock steps by the face's ascent
+     plus descent. That is "normal" for Segoe UI and the Linux faces; on a
+     Mac WebKit and Chrome add Helvetica's leading on top, Avalonia does not. */
+  line-height: var(--qcm-line-height, normal);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -385,21 +392,20 @@ textarea:focus-visible {
   color: var(--qcm-accent-text);
 }
 
+/* Fluent's ComboBox sits at the top of its StackPanel row, level with the
+   top of the larger Settings button, not centred against it. */
 .shell-utilities {
   justify-self: end;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--qcm-space-sm);
 }
 
+/* A plain Fluent ComboBox: the shared field edge and fill, not a surface. */
 .appearance-picker {
   min-width: 112px;
   min-height: var(--qcm-control-height);
   padding: 0 36px 0 var(--qcm-space-md);
-  border: var(--qcm-hairline) solid var(--qcm-border);
-  border-radius: var(--qcm-radius-control);
-  background-color: var(--qcm-surface);
-  color: var(--qcm-text);
 }
 
 .shell-main {
@@ -408,7 +414,7 @@ textarea:focus-visible {
   overflow: auto;
 }
 
-.shell-main:not(:has(.home-view)):not(:has(.editor-route)):not(:has(.settings-page)) {
+.shell-main:not(:has(.home-view)):not(:has(.editor-route)):not(:has(.settings-page)):not(:has(.device-preferences-page)) {
   max-width: 1180px;
   margin-inline: auto;
   padding: var(--qcm-space-xl) var(--qcm-space-2xl) var(--qcm-space-2xl);
@@ -501,8 +507,9 @@ textarea:focus-visible {
   font-weight: 700;
 }
 
+/* Avalonia's dialog panels sit 24 in on every side. */
 .dialog-body {
-  padding: 20px 24px 24px;
+  padding: 24px;
 }
 
 .dialog-actions {
@@ -652,8 +659,15 @@ textarea:focus-visible {
   font-weight: 600;
 }
 
-.controller-row .switch-row {
-  margin-top: 8px;
+/* The status line is hidden while it has nothing to say, so it takes no
+   gap; out of flow, the live region stays in the tree for screen readers. */
+.controller-row > .live-region:empty {
+  position: absolute;
+}
+
+/* MacGamesRow's 8px spacer sits between two 4px gaps. */
+.controller-row .explain-row + .switch-row {
+  margin-top: 12px;
 }
 
 .controller-store p {
@@ -677,10 +691,12 @@ textarea:focus-visible {
   align-self: center;
 }
 
-/* Fluent ToggleSwitch: a 40 by 20 track, a 12 knob, accent when on. */
+/* Fluent ToggleSwitch: a 40 by 20 track, a 12 knob, accent when on, the
+   track centred in the control's 32px row. */
 .switch-row {
   display: inline-flex;
   align-items: center;
+  min-height: 32px;
   gap: 10px;
   cursor: pointer;
 }

@@ -99,8 +99,13 @@
   gap: 4px;
 }
 
+/* The heading is centred in the row its buttons set (48), as in
+   DevicePageHeader's grid. */
 .device-page-copy h1 {
-  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  min-height: var(--qcm-control-height);
+  margin: 0;
   font-size: var(--qcm-section-size);
   font-weight: 700;
 }
@@ -132,11 +137,14 @@
   background: var(--qcm-surface);
 }
 
+/* The rail's ListBoxItem: 48 a group, the template's 2,3 margin inside
+   the item's padding, 1 between the name and the count. */
 .device-preference-categories button {
   display: grid;
   justify-items: start;
+  row-gap: 1px;
   min-height: 0;
-  padding: 4px 12px;
+  padding: 9px 12px;
   border: 0;
   border-radius: var(--qcm-radius-field);
   background: transparent;
@@ -158,9 +166,10 @@
   font-size: var(--qcm-small-size);
 }
 
+/* The band keeps its own 14 below; the list adds nothing (Margin 0,14). */
 .device-preference-main {
   display: grid;
-  gap: 16px;
+  gap: 0;
   min-width: 0;
 }
 
@@ -269,11 +278,12 @@ button.link-close {
 
 .device-preferences-page {
   box-sizing: border-box;
-  /* The window less the shell chrome (86) and the main area's own padding
-     (24 + 32), the way the editor route sizes itself: the shell grows with
-     its content, so nothing above gives a height to fill. */
-  height: calc(100vh - 86px - 56px);
-  margin: 0;
+  /* DevicePage Margin="28,22", the window wide. Tall: the window less the
+     shell chrome (86) and the 22 above and below, the way the editor route
+     sizes itself: the shell grows with its content, so nothing above gives
+     a height to fill. */
+  height: calc(100vh - 86px - 44px);
+  margin: 22px 28px;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -442,15 +452,11 @@ button.link-close {
   font-weight: 700;
 }
 
+/* In the files window the dialog's own 24 is the only inset, as in
+   DeviceFilesWindow; the page's 28,22 is for the page. */
 .device-page.in-dialog {
+  margin: 0;
   padding: 0;
-}
-
-/* Avalonia's TextBlocks stack at the font's own line height. */
-.device-page-copy,
-.device-page-copy .controller-row,
-.device-band-words {
-  line-height: 1.25;
 }
 
 .device-page-copy {

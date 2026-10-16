@@ -1,10 +1,8 @@
 /* Avalonia SettingsView: page + tab card + 560 field column */
 
-/* Avalonia's TextBlock line box (about 1.2 for Inter); the browser's 1.5
-   made every label and caption taller than the Avalonia page. */
+/* SettingsPage Margin="28,22"; the title keeps 18 below it. */
 .settings-page {
-  margin: 18px 28px 22px;
-  line-height: 1.2;
+  margin: 22px 28px;
 }
 
 .settings-page-header {
@@ -12,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--qcm-space-lg);
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .settings-title {
@@ -41,7 +39,6 @@ button.settings-tab {
   color: var(--qcm-text-secondary);
   font-size: 24px;
   font-weight: 400;
-  line-height: 1.2;
   transition: color 100ms ease, border-color 100ms ease;
 }
 
@@ -98,10 +95,12 @@ button.settings-tab[aria-selected="true"] {
   gap: 4px;
 }
 
+/* Fluent's CheckBox is 32 tall however small its box. */
 .settings-field label.checkbox-row {
   display: flex;
   align-items: center;
   gap: var(--qcm-space-sm);
+  min-height: 32px;
 }
 
 .settings-field select,
@@ -158,6 +157,12 @@ button.settings-tab[aria-selected="true"] {
 .settings-drive {
   display: grid;
   gap: 16px;
+}
+
+/* `Heading` has no margin of its own; the 4 above a tab's first heading is
+   the tab panel's. This one sits mid-panel. */
+.settings-drive .settings-heading {
+  margin-top: 0;
 }
 
 .settings-version {

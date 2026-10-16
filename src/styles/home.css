@@ -6,13 +6,11 @@
   box-sizing: border-box;
   width: fit-content;
   max-width: calc(1120px + 56px);
-  margin: 18px auto;
+  /* HomeView Margin="28,22". */
+  margin: 22px auto;
   padding: 0 28px 32px;
   display: grid;
   gap: 30px;
-  /* Avalonia's TextBlock line box for Inter: two caption lines sit 27px
-     apart there, 33 here at 1.33. */
-  line-height: 1.2;
 }
 
 .homepanel {
@@ -170,9 +168,12 @@
   opacity: 0.75;
 }
 
+/* As with the device line: the empty LibraryCards panel below is still
+   spaced by its StackPanel, 12 more. */
 .library-empty {
   display: grid;
   gap: 10px;
+  margin-bottom: 12px;
 }
 
 .library-empty-actions {
@@ -239,8 +240,10 @@
   gap: 10px;
 }
 
+/* Avalonia keeps the empty DeviceCards panel under this line, and its
+   StackPanel still spaces it: 12 more before the next section. */
 .device-empty {
-  margin: 0;
+  margin: 0 0 12px;
   font-size: var(--qcm-body-size);
   color: var(--qcm-text-secondary);
 }

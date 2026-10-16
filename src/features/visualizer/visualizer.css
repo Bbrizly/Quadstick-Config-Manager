@@ -372,7 +372,6 @@
   font-size: var(--qcm-body-size);
   font-weight: 700;
   text-align: center;
-  line-height: 1.2;
 }
 
 .accent-count {
@@ -425,7 +424,6 @@
   font-size: var(--qcm-small-size);
   font-weight: 600;
   text-align: right;
-  line-height: 1.25;
 }
 
 .gesture-gutter-cell {
@@ -466,7 +464,6 @@
   padding: 5px 0 5px 4px;
   font-size: var(--qcm-small-size);
   text-align: left;
-  line-height: 1.25;
   overflow-wrap: anywhere;
   border: 0;
   background: transparent;
