@@ -154,13 +154,16 @@ button.row-chip:active {
   transform: none;
 }
 
+/* The ring is an inset outline: borderless buttons (the shell nav, mode
+   list, grid cells) show it too, a scrolling parent cannot clip it, and
+   nothing moves when focus arrives. Bordered controls also tint the border. */
 button:focus-visible,
 select:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: none;
+  outline: 2px solid var(--qcm-focus);
+  outline-offset: -2px;
   border-color: var(--qcm-focus);
-  border-width: 2px;
   box-shadow: none;
 }
 

@@ -339,7 +339,12 @@
 .zone:focus-visible {
   background: var(--qcm-surface-subtle);
   border-color: var(--qcm-border);
-  outline: none;
+}
+
+.zone-callout:focus-visible,
+.zone:focus-visible {
+  outline: 2px solid var(--qcm-focus);
+  outline-offset: -2px;
 }
 
 .zone-callout:active,
