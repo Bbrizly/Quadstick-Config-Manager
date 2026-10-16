@@ -164,11 +164,14 @@ fn validate_file_name(document: &ProfileDocument, issues: &mut Vec<Issue>) {
 
 /// One character rule for every layer that names a device file. The device
 /// layer shares it so a name the validator refuses cannot be written anyway.
+/// Firmware 2373 maps only ASCII to and from long names, so it refuses to open
+/// a name with any other character in it.
 pub fn is_invalid_filename_char(c: char) -> bool {
     matches!(
         c,
         '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' | ' '
     ) || c.is_control()
+        || !c.is_ascii()
 }
 
 /// Windows resolves these to devices whatever extension follows, so the write
@@ -755,6 +758,20 @@ mod tests {
         ProfileDocument {
             sheets: vec![sheet],
             ..ProfileDocument::default()
+        }
+    }
+
+    /// Firmware 2373's FatFs maps only ASCII (`ff_convert`), so opening a name
+    /// with any byte above 0x7F fails with `FR_INVALID_NAME`.
+    #[test]
+    fn non_ascii_filename_is_an_error() {
+        for name in ["café.csv", "ملف.csv"] {
+            assert!(
+                validate(&profile(name))
+                    .iter()
+                    .any(|issue| issue.severity == Severity::Error && issue.cell == "A2"),
+                "{name}"
+            );
         }
     }
 
