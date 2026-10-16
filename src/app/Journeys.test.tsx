@@ -122,3 +122,133 @@ describe("language", () => {
     expect(screen.queryByRole("button", { name: "Open Settings" })).toBeNull();
   });
 });
+
+describe("community import", () => {
+  it("lists, imports through the review, and opens the copy with a true status", async () => {
+    const client = new MockQcmClient();
+    const review = {
+      importId: "imp-1",
+      name: "Forza",
+      modes: [{ number: 1, name: "Drive", kind: "mode" as const, bindingCount: 3 }],
+      skipped: [],
+      limitation: null,
+      renamed: [],
+      errorCount: 0,
+      warningCount: 0,
+    };
+    const imported: string[] = [];
+    Object.assign(client, {
+      loadCommunityCatalog: () =>
+        Promise.resolve({
+          profiles: [{ name: "Forza Horizon", sheetId: "sheet-1", csvName: "forza.csv", connection: "usb", notes: "", pointer: "" }],
+          fromCache: false,
+          skippedRows: 0,
+        }),
+      importCommunityProfile: (sheetId: string, csvName: string) => {
+        imported.push(`${sheetId}/${csvName}`);
+        return Promise.resolve(review);
+      },
+      acceptWorkbookImport: () => client.newProfile("forza.csv"),
+      cancelWorkbookImport: () => Promise.resolve(),
+    });
+    render(<App client={client} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Browse community profiles" }));
+    await screen.findByText("Forza Horizon");
+    fireEvent.click(screen.getByRole("button", { name: /^Import/u }));
+    const dialog = await screen.findByRole("dialog", { name: "Import review" });
+    expect(imported).toEqual(["sheet-1/forza.csv"]);
+    expect(within(dialog).getByText(/Your sheet came in clean/u)).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: /^Import/u }));
+    await screen.findByRole("heading", { level: 1, name: "forza.csv" });
+    await screen.findByText(/^Imported 1 mode from the spreadsheet\. This is a copy\./u);
+  });
+});
+
+describe("Sheets link", () => {
+  it("imports a pasted link, then Get the latest says it is up to date", async () => {
+    const client = new MockQcmClient();
+    const links: string[] = [];
+    Object.assign(client, {
+      importSheetsLink: (url: string) => {
+        links.push(url);
+        return Promise.resolve({
+          kind: "review",
+          review: {
+            importId: "imp-2",
+            name: "Halo",
+            modes: [{ number: 1, name: "Walk", kind: "mode", bindingCount: 2 }],
+            skipped: [],
+            limitation: null,
+            renamed: [],
+            errorCount: 0,
+            warningCount: 0,
+          },
+        });
+      },
+      acceptWorkbookImport: async () => {
+        const opened = await client.newProfile("halo.csv");
+        client.willSaveAs("halo.csv");
+        await client.saveProfileAs(opened.sessionId, opened.revision);
+        return client.getProfileSnapshot(opened.sessionId);
+      },
+      cancelWorkbookImport: () => Promise.resolve(),
+      getFollowState: () => Promise.resolve({ follows: true }),
+      checkLatestFromLink: () => Promise.resolve({ kind: "up_to_date" }),
+      replaceWithLatest: () => Promise.reject(new Error("nothing to replace")),
+    });
+    render(<App client={client} />);
+
+    const link = "https://docs.google.com/spreadsheets/d/abc/edit";
+    fireEvent.change(await screen.findByLabelText("Paste a Google Sheets profile link"), { target: { value: link } });
+    fireEvent.click(screen.getAllByRole("button", { name: "Import the profile from the pasted Google Sheets link" }).at(-1)!);
+    const dialog = await screen.findByRole("dialog", { name: "Import review" });
+    expect(links).toEqual([link]);
+    fireEvent.click(within(dialog).getByRole("button", { name: /^Import/u }));
+    await screen.findByRole("heading", { level: 1, name: "halo.csv" });
+
+    // Get the latest lives in the Share menu, as in Avalonia.
+    fireEvent.click(screen.getByRole("button", { name: "Share this profile as a Google Sheet" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Download this profile again/u }));
+    await screen.findByText("Already up to date. The sheet matches your copy.");
+  });
+});
+
+describe("Drive backup and restore", () => {
+  it("backs this profile up from the Share menu, then restores it from Home", async () => {
+    const client = new MockQcmClient();
+    const calls = { backups: 0, restored: [] as string[] };
+    Object.assign(client, {
+      getGoogleAuthStatus: () => Promise.resolve({ supported: true, configured: true, connected: true }),
+      connectGoogle: () => Promise.resolve({ supported: true, configured: true, connected: true }),
+      backupProfileToDrive: () => {
+        calls.backups += 1;
+        return Promise.resolve({ kind: "pushed" });
+      },
+      resolveDriveConflict: () => Promise.reject(new Error("no conflict")),
+      listDriveBackups: () => Promise.resolve([{ cloudRef: "ref-1", name: "racing", modifiedTime: "" }]),
+      restoreDriveBackups: (refs: readonly string[]) => {
+        calls.restored.push(...refs);
+        return Promise.resolve({ imported: ["racing"], skipped: [], failed: [] });
+      },
+    });
+    render(<App client={client} />);
+
+    client.willOpen("racing.csv");
+    fireEvent.click((await screen.findAllByRole("button", { name: "Open a profile CSV file from your computer" }))[0]!);
+    await screen.findByRole("heading", { level: 1, name: "racing.csv" });
+    fireEvent.click(screen.getByRole("button", { name: "Share this profile as a Google Sheet" }));
+    // The item says what it does: it backs up now, it is not a progress line.
+    fireEvent.click(await screen.findByRole("button", { name: "Back up this profile to Google Drive" }));
+    await screen.findByText("Backed up to Google Drive.");
+    expect(calls.backups).toBe(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Home" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Click to import your other profiles/u }));
+    const racing = await screen.findByRole("checkbox", { name: /racing/u });
+    fireEvent.click(racing);
+    const picker = screen.getByRole("dialog", { name: "Import from Google Drive" });
+    fireEvent.click(within(picker).getAllByRole("button", { name: /^Import/u })[0]!);
+    await waitFor(() => expect(calls.restored).toEqual(["ref-1"]));
+  });
+});
