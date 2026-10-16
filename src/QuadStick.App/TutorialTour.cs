@@ -216,7 +216,7 @@ public partial class MainWindow
         _tourBody.Text = step.Body;
         _tourBack.IsEnabled = _tourIndex > 0;
         bool last = _tourIndex == _tourSteps.Length - 1;
-        _tourNext.Content = last ? "Finish" : "Next";
+        _tourNext.Content = last ? Strings.Main_Done : Strings.Tour_Next;
 
         // The live region reads the whole step; keep its Name in sync.
         AutomationProperties.SetName(_tourCallout, string.Format(CultureInfo.CurrentCulture, Strings.Tour_StepTitleStepBody, step.Title, step.Body));
