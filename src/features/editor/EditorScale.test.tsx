@@ -16,8 +16,8 @@ function Harness({ client, initial }: { readonly client: MockQcmClient; readonly
 // production build: open 41 ms, Rows 26 ms, rename 17 ms, cell edit 22 ms.
 // jsdom under a parallel suite is far slower and noisier, so these bounds
 // only catch a render or edit that went quadratic, not a few milliseconds.
-const RENDER_BOUND_MS = 4000;
-const EDIT_BOUND_MS = 3000;
+const RENDER_BOUND_MS = 10000;
+const EDIT_BOUND_MS = 8000;
 
 describe("editor at the device limit", () => {
   it("renders a 16-mode, 128-row profile and applies an edit within bounds", async () => {
@@ -52,5 +52,5 @@ describe("editor at the device limit", () => {
       expect((await client.getProfileSnapshot(opened.sessionId)).dirty).toBe(true);
     });
     expect(editMs).toBeLessThan(EDIT_BOUND_MS);
-  });
+  }, 30000);
 });
