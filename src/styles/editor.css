@@ -786,6 +786,11 @@ button.problems-toggle.status-error {
   color: var(--qcm-error);
 }
 
+/* The icon takes the bar's tone, as Avalonia's does, not the quiet accent. */
+button.problems-toggle svg {
+  color: inherit;
+}
+
 /* ---- Editor command bar (Avalonia editorchrome) ---- */
 .editorchrome .secondary {
   font-size: var(--qcm-body-size);
@@ -1055,6 +1060,8 @@ button.mode-help h2 {
 
 .zone-list .accent-count {
   color: var(--qcm-accent-text);
+  /* `MainControlsRow`'s count is a plain small TextBlock. */
+  font-weight: 400;
 }
 
 .sidebar-view {

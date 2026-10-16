@@ -746,7 +746,9 @@ if (args.Contains("--compare"))
         {
             w.LoadProfile(ProfileFile.Load(Fixture));
             w.SetDeviceViewForPreview(true);
-            w.SelectZoneForPreview("sip");
+            // No zone pick: "sip" is an input, not a zone, so it left the view
+            // in a state the app never opens in (nothing checked, not even
+            // Main controls) and the rewrite's shot could not match it.
             w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick",
                 new HashSet<string> { "cross" }, true));
         });

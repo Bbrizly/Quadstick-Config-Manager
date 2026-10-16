@@ -318,7 +318,9 @@
   justify-content: center;
   gap: 3px;
   min-width: 0 !important;
-  min-height: 0 !important;
+  /* Not !important: a callout's inline floor (Avalonia's PillH 116, and
+     SmallPillH 150 under the photo) has to win over this. */
+  min-height: 0;
   padding: var(--qcm-pad-zone) !important;
   border: 2px solid var(--qcm-border);
   border-radius: var(--qcm-radius-control);
@@ -385,10 +387,12 @@
   font-size: var(--qcm-small-size);
 }
 
-/* Avalonia GestureTable: Auto | 10px gutter | * */
+/* Avalonia GestureTable: one Auto | 10px gutter | * grid for the whole
+   card, so every name shares the widest name's column. */
 .gesture-table {
   position: relative;
   display: grid;
+  grid-template-columns: auto 10px minmax(0, 1fr);
   width: 100%;
   margin-top: 3px;
   padding-top: 5px;
@@ -398,7 +402,10 @@
 
 .gesture-row {
   display: grid;
+  grid-column: 1 / -1;
+  /* Per-row columns where a WebView has no subgrid (pre Safari 16). */
   grid-template-columns: auto 10px minmax(0, 1fr);
+  grid-template-columns: subgrid;
   align-items: center;
   position: relative;
   /* Avalonia's callout rows are about 20 stage units. */
@@ -420,7 +427,7 @@
 }
 
 .gesture-name {
-  padding: 5px 6px 5px 0;
+  padding: 5px 8px 5px 0;
   font-size: var(--qcm-small-size);
   font-weight: 600;
   text-align: right;
