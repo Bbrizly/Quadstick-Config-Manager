@@ -176,7 +176,7 @@ function FileNameBox({
           if (event.key === "Enter") event.currentTarget.blur();
         }}
       />
-      <span className="filename-suffix" aria-hidden="true">{t("Shell_Csv")}</span>
+      <span className="filename-suffix" dir="ltr" aria-hidden="true">{t("Shell_Csv")}</span>
     </span>
   );
 }
