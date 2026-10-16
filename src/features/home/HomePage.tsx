@@ -112,6 +112,9 @@ export function HomePage({
   // and leave the picker open.
   const [renamingTemplate, setRenamingTemplate] = useState<{ readonly id: string; readonly name: string } | null>(null);
   const [deletingTemplate, setDeletingTemplate] = useState<TemplateEntry | null>(null);
+  // The picker is hidden under its child dialog; coming back, focus returns
+  // to the button that opened it rather than to the top of the list.
+  const [returnFocus, setReturnFocus] = useState<"rename" | "delete" | null>(null);
   // Read once per visit to Home, as `RefreshHomeCards` does: no timer ticks
   // the labels on while the page sits idle.
   const [now] = useState(() => Date.now());
@@ -165,6 +168,7 @@ export function HomePage({
       return;
     }
     setPickedTemplate(found[0]?.id ?? null);
+    setReturnFocus(null);
     setTemplates(found);
   };
 
@@ -604,10 +608,14 @@ export function HomePage({
               type="button"
               disabled={pickedTemplate === null}
               aria-label={t("Main_RenameSelectedTemplate")}
+              data-autofocus={returnFocus === "rename" ? true : undefined}
               onClick={() => {
                 const entry = templates?.find((candidate) => candidate.id === pickedTemplate);
                 if (entry === undefined) setHomeStatus(t("Main_SelectATemplateToRename"));
-                else setRenamingTemplate({ id: entry.id, name: entry.name });
+                else {
+                  setReturnFocus("rename");
+                  setRenamingTemplate({ id: entry.id, name: entry.name });
+                }
               }}
             >
               {t("Main_Rename")}
@@ -619,7 +627,11 @@ export function HomePage({
               type="button"
               disabled={pickedTemplate === null}
               aria-label={t("Main_DeleteSelectedTemplate")}
-              onClick={() => setDeletingTemplate(templates?.find((candidate) => candidate.id === pickedTemplate) ?? null)}
+              data-autofocus={returnFocus === "delete" ? true : undefined}
+              onClick={() => {
+                setReturnFocus("delete");
+                setDeletingTemplate(templates?.find((candidate) => candidate.id === pickedTemplate) ?? null);
+              }}
             >
               {t("Main_Delete")}
             </button>

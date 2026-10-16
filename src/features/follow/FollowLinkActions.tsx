@@ -266,11 +266,8 @@ export function FollowLinkActions({
         {/* A published link sees one tab; replacing a five-mode profile with
             it would drop four modes, so the reason is said beside the list.
             A workbook too large to read whole says so the same way. */}
-        {review?.singleTab === true ? (
-          <p>{t("Main_ThisLinkIsAPublished")}</p>
-        ) : review !== null && review.limitation !== null ? (
-          <p>{limitationText(review.limitation, t)}</p>
-        ) : null}
+        {review?.singleTab === true ? <p>{t("Main_ThisLinkIsAPublished")}</p> : null}
+        {review !== null && review.limitation !== null ? <p>{limitationText(review.limitation, t)}</p> : null}
       </Dialog>
     </section>
   );

@@ -410,11 +410,31 @@ pub fn rename_template_card(
     if new == old {
         return Ok(TemplateRenameDto::Renamed { name: bare });
     }
-    if new.exists() {
-        return Ok(TemplateRenameDto::Taken { name: bare });
+    // A change of case only, on a volume that ignores case: the same file.
+    if fs::canonicalize(&new).ok() == fs::canonicalize(&old).ok() {
+        fs::rename(&old, &new)
+            .map_err(|error| io_error(&error, StorageStage::ReplaceBeforeDisplace))?;
+        cards.forget(&request.id);
+        return Ok(TemplateRenameDto::Renamed { name: bare });
     }
-    fs::rename(&old, &new)
-        .map_err(|error| io_error(&error, StorageStage::ReplaceBeforeDisplace))?;
+    // No-clobber, as `File.Move` is: a hard link fails when the name is taken,
+    // even by a file that appeared after any check.
+    match fs::hard_link(&old, &new) {
+        Ok(()) => {
+            fs::remove_file(&old).map_err(|error| io_error(&error, StorageStage::Delete))?;
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            return Ok(TemplateRenameDto::Taken { name: bare });
+        }
+        // A volume without hard links: check, then move.
+        Err(_) => {
+            if new.exists() {
+                return Ok(TemplateRenameDto::Taken { name: bare });
+            }
+            fs::rename(&old, &new)
+                .map_err(|error| io_error(&error, StorageStage::ReplaceBeforeDisplace))?;
+        }
+    }
     cards.forget(&request.id);
     Ok(TemplateRenameDto::Renamed { name: bare })
 }
