@@ -206,7 +206,25 @@ impl DriveService {
         ticket
     }
 
-    fn is_latest(&self, key: &str, ticket: u64) -> bool {
+    /// Forget the unanswered conflicts of one profile; their ids, so the
+    /// window can take the questions down.
+    pub fn drop_conflicts_for(&self, key: &str) -> Vec<String> {
+        let mut pending = self.pending();
+        let ids: Vec<u64> = pending
+            .conflicts
+            .iter()
+            .filter(|(_, conflict)| conflict.profile.persistent_key == key)
+            .map(|(id, _)| *id)
+            .collect();
+        for id in &ids {
+            pending.conflicts.remove(id);
+        }
+        ids.into_iter()
+            .map(|id| format!("drive-resolution-{id}"))
+            .collect()
+    }
+
+    pub fn is_latest(&self, key: &str, ticket: u64) -> bool {
         self.tickets
             .lock()
             .unwrap_or_else(PoisonError::into_inner)

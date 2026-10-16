@@ -30,6 +30,11 @@ pub enum DriveBackupEventDto {
     Missing {
         resolution_id: String,
     },
+    /// A newer save of the same profile is being pushed; that push asks
+    /// again if it still has to, so this unanswered question is void.
+    Superseded {
+        resolution_id: String,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,7 +51,7 @@ pub fn run_backup(
     mode: BackupMode,
 ) -> Option<DriveBackupEventDto> {
     let ticket = drive.ticket(&profile.persistent_key);
-    run_ticketed(drive, profile, mode, ticket)
+    run_ticketed(drive, profile, mode, ticket, &|_| {})
 }
 
 fn run_ticketed(
@@ -54,7 +59,19 @@ fn run_ticketed(
     profile: DriveProfileSnapshot,
     mode: BackupMode,
     ticket: u64,
+    deliver: &dyn Fn(DriveBackupEventDto),
 ) -> Option<DriveBackupEventDto> {
+    let key = profile.persistent_key.clone();
+    if !drive.is_latest(&key, ticket) {
+        return None;
+    }
+    // An older save's unanswered conflict would push older bytes if it were
+    // answered Yes now. Only the newest save of a profile may ask.
+    if mode == BackupMode::AfterSave {
+        for resolution_id in drive.drop_conflicts_for(&key) {
+            deliver(DriveBackupEventDto::Superseded { resolution_id });
+        }
+    }
     let result = match mode {
         BackupMode::AfterSave => drive.backup_after_save(profile, ticket),
         BackupMode::RetryIfDirty => drive.retry_if_dirty(profile, ticket),
@@ -85,13 +102,13 @@ pub fn spawn_backup(
     drive: Arc<DriveService>,
     profile: Option<DriveProfileSnapshot>,
     mode: BackupMode,
-    deliver: impl FnOnce(DriveBackupEventDto) + Send + 'static,
+    deliver: impl Fn(DriveBackupEventDto) + Send + 'static,
 ) {
     let Some(profile) = profile else { return };
     // The ticket is taken here, on the saving thread, so save order holds.
     let ticket = drive.ticket(&profile.persistent_key);
     std::thread::spawn(move || {
-        if let Some(event) = run_ticketed(&drive, profile, mode, ticket) {
+        if let Some(event) = run_ticketed(&drive, profile, mode, ticket, &deliver) {
             deliver(event);
         }
     });
@@ -350,11 +367,23 @@ mod tests {
         let newer = drive.ticket("/profiles/Game.csv");
         // The newer save's thread got to the gate first.
         assert_eq!(
-            run_ticketed(&drive, profile("joystick"), BackupMode::AfterSave, newer),
+            run_ticketed(
+                &drive,
+                profile("joystick"),
+                BackupMode::AfterSave,
+                newer,
+                &|_| {}
+            ),
             Some(DriveBackupEventDto::Pushed)
         );
         assert_eq!(
-            run_ticketed(&drive, profile("mouse"), BackupMode::AfterSave, older),
+            run_ticketed(
+                &drive,
+                profile("mouse"),
+                BackupMode::AfterSave,
+                older,
+                &|_| {}
+            ),
             None
         );
         let d = fake.lock().expect("fake");
@@ -441,6 +470,44 @@ mod tests {
         ));
         assert_eq!(fake.lock().expect("fake").pushes.len(), 2);
         assert!(!dirty(&state));
+    }
+
+    #[test]
+    fn a_newer_save_voids_an_older_unanswered_conflict() {
+        let fake = Arc::new(Mutex::new(FakeDrive::default()));
+        let state = state_file("void");
+        let drive = service(&serve(Arc::clone(&fake)), true, &state);
+        run_backup(&drive, profile("mouse"), BackupMode::AfterSave);
+        fake.lock().expect("fake").modified += 1;
+        let Some(DriveBackupEventDto::Conflict {
+            resolution_id: older,
+        }) = run_backup(&drive, profile("joystick"), BackupMode::AfterSave)
+        else {
+            panic!("expected a conflict");
+        };
+        let voided = Mutex::new(Vec::new());
+        let ticket = drive.ticket("/profiles/Game.csv");
+        let next = run_ticketed(
+            &drive,
+            profile("buttons"),
+            BackupMode::AfterSave,
+            ticket,
+            &|event| voided.lock().expect("voided").push(event),
+        );
+        assert!(matches!(next, Some(DriveBackupEventDto::Conflict { .. })));
+        assert_eq!(
+            *voided.lock().expect("voided"),
+            vec![DriveBackupEventDto::Superseded {
+                resolution_id: older.clone()
+            }]
+        );
+        // Yes on the old question can no longer push the older bytes.
+        assert!(
+            drive
+                .resolve(&older, ConflictChoice::ReplaceWithMine)
+                .is_err()
+        );
+        assert_eq!(fake.lock().expect("fake").pushes.len(), 1);
     }
 
     #[test]

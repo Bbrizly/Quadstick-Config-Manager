@@ -51,7 +51,9 @@ export function DriveBackupNotices({ client, onMessage, onReview }: DriveBackupN
       if (disposed) return;
       if (event.kind === "pushed") say.current(tr.current("Main_BackedUpToGoogleDrive"));
       else if (event.kind === "pending") say.current(tr.current("Backup_BackupPending"));
-      else setQuestions((queued) => [...queued, event]);
+      else if (event.kind === "superseded") {
+        setQuestions((queued) => queued.filter((q) => q.resolutionId !== event.resolutionId));
+      } else setQuestions((queued) => [...queued, event]);
     }).then((subscription) => {
       if (disposed) subscription.dispose();
       else dispose = () => subscription.dispose();

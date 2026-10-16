@@ -11,7 +11,9 @@ export type DriveBackupEvent =
   | { readonly kind: "pushed" }
   | { readonly kind: "pending" }
   | { readonly kind: "conflict"; readonly resolutionId: string }
-  | { readonly kind: "missing"; readonly resolutionId: string };
+  | { readonly kind: "missing"; readonly resolutionId: string }
+  /** A newer save of that profile is being pushed: the question is void. */
+  | { readonly kind: "superseded"; readonly resolutionId: string };
 
 export type DriveConflictChoice =
   | "replace_with_mine"

@@ -45,6 +45,10 @@ class FakeDrive {
     for (const run of work) run();
   }
 
+  emit(event: DriveBackupEvent): void {
+    this.listener?.(event);
+  }
+
   retryIfDirty(name: string): void {
     if (this.dirty) this.afterSave(name);
   }
@@ -186,5 +190,16 @@ describe("Backup on every save", () => {
     await waitFor(() => expect(reviews).toHaveLength(1));
     expect(drive.resolved).toEqual(["keep_online"]);
     expect(drive.pushes).toEqual([]);
+  });
+
+  it("a newer save takes an older, unanswered question down", async () => {
+    const { drive } = await show();
+    drive.editedOnline = true;
+    await replace();
+    act(() => drive.settle());
+    await screen.findByRole("dialog", { name: "Sheet edited online" });
+    act(() => drive.emit({ kind: "superseded", resolutionId: "drive-resolution-1" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(drive.resolved).toEqual([]);
   });
 });
