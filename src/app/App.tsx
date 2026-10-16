@@ -306,9 +306,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   // reads them again on the next visit), editor work is asked about first.
   const openFromDeviceFiles = async (opened: EditorSnapshot): Promise<void> => {
     setFilesOpen(false);
-    if (devicePreferences !== null && devicePreferences.sessionId !== opened.sessionId) {
-      await client.closeProfile(devicePreferences.sessionId, "discard").catch(() => undefined);
-    }
+    // Editor work first: if it stays, nothing else is touched.
     if (editor !== null) {
       const outcome = await client.closeProfile(editor.sessionId, "if_clean").catch(() => null);
       if (outcome?.kind === "keptOpenUnsavedChanges") {
@@ -316,6 +314,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         setMessage(t("Main_ThisProfileHasUnsavedChanges"));
         return;
       }
+    }
+    if (devicePreferences !== null && devicePreferences.sessionId !== opened.sessionId) {
+      await client.closeProfile(devicePreferences.sessionId, "discard").catch(() => undefined);
     }
     showEditor(opened);
   };

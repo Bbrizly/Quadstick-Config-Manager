@@ -79,7 +79,9 @@ export function DeviceSettingsRoute({ client, snapshot, onSnapshot, onManageFile
     if (snapshotRef.current === null) void load();
   }, [load]);
 
+  // Offered only with no session open, so there are no edits to lose.
   const chooseDrive = async (): Promise<void> => {
+    if (snapshotRef.current !== null) return;
     try {
       const next = await client.chooseDeviceFolder();
       if (next !== null) await load();
