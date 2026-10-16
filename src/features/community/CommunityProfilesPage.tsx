@@ -171,7 +171,7 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
       </header>
 
       <label>
-        <span className="sr-only">{t("Community_SearchTheCommunityProfiles")}</span>
+        <span className="visually-hidden">{t("Community_SearchTheCommunityProfiles")}</span>
         <input
           type="search"
           placeholder={t("Community_SearchByGameFileName")}

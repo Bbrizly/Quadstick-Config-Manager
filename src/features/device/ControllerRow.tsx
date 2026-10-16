@@ -151,7 +151,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
 
   return (
     <section className="controller-row" aria-label={t("DevicePage_MacGames")}>
-      <h3 className="controller-title">{t("DevicePage_MacGames")}</h3>
+      <h2 className="controller-title">{t("DevicePage_MacGames")}</h2>
       <Explain line="DevicePage_MacGamesLine" heading="DevicePage_MacGames" help="DevicePage_MacGamesHelp" />
       {options.macSandboxed ? (
         <div className="controller-store">

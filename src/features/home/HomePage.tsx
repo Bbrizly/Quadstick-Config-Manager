@@ -288,6 +288,7 @@ export function HomePage({
 
   return (
     <div className="home-view">
+      <h1 className="visually-hidden">{t("Rewrite_ProductName")}</h1>
       <section className="homepanel start" aria-labelledby="home-start-title">
         <div className="homepanel-header">
           <h2 className="section" id="home-start-title">
