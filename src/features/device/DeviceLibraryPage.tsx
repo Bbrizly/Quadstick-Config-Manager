@@ -48,6 +48,21 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
   const [renameTo, setRenameTo] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  // `MacDriveAccess.Needed`: only the sandboxed Mac build has to be handed
+  // the drive. A normal build finds it on its own.
+  const [driveAccessNeeded, setDriveAccessNeeded] = useState(false);
+  useEffect(() => {
+    let active = true;
+    void client.controller
+      ?.getControllerOptions()
+      .then((options) => {
+        if (active) setDriveAccessNeeded(options.kind === "mac" && options.macSandboxed);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [client]);
 
   const selected = useMemo(
     () => presence?.devices.find((device) => device.deviceId === selectedId) ?? null,
@@ -254,7 +269,7 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
       {t("Device_Refresh")}
     </button>
   );
-  const chooseButton = (
+  const chooseButton = !driveAccessNeeded ? null : (
     <button type="button" disabled={busy} onClick={() => void chooseDevice()}>
       {t("Install_ChooseTheQuadStickDrive")}
     </button>
@@ -324,7 +339,7 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
           inDialog ? (
             // Where Avalonia's `DriveAccessButton` sits: under the summary, and
             // only while no drive is found.
-            <div className="device-files-choose">{chooseButton}</div>
+            chooseButton === null ? null : <div className="device-files-choose">{chooseButton}</div>
           ) : (
             <div className="empty-state">
               <p>{noDrive}</p>
