@@ -4,15 +4,17 @@ import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n, type MessageKey } from "../../i18n";
 
 /** Soft tour: callout steps only. Spotlight targeting lands with AT hardening. */
-const STEPS: readonly { title: MessageKey | string; body: MessageKey }[] = [
-  { title: "Welcome", body: "Tour_ThisShowsYouHowTo" },
+// Avalonia hard-codes five of these titles in English; here every one is a
+// catalog word, so a French or Arabic tour reads in that language throughout.
+const STEPS: readonly { title: MessageKey; body: MessageKey }[] = [
+  { title: "Rewrite_TourWelcome", body: "Tour_ThisShowsYouHowTo" },
   { title: "Settings_Appearance", body: "Tour_SetLightOrDarkTo" },
   { title: "Tour_NewProfile", body: "Tour_EveryProfileStartsFromA" },
-  { title: "Your QuadStick", body: "Tour_ThisIsYourQuadStickEach" },
+  { title: "Rewrite_TourYourQuadStick", body: "Tour_ThisIsYourQuadStickEach" },
   { title: "Tour_PickAPart", body: "Tour_PickAPartToSee" },
-  { title: "Save", body: "Tour_SaveYourWorkToA" },
-  { title: "Install", body: "Tour_WhenItSReadySend" },
-  { title: "Done", body: "Tour_YouCanReplayThisAnytime" },
+  { title: "Main_Save", body: "Tour_SaveYourWorkToA" },
+  { title: "Rewrite_TourInstall", body: "Tour_WhenItSReadySend" },
+  { title: "Main_Done", body: "Tour_YouCanReplayThisAnytime" },
 ];
 
 export interface TutorialTourProps {
@@ -26,10 +28,7 @@ export function TutorialTour({ open, onDone }: TutorialTourProps) {
   if (!open) return null;
 
   const step = STEPS[index] ?? STEPS[0]!;
-  const title =
-    step.title.startsWith("Tour_") || step.title.startsWith("Settings_")
-      ? t(step.title as MessageKey)
-      : step.title;
+  const title = t(step.title);
   const last = index >= STEPS.length - 1;
 
   return (

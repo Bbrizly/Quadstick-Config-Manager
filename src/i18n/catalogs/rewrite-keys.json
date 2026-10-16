@@ -17,5 +17,8 @@
   "Rewrite_SeverityError",
   "Rewrite_SeverityWarning",
   "Rewrite_SkipToMainContent",
+  "Rewrite_TourInstall",
+  "Rewrite_TourWelcome",
+  "Rewrite_TourYourQuadStick",
   "Rewrite_TurnOff"
 ]
