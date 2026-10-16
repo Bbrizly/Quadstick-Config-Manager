@@ -144,9 +144,15 @@ const string Settled = """
      "untouched":["kb_f"]}
     """;
 
+// The shipped builder's fonts (Program.BuildAvaloniaApp registers Inter), so
+// a shot resolves type exactly as the app does. Inter is only registered,
+// not made the default: App.axaml's Window style sets AppFont, which Style.cs
+// leaves at FontFamily.Default, so the words are the platform's default face
+// (Helvetica on a Mac, Segoe UI on Windows), here as in the shipped app.
 AppBuilder.Configure<App>()
     .UseSkia()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
+    .WithInterFont()
     .SetupWithoutStarting();
 
 // The set the README and the site use, named the way they are named there, so
