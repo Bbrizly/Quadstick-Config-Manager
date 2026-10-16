@@ -868,6 +868,45 @@ mod tests {
         std::thread::sleep(Duration::from_millis(120));
     }
 
+    // While a game runs nothing is queued, and the sender must sit in a
+    // blocking receive: no timer, no periodic flush. One event is one post
+    // after the window, and then it parks again.
+    #[test]
+    fn the_sender_parks_with_nothing_queued() {
+        let sink = Arc::new(Recorder::default());
+        let usage = Arc::new(AtomicBool::new(true));
+        let (tx, rx) = mpsc::channel::<Msg>();
+        let worker = {
+            let sink = Arc::clone(&sink);
+            let usage = Arc::clone(&usage);
+            std::thread::spawn(move || {
+                run_sender(&rx, &*sink, &usage, "t", Duration::from_millis(10));
+            })
+        };
+        std::thread::sleep(Duration::from_millis(150));
+        assert!(!worker.is_finished());
+        assert!(lock(&sink.posts).is_empty());
+
+        tx.send(Msg::Event(Captured {
+            event: TelemetryEvent::AppLaunched.wire().to_owned(),
+            distinct_id: "d".into(),
+            properties: Map::new(),
+            timestamp: "2026-10-15T00:00:00Z".into(),
+        }))
+        .unwrap();
+        std::thread::sleep(Duration::from_millis(300));
+        assert_eq!(lock(&sink.posts).len(), 1);
+
+        // Hanging up wakes a parked receive at once.
+        drop(tx);
+        let deadline = std::time::Instant::now() + Duration::from_secs(1);
+        while !worker.is_finished() && std::time::Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert!(worker.is_finished());
+        assert_eq!(lock(&sink.posts).len(), 1);
+    }
+
     #[test]
     fn every_event_has_its_avalonia_wire_name() {
         let names: Vec<_> = [
