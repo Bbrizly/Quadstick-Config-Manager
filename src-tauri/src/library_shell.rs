@@ -411,7 +411,9 @@ pub fn rename_template_card(
         return Ok(TemplateRenameDto::Renamed { name: bare });
     }
     // A change of case only, on a volume that ignores case: the same file.
-    if fs::canonicalize(&new).ok() == fs::canonicalize(&old).ok() {
+    if let (Ok(a), Ok(b)) = (fs::canonicalize(&new), fs::canonicalize(&old))
+        && a == b
+    {
         fs::rename(&old, &new)
             .map_err(|error| io_error(&error, StorageStage::ReplaceBeforeDisplace))?;
         cards.forget(&request.id);
@@ -426,13 +428,28 @@ pub fn rename_template_card(
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
             return Ok(TemplateRenameDto::Taken { name: bare });
         }
-        // A volume without hard links: check, then move.
+        // A volume without hard links: copy into a file that must not exist
+        // yet, then remove the old one. Still never replaces anything.
         Err(_) => {
-            if new.exists() {
-                return Ok(TemplateRenameDto::Taken { name: bare });
+            use std::io::Write as _;
+            let bytes = fs::read(&old).map_err(|error| io_error(&error, StorageStage::ReadFile))?;
+            let mut file = match fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&new)
+            {
+                Ok(file) => file,
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                    return Ok(TemplateRenameDto::Taken { name: bare });
+                }
+                Err(error) => return Err(io_error(&error, StorageStage::TempCreate)),
+            };
+            if let Err(error) = file.write_all(&bytes).and_then(|()| file.sync_all()) {
+                drop(file);
+                let _ = fs::remove_file(&new);
+                return Err(io_error(&error, StorageStage::TempWrite));
             }
-            fs::rename(&old, &new)
-                .map_err(|error| io_error(&error, StorageStage::ReplaceBeforeDisplace))?;
+            fs::remove_file(&old).map_err(|error| io_error(&error, StorageStage::Delete))?;
         }
     }
     cards.forget(&request.id);
