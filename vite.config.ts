@@ -42,6 +42,10 @@ export default defineConfig({
     globals: true,
     setupFiles: ["src/test/setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
+    // Hang guards, not speed checks: the journey tests take about a second
+    // alone and five or more on a machine at full load, which tripped the 5 s
+    // default. Nothing in the suite asserts on elapsed time.
+    testTimeout: 30000,
     // css is stubbed to "" by default, which silently empties a `?raw`
     // import too. Only the raw ones are let through, so no stylesheet is
     // ever injected into jsdom.

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
@@ -552,33 +552,43 @@ export function EditorWorkspace({
     }
   };
 
+  // The window listener reads the handlers through a ref set during commit.
+  // Re-subscribing in a passive effect left a gap after each edit where a
+  // Ctrl+Z reached the previous render's undo, still marked busy, and was
+  // dropped.
+  const keys = useRef({ onHelp, onInstall, save, undo });
+  useLayoutEffect(() => {
+    keys.current = { onHelp, onInstall, save, undo };
+  });
+
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent): void => {
+      const now = keys.current;
       if (document.querySelector('[aria-modal="true"]') !== null) return;
-      if (event.key === "F1" && onHelp !== undefined) {
+      if (event.key === "F1" && now.onHelp !== undefined) {
         event.preventDefault();
-        onHelp();
+        now.onHelp();
         return;
       }
       if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
       const key = event.key.toLowerCase();
       if (key === "z") {
         event.preventDefault();
-        void undo();
+        void now.undo();
       } else if (key === "s") {
         event.preventDefault();
-        void save();
-      } else if (key === "h" && onHelp !== undefined) {
+        void now.save();
+      } else if (key === "h" && now.onHelp !== undefined) {
         event.preventDefault();
-        onHelp();
-      } else if (key === "i" && onInstall !== undefined) {
+        now.onHelp();
+      } else if (key === "i" && now.onInstall !== undefined) {
         event.preventDefault();
-        onInstall();
+        now.onInstall();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onHelp, onInstall, save, undo]);
+  }, []);
 
   const moveIssueToNotes = (issue: Issue): void => {
     const row = issueRow(issue.cell);
