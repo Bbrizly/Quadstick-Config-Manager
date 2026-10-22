@@ -562,3 +562,26 @@ fn the_calendar_arithmetic_matches_known_days() {
     assert_eq!(civil_from_days(11_016), (2000, 2, 29));
     assert_eq!(civil_from_days(20_313), (2025, 8, 13));
 }
+
+// A different stick mounted at the same path between two scans never looked
+// absent, so only its mount identity tells it apart. Faked here by changing
+// the recorded one: the old id stops answering, and the next scan gives the
+// path a new generation.
+#[test]
+#[cfg(unix)]
+fn a_stick_swapped_at_the_same_path_is_a_new_generation() {
+    let scratch = Scratch::new("swap");
+    let root = quadstick(&scratch);
+    let adapter = storage(vec![root]);
+    let before = adapter.discover().expect("discovery")[0].clone();
+    adapter.registry().devices[0].mount = Some(u64::MAX);
+
+    assert_eq!(
+        adapter.revalidate(before.id).map(|_| ()),
+        Err(StorageError::Device(DeviceError::NotFound))
+    );
+    let after = adapter.discover().expect("discovery")[0].clone();
+    assert_eq!(before.id, after.id);
+    assert_ne!(before.generation, after.generation);
+    assert!(adapter.revalidate(after.id).is_ok());
+}

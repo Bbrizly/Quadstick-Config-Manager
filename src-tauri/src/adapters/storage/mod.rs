@@ -45,6 +45,8 @@ struct Mounted {
     /// False once the mount has gone. The entry is kept so the same drive coming
     /// back keeps its id, at a new generation.
     present: bool,
+    /// Which mount the root was when it was found (see [`mount_identity`]).
+    mount: Option<u64>,
 }
 
 #[derive(Debug)]
@@ -111,6 +113,11 @@ impl Registry {
             .iter()
             .find(|mounted| mounted.id == device && mounted.present)
             .ok_or(StorageError::Device(DeviceError::NotFound))?;
+        // Another stick mounted at the same path between scans is a different
+        // drive, so nothing planned against the first may land on it.
+        if found.mount.is_some() && mount_identity(&found.root) != found.mount {
+            return Err(StorageError::Device(DeviceError::NotFound));
+        }
         if !is_quadstick(&found.root) {
             return Err(StorageError::Device(DeviceError::NotQuadStick));
         }
@@ -129,19 +136,39 @@ impl Registry {
 }
 
 impl Mounted {
-    const fn new(
+    fn new(
         id: StorageDeviceId,
         root: PathBuf,
         label: String,
         generation: DeviceGeneration,
     ) -> Self {
+        let mount = mount_identity(&root);
         Self {
             id,
             root,
             label,
             generation,
             present: true,
+            mount,
         }
+    }
+}
+
+/// The device number of the volume behind `root`. A volume gets one when it is
+/// mounted, so a swap at the same path usually shows up as a different number.
+/// ponytail: Unix only (Windows has no stable std call for a volume serial),
+/// and a replug that lands on the same disk slot can reuse the number; the
+/// marker check and generations still cover the rest.
+fn mount_identity(root: &Path) -> Option<u64> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        fs::metadata(root).ok().map(|meta| meta.dev())
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = root;
+        None
     }
 }
 
@@ -218,11 +245,14 @@ impl<V: VolumeSource> DeviceStorage for FileSystemDeviceStorage<V> {
                 Some(index) => {
                     // A root the OS handed back after it went away may be an
                     // unrelated volume, so it answers at a new generation and any
-                    // plan made against the old one is refused.
-                    if !registry.devices[index].present {
+                    // plan made against the old one is refused. So does one that
+                    // was swapped between two scans without ever looking absent.
+                    let mount = mount_identity(&root);
+                    if !registry.devices[index].present || registry.devices[index].mount != mount {
                         registry.next_generation += 1;
                         let generation = DeviceGeneration::from_raw(registry.next_generation);
                         registry.devices[index].generation = generation;
+                        registry.devices[index].mount = mount;
                     }
                     registry.devices[index].present = true;
                     registry.devices[index].label = label;
