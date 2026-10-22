@@ -20,3 +20,22 @@ export function writeReport(report: string): Promise<void> {
 export function exit(code: number): Promise<void> {
   return invoke("e2e_exit", { code });
 }
+
+/** Show, unminimize and focus the test window (and activate the app). */
+export function bringForward(): Promise<void> {
+  return invoke("e2e_bring_forward");
+}
+
+export interface WindowState {
+  readonly window: boolean;
+  readonly visible?: boolean | null;
+  readonly minimized?: boolean | null;
+  readonly focused?: boolean | null;
+  readonly fullscreen?: boolean | null;
+  readonly screenLocked?: boolean | null;
+  readonly displayAsleep?: boolean | null;
+}
+
+export function windowState(): Promise<WindowState> {
+  return invoke("e2e_window_state");
+}

@@ -13,7 +13,42 @@ use qcm_core::ports::live_input::{
 };
 use std::collections::{BTreeMap, HashMap};
 use std::ffi::CString;
-use std::sync::{Mutex, MutexGuard, PoisonError};
+use std::sync::{Mutex, MutexGuard, OnceLock, PoisonError, mpsc};
+
+type HidJob = Box<dyn FnOnce() + Send>;
+
+static HID_THREAD: OnceLock<Mutex<mpsc::Sender<HidJob>>> = OnceLock::new();
+
+/// Run HID setup (init, scan, open) on one thread that lives as long as the
+/// app. macOS hidapi schedules its device manager on the run loop of the
+/// first thread that touches HID; the live worker is a thread per session,
+/// so once the first one exited, the next scan added devices to a dead run
+/// loop and the app died with SIGTRAP. One thread also keeps two scans from
+/// racing on hidapi's shared manager. Reading an open device stays on the
+/// caller's thread. `Err(NotFound)` if the thread is gone.
+fn on_hid_thread<T: Send + 'static>(
+    work: impl FnOnce() -> T + Send + 'static,
+) -> Result<T, DeviceError> {
+    let jobs = HID_THREAD.get_or_init(|| {
+        let (sender, receiver) = mpsc::channel::<HidJob>();
+        let _ = std::thread::Builder::new()
+            .name("qcm-hid".to_owned())
+            .spawn(move || {
+                for job in receiver {
+                    job();
+                }
+            });
+        Mutex::new(sender)
+    });
+    let (done, result) = mpsc::sync_channel(1);
+    jobs.lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .send(Box::new(move || {
+            let _ = done.send(work());
+        }))
+        .map_err(|_| DeviceError::NotFound)?;
+    result.recv().map_err(|_| DeviceError::NotFound)
+}
 
 /// Every HID identity emitted by firmware 2373's joystick descriptors.
 /// Xbox 360 native (emulation mode 3) is intentionally absent: it is XInput,
@@ -87,40 +122,40 @@ impl LiveInputPort for HidLiveInput {
     type Session = HidLiveSession;
 
     fn candidates(&self) -> Result<Vec<LiveCandidate>, DeviceError> {
-        let api = HidApi::new().map_err(|_| DeviceError::NotFound)?;
-        let mut found = Vec::new();
+        let readable = on_hid_thread(|| {
+            let api = HidApi::new().map_err(|_| DeviceError::NotFound)?;
+            let mut readable = Vec::new();
+            for info in api.device_list() {
+                if !known_identity(info.vendor_id(), info.product_id()) {
+                    continue;
+                }
 
-        for info in api.device_list() {
-            if !known_identity(info.vendor_id(), info.product_id()) {
-                continue;
+                // Opening each matching interface is deliberate. Most QuadStick
+                // modes expose gamepad + mouse + keyboard under one VID/PID and
+                // enumeration order is not stable. The descriptor is the authority.
+                let Ok(device) = info.open_device(&api) else {
+                    continue;
+                };
+                let Some(layout) = descriptor_layout(&device) else {
+                    continue;
+                };
+                if !layout.has_stick_fields() {
+                    continue;
+                }
+                readable.push((info.path().to_owned(), safe_product(info.product_string())));
             }
+            Ok(readable)
+        })??;
 
-            // Opening each matching interface is deliberate. Most QuadStick
-            // modes expose gamepad + mouse + keyboard under one VID/PID and
-            // enumeration order is not stable. The descriptor is the authority.
-            let Ok(device) = info.open_device(&api) else {
-                continue;
-            };
-            let Some(layout) = descriptor_layout(&device) else {
-                continue;
-            };
-            if !layout.has_stick_fields() {
-                continue;
-            }
-
-            let path = info.path().to_owned();
-            let id = {
-                let mut state = self.devices();
-                Self::mint_id(&mut state, &path)
-            };
-            found.push(LiveCandidate {
-                id,
+        let mut state = self.devices();
+        Ok(readable
+            .into_iter()
+            .map(|(path, product)| LiveCandidate {
+                id: Self::mint_id(&mut state, &path),
                 kind: CandidateKind::Readable,
-                product: safe_product(info.product_string()),
-            });
-        }
-
-        Ok(found)
+                product,
+            })
+            .collect())
     }
 
     fn open(&self, device: LiveDeviceId) -> Result<Self::Session, DeviceError> {
@@ -130,10 +165,11 @@ impl LiveInputPort for HidLiveInput {
             .get(&device)
             .cloned()
             .ok_or(DeviceError::NotFound)?;
-        let api = HidApi::new().map_err(|_| DeviceError::NotFound)?;
-        let handle = api
-            .open_path(path.as_c_str())
-            .map_err(|_| DeviceError::NotFound)?;
+        let handle = on_hid_thread(move || {
+            let api = HidApi::new().map_err(|_| DeviceError::NotFound)?;
+            api.open_path(path.as_c_str())
+                .map_err(|_| DeviceError::NotFound)
+        })??;
         let layout = descriptor_layout(&handle).ok_or(DeviceError::NotFound)?;
         let product = handle
             .get_product_string()

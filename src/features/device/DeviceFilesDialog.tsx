@@ -5,8 +5,9 @@ import { DeviceLibraryPage } from "./DeviceLibraryPage";
 
 /**
  * `DeviceFilesWindow`: the files on a plugged-in QuadStick, opened from the
- * device page's Manage files and Home's. Mounted only while open, so the
- * drive is read when the window opens and never while it is shut.
+ * device page's Manage files and Home's. The page inside is mounted only
+ * while the dialog is (open, or fading out), so the drive is read when the
+ * window opens and never while it is shut.
  */
 export function DeviceFilesDialog({
   client,
@@ -20,10 +21,9 @@ export function DeviceFilesDialog({
   readonly onOpenProfile: (snapshot: EditorSnapshot) => void;
 }) {
   const { t } = useI18n();
-  if (!open) return null;
   return (
     <Dialog
-      open
+      open={open}
       wide
       title={t("Device_FilesOnYourQuadStick")}
       onClose={onClose}

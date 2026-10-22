@@ -68,6 +68,42 @@ pub fn e2e_log(line: String) {
     }
 }
 
+/// Bring the test window forward and make the app active, so WebKit treats
+/// the page as visible. Only this window is touched.
+#[tauri::command]
+pub fn e2e_bring_forward(app: tauri::AppHandle) {
+    use tauri::Manager;
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
+/// What the native window says about itself, for the visibility log.
+#[tauri::command]
+pub fn e2e_window_state(app: tauri::AppHandle) -> serde_json::Value {
+    use tauri::Manager;
+    let Some(window) = app.get_webview_window("main") else {
+        return serde_json::json!({ "window": false });
+    };
+    serde_json::json!({
+        "window": true,
+        "visible": window.is_visible().ok(),
+        "minimized": window.is_minimized().ok(),
+        "focused": window.is_focused().ok(),
+        "fullscreen": window.is_fullscreen().ok(),
+        "screenLocked": session_flag("ioreg", &["-n", "Root", "-d1"], "\"CGSSessionScreenIsLocked\"=Yes"),
+        "displayAsleep": session_flag("system_profiler", &["SPDisplaysDataType"], "Display Asleep: Yes"),
+    })
+}
+
+/// Whether a macOS tool's output says `needle`. `None` when it could not run.
+fn session_flag(tool: &str, args: &[&str], needle: &str) -> Option<bool> {
+    let out = std::process::Command::new(tool).args(args).output().ok()?;
+    Some(String::from_utf8_lossy(&out.stdout).contains(needle))
+}
+
 /// A real native close request on the main window, as the red button sends.
 #[tauri::command]
 pub fn e2e_request_close(app: tauri::AppHandle) {

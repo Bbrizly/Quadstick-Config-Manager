@@ -34,8 +34,8 @@ the unsaved-changes prompts, quit), checks each screen is idle, writes
 `report.json` and quits. Two runs by default (`QCM_E2E_RUNS`); a failed run
 keeps its folder. No Accessibility or Screen Recording permission is needed.
 Normal builds contain none of it: the feature is off and Vite drops the
-`src/e2e` import outside mode `e2e`. With the screen locked the walk still
-runs, but animation timing is reported as not observable.
+`src/e2e` import outside mode `e2e`. The walk brings its window forward first. If the page stays hidden it still
+runs, but animation timing is reported as not observable, with the reason (screen locked, display asleep, occluded).
 
 Keep `make` as a compatibility/convenience façade if useful:
 

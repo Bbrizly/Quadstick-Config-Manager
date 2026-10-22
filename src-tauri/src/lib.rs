@@ -345,6 +345,10 @@ pub fn run() {
             #[cfg(feature = "e2e")]
             e2e::e2e_log,
             #[cfg(feature = "e2e")]
+            e2e::e2e_bring_forward,
+            #[cfg(feature = "e2e")]
+            e2e::e2e_window_state,
+            #[cfg(feature = "e2e")]
             e2e::e2e_request_close,
             #[cfg(feature = "e2e")]
             e2e::e2e_report,

@@ -43,6 +43,8 @@ const handled: string[] = [];
 const steps: StepResult[] = [];
 const idles: IdleResult[] = [];
 let rafCalls = 0;
+/** Where the last few frame requests came from, for a busy screen. */
+const rafStacks: string[] = [];
 
 function describe(reason: unknown): string {
   if (reason instanceof Error) return `${reason.name}: ${reason.message}`;
@@ -71,6 +73,8 @@ function installProbes(): void {
   const raf = window.requestAnimationFrame.bind(window);
   window.requestAnimationFrame = (callback) => {
     rafCalls += 1;
+    rafStacks.push(`${String(Math.round(performance.now()))}ms ${(new Error().stack ?? "").split("\n").slice(1, 6).join(" < ")}`);
+    if (rafStacks.length > 20) rafStacks.shift();
     return raf(callback);
   };
 }
@@ -127,6 +131,7 @@ async function step(name: string, body: () => Promise<string | void>): Promise<v
   for (const problem of found) await native.log(`  ${problem.kind}: ${problem.text}`).catch(() => undefined);
   if (status === "fail") {
     await native.log(`  page: ${pageSummary()}`).catch(() => undefined);
+    await native.log(`  visibility: ${hidden() ? `hidden, ${await hiddenReason()}` : "visible"}, focus ${String(document.hasFocus())}, animations [${animationNames().join(", ")}]`).catch(() => undefined);
     throw new Error(`step failed: ${name}`);
   }
 }
@@ -145,35 +150,69 @@ function skip(name: string, detail: string): void {
   void native.log(`SKIP ${name} ${detail}`).catch(() => undefined);
 }
 
-/** A hidden page (screen locked, window covered) draws nothing, so WebKit
- *  holds its animations still. Timing checks wait for a visible page. */
+/** A hidden page draws nothing, so WebKit holds its animations still and
+ *  exit timing cannot be checked. */
 function hidden(): boolean {
   return document.visibilityState === "hidden";
 }
 
-/** At rest the page asks for no frames and runs no endless animation. */
+/** Why the page is hidden, from the native window and the session. */
+async function hiddenReason(): Promise<string> {
+  const state = await native.windowState().catch(() => null);
+  if (state === null || !state.window) return "no main window";
+  if (state.screenLocked === true) return "screen locked";
+  if (state.displayAsleep === true) return "display asleep";
+  if (state.visible === false) return "window not shown";
+  if (state.minimized === true) return "window minimized";
+  return `window shown but occluded (covered by another window or on another Space; focused ${String(state.focused)})`;
+}
+
+/** Bring the test window forward and wait for WebKit to call the page
+ *  visible. Returns "" when visible, else the reason it is not. */
+async function makeVisible(timeoutMs = 3000): Promise<string> {
+  if (!hidden()) return "";
+  await native.bringForward().catch(() => undefined);
+  const start = performance.now();
+  while (hidden() && performance.now() - start < timeoutMs) await sleep(100);
+  return hidden() ? hiddenReason() : "";
+}
+
+function animationNames(): string[] {
+  return document.getAnimations().map((animation) => {
+    const name = animation instanceof CSSAnimation ? animation.animationName : animation.id || "animation";
+    const endless = animation.effect?.getTiming().iterations === Infinity;
+    return `${name}:${animation.playState}${endless ? " (infinite)" : ""}`;
+  });
+}
+
+/** At rest the page asks for no frames and holds no animation at all. */
 async function idle(screen: string): Promise<void> {
+  const why = await makeVisible();
+  // Settle first: entrances, and one-shot work such as the first live-input
+  // status arriving once HID has been scanned. Then 2 s must be silent.
   await sleep(800);
+  for (let quietSince = rafCalls, waited = 0; waited < 5000; waited += 1000) {
+    await sleep(1000);
+    if (rafCalls === quietSince) break;
+    quietSince = rafCalls;
+  }
   const before = rafCalls;
   await sleep(2000);
   const raf = rafCalls - before;
-  const running = document
-    .getAnimations()
-    .filter((animation) => animation.playState === "running")
-    .map((animation) => {
-      const name = animation instanceof CSSAnimation ? animation.animationName : animation.id || "animation";
-      const endless = animation.effect?.getTiming().iterations === Infinity;
-      return `${name}${endless ? " (infinite)" : ""}`;
-    });
-  // Hidden, a one-shot entrance is frozen at its start, not running: only an
-  // endless one would still be work once the window shows.
-  const busy = hidden() ? running.filter((name) => name.endsWith("(infinite)")) : running;
+  const animations = animationNames();
+  const visible = !hidden();
+  // Hidden, a one-shot entrance is frozen at its start rather than running:
+  // only an endless one would still be work once the window shows.
+  const busy = visible ? animations : animations.filter((name) => name.endsWith("(infinite)"));
   const pass = raf === 0 && busy.length === 0;
-  idles.push({ screen, rafCalls: raf, runningAnimations: running, pageVisible: !hidden(), pass });
+  idles.push({ screen, rafCalls: raf, runningAnimations: animations, pageVisible: visible, pass });
   await native.log(
-    `${pass ? "IDLE" : "BUSY"} ${screen}: rAF ${String(raf)}, running [${running.join(", ")}], page ${document.visibilityState}`,
+    `${pass ? "IDLE" : "BUSY"} ${screen}: rAF ${String(raf)}, animations [${animations.join(", ")}]${visible ? "" : `, page hidden: ${why || await hiddenReason()}`}`,
   ).catch(() => undefined);
-  if (!pass) throw new Error(`${screen} is not idle: ${String(raf)} rAF calls, running [${busy.join(", ")}]`);
+  if (!pass) {
+    for (const stack of rafStacks.slice(-Math.max(raf, 1))) await native.log(`  rAF from ${stack}`).catch(() => undefined);
+  }
+  if (!pass) throw new Error(`${screen} is not idle: ${String(raf)} rAF calls, animations [${busy.join(", ")}]`);
 }
 
 const UNSAVED = "This profile has unsaved changes. Save them before leaving?";
@@ -242,6 +281,7 @@ async function watchExit(element: HTMLElement, close: () => void): Promise<strin
     if (element.classList.contains("closing") || element.closest(".closing") !== null) sawClosing = true;
   });
   observer.observe(element.parentElement ?? element, { attributes: true, subtree: true, attributeFilter: ["class"] });
+  const why = await makeVisible();
   const start = performance.now();
   close();
   if (hidden() && !reduced) {
@@ -251,7 +291,7 @@ async function watchExit(element: HTMLElement, close: () => void): Promise<strin
     observer.disconnect();
     const inert = !element.isConnected || element.closest("[inert]") !== null || element.classList.contains("closing");
     if (!inert) throw new Error("closing overlay is still interactive");
-    return "page hidden (screen locked): exit started and the overlay is inert; unmount waits for the window to show";
+    return `page hidden (${why || await hiddenReason()}): exit started and the overlay is inert; unmount not observable`;
   }
   await waitFor("overlay to unmount", () => !element.isConnected, 4000);
   observer.disconnect();
@@ -270,6 +310,8 @@ async function waitHome(): Promise<void> {
 
 async function walk(): Promise<void> {
   await native.log(`walk started ${new Date().toISOString()}`).catch(() => undefined);
+  const why = await makeVisible(5000);
+  await native.log(why === "" ? "page visible" : `page hidden: ${why}`).catch(() => undefined);
 
   await step("first-run consent and tour", async () => {
     click(await waitButton("No thanks, do not share usage data"));

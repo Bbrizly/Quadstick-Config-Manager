@@ -25,8 +25,6 @@ export interface TutorialTourProps {
 export function TutorialTour({ open, onDone }: TutorialTourProps) {
   const { t } = useI18n();
   const [index, setIndex] = useState(0);
-  if (!open) return null;
-
   const step = STEPS[index] ?? STEPS[0]!;
   const title = t(step.title);
   const last = index >= STEPS.length - 1;

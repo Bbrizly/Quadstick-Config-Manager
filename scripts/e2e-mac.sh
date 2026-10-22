@@ -46,11 +46,6 @@ real_state() {
 REAL_HOME=$HOME
 before=$(real_state)
 
-if ioreg -n Root -d1 | grep -q '"CGSSessionScreenIsLocked"=Yes'; then
-  echo "e2e: the screen is locked, so the window is hidden and WebKit holds"
-  echo "     animations still. Flows run; animation timing is not observable."
-fi
-
 status=0
 run=1
 while [ "$run" -le "$RUNS" ]; do
