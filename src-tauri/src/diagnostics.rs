@@ -186,18 +186,22 @@ static RESCUE_TEST_LOCK: Mutex<()> = Mutex::new(());
 
 /// Test seam for pending crash reports.
 pub fn set_pending_dir_override(path: Option<PathBuf>) {
-    *PENDING_DIR_OVERRIDE.lock().expect("pending dir lock") = path;
+    *PENDING_DIR_OVERRIDE
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = path;
 }
 
 /// Test seam for rescue writes.
 pub fn set_rescue_dir_override(path: Option<PathBuf>) {
-    *RESCUE_DIR_OVERRIDE.lock().expect("rescue dir lock") = path;
+    *RESCUE_DIR_OVERRIDE
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = path;
 }
 
 fn pending_dir() -> PathBuf {
     PENDING_DIR_OVERRIDE
         .lock()
-        .expect("pending dir lock")
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
         .clone()
         .unwrap_or_else(|| default_app_data_dir().join("pending-reports"))
 }
@@ -205,7 +209,7 @@ fn pending_dir() -> PathBuf {
 fn rescue_dir() -> PathBuf {
     RESCUE_DIR_OVERRIDE
         .lock()
-        .expect("rescue dir lock")
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
         .clone()
         .unwrap_or_else(|| default_app_data_dir().join("rescue"))
 }

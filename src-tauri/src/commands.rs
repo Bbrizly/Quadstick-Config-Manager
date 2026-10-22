@@ -51,9 +51,9 @@ fn redact_operation<T>(result: Result<T, DeviceOperationError>) -> Result<T, Fai
     result.map_err(|failure| Box::new(QcmErrorDto::new(&failure.error, failure.operation)))
 }
 
-/// Run device work on a blocking worker. A plain command runs on the main
-/// thread, and a QuadStick drive is USB flash behind FAT: a write, a listing or
-/// a stalled volume can take seconds, which would freeze the window.
+/// Run blocking file work on a worker. A plain command runs on the main
+/// thread, and a QuadStick drive is USB flash behind FAT (a write, a listing or
+/// a stalled volume can take seconds), so that would freeze the window.
 async fn off_main<T: Send + 'static>(
     app: AppHandle,
     work: impl FnOnce(&AppHandle) -> Result<T, Failure> + Send + 'static,
@@ -63,7 +63,7 @@ async fn off_main<T: Send + 'static>(
         .map_err(|error| {
             Box::new(QcmErrorDto::from(&QcmError::Internal(
                 qcm_core::error::InternalError {
-                    what: "device worker",
+                    what: "file worker",
                     detail: qcm_core::error::OsDetail::new(error.to_string()),
                 },
             )))
@@ -526,83 +526,121 @@ pub fn unsubscribe_devices_changed(
 
 // ---- Home library and templates (`library_shell.rs`) ----
 
+// The library lives in Documents, which macOS guards: the first read waits
+// on the "access your Documents folder" prompt, and an iCloud-synced folder
+// can wait on the download. On the main thread either one froze the window,
+// so these run on a worker. (A local save stays put: it is quick, and its
+// Drive ticket must be taken in save order.)
+type Cards = crate::library_shell::LibraryCards;
+
 #[tauri::command]
-pub fn list_library_profiles(
-    state: State<'_, ShellState>,
-    cards: State<'_, crate::library_shell::LibraryCards>,
-) -> Vec<crate::library_shell::LibraryCardDto> {
-    state.library_cards(&cards, &crate::drive::library_dir())
+pub async fn list_library_profiles(
+    app: AppHandle,
+) -> Result<Vec<crate::library_shell::LibraryCardDto>, Failure> {
+    off_main(app, |app| {
+        Ok(app
+            .state::<ShellState>()
+            .library_cards(&app.state::<Cards>(), &crate::drive::library_dir()))
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn open_library_profile(
-    state: State<'_, ShellState>,
-    cards: State<'_, crate::library_shell::LibraryCards>,
-    drive: Drive<'_>,
-    backups: Backups<'_>,
+pub async fn open_library_profile(
+    app: AppHandle,
     request: Value,
 ) -> Result<EditorSnapshot, Failure> {
-    let opened = redact(state.open_library_card(&cards, request))?;
-    telemetry::global().opened(ProfileSource::Library, None);
-    let profile = state.drive_snapshot(&opened.session_id);
-    fire(&drive, &backups, profile, BackupMode::RetryIfDirty);
-    Ok(opened)
+    off_main(app, move |app| {
+        let state = app.state::<ShellState>();
+        let opened = redact(state.open_library_card(&app.state::<Cards>(), request))?;
+        telemetry::global().opened(ProfileSource::Library, None);
+        let profile = state.drive_snapshot(&opened.session_id);
+        fire(
+            &app.state::<Arc<DriveService>>(),
+            &app.state::<Arc<DriveBackupHub>>(),
+            profile,
+            BackupMode::RetryIfDirty,
+        );
+        Ok(opened)
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn delete_library_profile(
-    state: State<'_, ShellState>,
-    cards: State<'_, crate::library_shell::LibraryCards>,
-    request: Value,
-) -> Result<(), Failure> {
-    redact(state.delete_library_card(&cards, request))
+pub async fn delete_library_profile(app: AppHandle, request: Value) -> Result<(), Failure> {
+    off_main(app, move |app| {
+        redact(
+            app.state::<ShellState>()
+                .delete_library_card(&app.state::<Cards>(), request),
+        )
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn list_templates(
-    state: State<'_, ShellState>,
-    cards: State<'_, crate::library_shell::LibraryCards>,
-) -> Vec<crate::library_shell::TemplateDto> {
-    state.template_list(&cards, &crate::library_shell::templates_dir())
+pub async fn list_templates(
+    app: AppHandle,
+) -> Result<Vec<crate::library_shell::TemplateDto>, Failure> {
+    off_main(app, |app| {
+        Ok(app.state::<ShellState>().template_list(
+            &app.state::<Cards>(),
+            &crate::library_shell::templates_dir(),
+        ))
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn open_template(
-    state: State<'_, ShellState>,
-    cards: State<'_, crate::library_shell::LibraryCards>,
-    request: Value,
-) -> Result<EditorSnapshot, Failure> {
-    let opened = redact(state.open_template_card(&cards, request))?;
-    telemetry::global().opened(ProfileSource::New, None);
-    Ok(opened)
+pub async fn open_template(app: AppHandle, request: Value) -> Result<EditorSnapshot, Failure> {
+    off_main(app, move |app| {
+        let opened = redact(
+            app.state::<ShellState>()
+                .open_template_card(&app.state::<Cards>(), request),
+        )?;
+        telemetry::global().opened(ProfileSource::New, None);
+        Ok(opened)
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn rename_template(
-    cards: State<'_, crate::library_shell::LibraryCards>,
+pub async fn rename_template(
+    app: AppHandle,
     request: Value,
 ) -> Result<crate::library_shell::TemplateRenameDto, Failure> {
-    redact(crate::library_shell::rename_template_card(
-        &cards,
-        &crate::library_shell::templates_dir(),
-        request,
-    ))
+    off_main(app, move |app| {
+        redact(crate::library_shell::rename_template_card(
+            &app.state::<Cards>(),
+            &crate::library_shell::templates_dir(),
+            request,
+        ))
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn delete_template(
-    cards: State<'_, crate::library_shell::LibraryCards>,
-    request: Value,
-) -> Result<(), Failure> {
-    redact(crate::library_shell::delete_template_card(&cards, request))
+pub async fn delete_template(app: AppHandle, request: Value) -> Result<(), Failure> {
+    off_main(app, move |app| {
+        redact(crate::library_shell::delete_template_card(
+            &app.state::<Cards>(),
+            request,
+        ))
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn save_template(
-    state: State<'_, ShellState>,
+pub async fn save_template(
+    app: AppHandle,
     request: Value,
 ) -> Result<crate::library_shell::TemplateReceiptDto, Failure> {
-    redact(state.save_template(&crate::library_shell::templates_dir(), request))
+    off_main(app, move |app| {
+        redact(
+            app.state::<ShellState>()
+                .save_template(&crate::library_shell::templates_dir(), request),
+        )
+    })
+    .await
 }
 
 // ---- Custom output names not used yet (`names_shell.rs`) ----
