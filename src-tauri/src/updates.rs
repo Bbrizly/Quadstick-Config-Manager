@@ -217,14 +217,22 @@ fn allowed_github_release_url(raw: &str) -> Result<&str, QcmError> {
     Ok(raw)
 }
 
+// Up to 15 s on a slow network, so off the main thread.
 #[tauri::command]
-pub fn check_for_update(request: Value) -> Result<UpdateResultDto, Failure> {
+pub async fn check_for_update(request: Value) -> Result<UpdateResultDto, Failure> {
     let request: CheckForUpdateRequest = redact(parse(request, "check_for_update request"))?;
     let current = request
         .current_version
         .filter(|value| !value.trim().is_empty())
         .unwrap_or_else(|| env!("CARGO_PKG_VERSION").to_owned());
-    Ok(latest_async(&current))
+    tauri::async_runtime::spawn_blocking(move || latest_async(&current))
+        .await
+        .map_err(|error| {
+            Box::new(QcmErrorDto::from(&QcmError::Internal(InternalError {
+                what: "update worker",
+                detail: OsDetail::new(error.to_string()),
+            })))
+        })
 }
 
 #[tauri::command]

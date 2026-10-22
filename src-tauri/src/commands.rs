@@ -28,8 +28,8 @@ use qcm_core::settings::AppSettingsDto;
 use serde::Serialize;
 use serde_json::Value;
 use std::sync::Arc;
-use tauri::State;
 use tauri::ipc::Channel;
+use tauri::{AppHandle, Manager, State};
 
 use crate::telemetry::{self, AppFeature, InstallFailure, ProfileSource};
 use qcm_core::ErrorCode;
@@ -49,6 +49,25 @@ fn redact<T>(result: Result<T, qcm_core::QcmError>) -> Result<T, Failure> {
 
 fn redact_operation<T>(result: Result<T, DeviceOperationError>) -> Result<T, Failure> {
     result.map_err(|failure| Box::new(QcmErrorDto::new(&failure.error, failure.operation)))
+}
+
+/// Run device work on a blocking worker. A plain command runs on the main
+/// thread, and a QuadStick drive is USB flash behind FAT: a write, a listing or
+/// a stalled volume can take seconds, which would freeze the window.
+async fn off_main<T: Send + 'static>(
+    app: AppHandle,
+    work: impl FnOnce(&AppHandle) -> Result<T, Failure> + Send + 'static,
+) -> Result<T, Failure> {
+    tauri::async_runtime::spawn_blocking(move || work(&app))
+        .await
+        .map_err(|error| {
+            Box::new(QcmErrorDto::from(&QcmError::Internal(
+                qcm_core::error::InternalError {
+                    what: "device worker",
+                    detail: qcm_core::error::OsDetail::new(error.to_string()),
+                },
+            )))
+        })?
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -247,22 +266,23 @@ pub fn get_preference_catalog() -> PreferenceCatalogDto {
 }
 
 #[tauri::command]
-pub fn list_devices(
-    state: State<'_, DeviceShellState>,
-) -> Result<DevicePresenceSnapshotDto, Failure> {
-    redact(state.list_devices())
+pub async fn list_devices(app: AppHandle) -> Result<DevicePresenceSnapshotDto, Failure> {
+    off_main(app, |app| {
+        redact(app.state::<DeviceShellState>().list_devices())
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn refresh_devices(
-    state: State<'_, DeviceShellState>,
-    invalidation: State<'_, DeviceInvalidationHub>,
-) -> Result<DevicePresenceSnapshotDto, Failure> {
-    let snapshot = redact(state.refresh_devices())?;
-    if snapshot.changed {
-        invalidation.notify();
-    }
-    Ok(snapshot)
+pub async fn refresh_devices(app: AppHandle) -> Result<DevicePresenceSnapshotDto, Failure> {
+    off_main(app, |app| {
+        let snapshot = redact(app.state::<DeviceShellState>().refresh_devices())?;
+        if snapshot.changed {
+            app.state::<DeviceInvalidationHub>().notify();
+        }
+        Ok(snapshot)
+    })
+    .await
 }
 
 #[tauri::command]
@@ -277,26 +297,41 @@ pub fn choose_device_folder(
     Ok(snapshot)
 }
 
+// Waits on the device lock, which an install holds for its whole write.
 #[tauri::command]
-pub fn device_location(
-    state: State<'_, DeviceShellState>,
-    request: Value,
-) -> Result<Option<String>, Failure> {
-    redact(state.device_location(request))
+pub async fn device_location(app: AppHandle, request: Value) -> Result<Option<String>, Failure> {
+    off_main(app, move |app| {
+        redact(app.state::<DeviceShellState>().device_location(request))
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn get_device_library(
-    state: State<'_, DeviceShellState>,
+pub async fn get_device_library(
+    app: AppHandle,
     request: Value,
 ) -> Result<DeviceLibrarySnapshotDto, Failure> {
-    redact(state.get_device_library(request))
+    off_main(app, move |app| {
+        redact(app.state::<DeviceShellState>().get_device_library(request))
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn prepare_install(
-    profile_state: State<'_, ShellState>,
-    device_state: State<'_, DeviceShellState>,
+pub async fn prepare_install(app: AppHandle, request: Value) -> Result<InstallPlanDto, Failure> {
+    off_main(app, move |app| {
+        prepare_install_blocking(
+            &app.state::<ShellState>(),
+            &app.state::<DeviceShellState>(),
+            request,
+        )
+    })
+    .await
+}
+
+fn prepare_install_blocking(
+    profile_state: &ShellState,
+    device_state: &DeviceShellState,
     request: Value,
 ) -> Result<InstallPlanDto, Failure> {
     let request: PrepareInstallRequest = redact(parse(request, "prepare_install request"))?;
@@ -347,12 +382,24 @@ pub fn record_install_cancelled(request: Value) -> Result<bool, Failure> {
 }
 
 #[tauri::command]
-pub fn commit_install(
-    state: State<'_, DeviceShellState>,
-    invalidation: State<'_, DeviceInvalidationHub>,
+pub async fn commit_install(
+    app: AppHandle,
     request: Value,
     progress: Channel<InstallProgressDto>,
 ) -> Result<InstallReceiptDto, Failure> {
+    off_main(app, move |app| {
+        commit_install_blocking(app, request, &progress)
+    })
+    .await
+}
+
+fn commit_install_blocking(
+    app: &AppHandle,
+    request: Value,
+    progress: &Channel<InstallProgressDto>,
+) -> Result<InstallReceiptDto, Failure> {
+    let state = app.state::<DeviceShellState>();
+    let invalidation = app.state::<DeviceInvalidationHub>();
     let result = state.commit_install_with_progress(request, |stage| {
         let _ = progress.send(InstallProgressDto::from(stage));
     });
@@ -373,65 +420,79 @@ pub fn commit_install(
 }
 
 #[tauri::command]
-pub fn prepare_delete_device_profile(
-    state: State<'_, DeviceShellState>,
+pub async fn prepare_delete_device_profile(
+    app: AppHandle,
     request: Value,
 ) -> Result<DeletePlanDto, Failure> {
-    redact(state.prepare_delete(request))
+    off_main(app, move |app| {
+        redact(app.state::<DeviceShellState>().prepare_delete(request))
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn commit_delete_device_profile(
-    state: State<'_, DeviceShellState>,
-    invalidation: State<'_, DeviceInvalidationHub>,
+pub async fn commit_delete_device_profile(
+    app: AppHandle,
     request: Value,
 ) -> Result<DeleteReceiptDto, Failure> {
-    let receipt = redact_operation(state.commit_delete(request))?;
-    invalidation.notify();
-    Ok(receipt)
+    off_main(app, move |app| {
+        let receipt = redact_operation(app.state::<DeviceShellState>().commit_delete(request))?;
+        app.state::<DeviceInvalidationHub>().notify();
+        Ok(receipt)
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn rename_device_profile(
-    state: State<'_, DeviceShellState>,
-    invalidation: State<'_, DeviceInvalidationHub>,
+pub async fn rename_device_profile(
+    app: AppHandle,
     request: Value,
 ) -> Result<RenameDeviceProfileReceiptDto, Failure> {
-    let receipt = redact(state.rename_profile(request))?;
-    invalidation.notify();
-    Ok(receipt)
+    off_main(app, move |app| {
+        let receipt = redact(app.state::<DeviceShellState>().rename_profile(request))?;
+        app.state::<DeviceInvalidationHub>().notify();
+        Ok(receipt)
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn open_device_profile(
-    profile_state: State<'_, ShellState>,
-    device_state: State<'_, DeviceShellState>,
+pub async fn open_device_profile(
+    app: AppHandle,
     request: Value,
 ) -> Result<EditorSnapshot, Failure> {
-    let opened = redact(device_state.open_device_profile(request))?;
-    let snapshot = profile_state.open_device_copy(
-        opened.device,
-        opened.generation,
-        opened.name,
-        &opened.csv_text,
-    );
-    telemetry::global().opened(ProfileSource::Device, None);
-    Ok(snapshot)
+    off_main(app, move |app| {
+        let opened = redact(app.state::<DeviceShellState>().open_device_profile(request))?;
+        let snapshot = app.state::<ShellState>().open_device_copy(
+            opened.device,
+            opened.generation,
+            opened.name,
+            &opened.csv_text,
+        );
+        telemetry::global().opened(ProfileSource::Device, None);
+        Ok(snapshot)
+    })
+    .await
 }
 
 #[tauri::command]
-pub fn open_device_preferences(
-    profile_state: State<'_, ShellState>,
-    device_state: State<'_, DeviceShellState>,
+pub async fn open_device_preferences(
+    app: AppHandle,
     request: Value,
 ) -> Result<EditorSnapshot, Failure> {
-    let opened = redact(device_state.open_device_preferences(request))?;
-    Ok(profile_state.open_device_copy(
-        opened.device,
-        opened.generation,
-        opened.name,
-        &opened.csv_text,
-    ))
+    off_main(app, move |app| {
+        let opened = redact(
+            app.state::<DeviceShellState>()
+                .open_device_preferences(request),
+        )?;
+        Ok(app.state::<ShellState>().open_device_copy(
+            opened.device,
+            opened.generation,
+            opened.name,
+            &opened.csv_text,
+        ))
+    })
+    .await
 }
 
 #[tauri::command]

@@ -566,9 +566,15 @@ pub async fn connect_console(
     blocking(&shell, move |s| s.connect(request)).await
 }
 
+// Closing can wait on an exchange in flight and the strength-test cleanup on
+// the serial line, so it is off the main thread like the rest.
 #[tauri::command]
-pub fn close_console(shell: Shell<'_>) {
-    shell.close();
+pub async fn close_console(shell: Shell<'_>) -> Result<(), Failure> {
+    blocking(&shell, |s| {
+        s.close();
+        Ok(())
+    })
+    .await
 }
 
 /// Synchronous on purpose: the native file dialog belongs on the main thread.

@@ -16,6 +16,15 @@ use tauri::State;
 
 type Failure = Box<QcmErrorDto>;
 
+fn join_error(error: impl std::fmt::Display) -> Failure {
+    Box::new(QcmErrorDto::from(&QcmError::Internal(
+        qcm_core::error::InternalError {
+            what: "diagnostics worker",
+            detail: qcm_core::error::OsDetail::new(error.to_string()),
+        },
+    )))
+}
+
 fn redact_err<T>(result: Result<T, QcmError>) -> Result<T, Failure> {
     result.map_err(|error| Box::new(QcmErrorDto::from(&error)))
 }
@@ -686,13 +695,20 @@ pub fn resolve_pending_crash_report(
     }
 }
 
+// Sending waits up to 5 s for the batch to go, so this and the crash report
+// below run on a worker thread rather than freezing the window.
 #[tauri::command]
-pub fn send_feedback(state: State<'_, ShellState>, request: Value) -> Result<(), Failure> {
+pub async fn send_feedback(state: State<'_, ShellState>, request: Value) -> Result<(), Failure> {
     let request: SendFeedbackRequest = redact_err(parse(request, "send_feedback request"))?;
     let settings = state.get_settings();
     redact_err(send_feedback_text(&request.text, settings.usage_analytics))?;
+    let sent = tauri::async_runtime::spawn_blocking(move || {
+        crate::telemetry::global().send_feedback(&request.text)
+    })
+    .await
+    .map_err(join_error)?;
     // The window clears the box on success, so success means the batch went.
-    if crate::telemetry::global().send_feedback(&request.text) {
+    if sent {
         Ok(())
     } else {
         Err(Box::new(QcmErrorDto::from(&QcmError::Internal(
@@ -738,7 +754,7 @@ pub fn get_pending_crash_report(state: State<'_, ShellState>) -> Option<PendingC
 }
 
 #[tauri::command]
-pub fn resolve_crash_report(
+pub async fn resolve_crash_report(
     state: State<'_, ShellState>,
     request: Value,
 ) -> Result<CrashResolveResultDto, Failure> {
@@ -751,14 +767,21 @@ pub fn resolve_crash_report(
             },
         )))
     })?;
-    let result = redact_err(resolve_pending_crash_report(
-        &request.report_id,
-        choice,
-        |report| {
-            crate::telemetry::global()
-                .send_crash_report(report, &state.install_id_for_crash_report())
-        },
-    ))?;
+    // Only a yes may mint an install id, so it is read before the worker
+    // starts and only for a send.
+    let install_id =
+        (choice == CrashReportChoice::Send).then(|| state.install_id_for_crash_report());
+    let report_id = request.report_id;
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        resolve_pending_crash_report(&report_id, choice, |report| {
+            install_id
+                .as_deref()
+                .is_some_and(|id| crate::telemetry::global().send_crash_report(report, id))
+        })
+    })
+    .await
+    .map_err(join_error)
+    .and_then(redact_err)?;
     if choice == CrashReportChoice::Never {
         let settings = state.get_settings();
         redact_err(state.update_settings(json!({

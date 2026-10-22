@@ -53,7 +53,9 @@ pub struct CommunityImportRequest {
     pub csv_name: String,
 }
 
-#[derive(Debug)]
+/// Cheap to clone: the client is a handle, so a command can hand a copy to a
+/// worker thread.
+#[derive(Debug, Clone)]
 pub struct CommunityService {
     http: Client,
     cache: PathBuf,

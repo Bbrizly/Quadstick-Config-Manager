@@ -15,6 +15,13 @@ fn redact<T>(result: Result<T, QcmError>) -> Result<T, Failure> {
     result.map_err(|error| Box::new(QcmErrorDto::from(&error)))
 }
 
+fn join_error(error: impl std::fmt::Display) -> Failure {
+    Box::new(QcmErrorDto::from(&QcmError::Internal(InternalError {
+        what: "Community worker",
+        detail: OsDetail::new(error.to_string()),
+    })))
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct OpenCommunitySheetRequest {
@@ -36,24 +43,38 @@ fn checked_sheet_id(raw: &str) -> Result<&str, QcmError> {
     }
 }
 
+// Both go to the network with a blocking client, so they run on a worker
+// thread. A plain command runs on the main thread, and a slow or offline
+// network would freeze the window for up to the 15 s timeout.
 #[tauri::command]
-pub fn load_community_catalog(
+pub async fn load_community_catalog(
     state: State<'_, CommunityService>,
     request: Value,
 ) -> Result<CommunityCatalogDto, Failure> {
     let request: CommunityLoadRequest = redact(parse(request, "load_community_catalog request"))?;
-    redact(state.load(request.refresh))
+    let service = state.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || service.load(request.refresh))
+        .await
+        .map_err(join_error)
+        .and_then(redact)
 }
 
 #[tauri::command]
-pub fn import_community_profile(
+pub async fn import_community_profile(
     community: State<'_, CommunityService>,
     workbook: State<'_, WorkbookShellState>,
     request: Value,
 ) -> Result<WorkbookImportReviewDto, Failure> {
     let request: CommunityImportRequest =
         redact(parse(request, "import_community_profile request"))?;
-    let bytes = redact(community.download_workbook(&request))?;
+    let service = community.inner().clone();
+    let (request, bytes) = tauri::async_runtime::spawn_blocking(move || {
+        let bytes = service.download_workbook(&request);
+        (request, bytes)
+    })
+    .await
+    .map_err(join_error)?;
+    let bytes = redact(bytes)?;
     let display_name = format!("{}.xlsx", crate::drive::csv_stem(&request.csv_name));
     redact(workbook.import_bytes(&display_name, bytes, ProfileSource::Sheets))
 }
