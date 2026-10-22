@@ -109,18 +109,28 @@ impl LibraryCards {
     }
 
     /// Ids for `paths`, `prefix` keeping library and template ids apart.
+    ///
+    /// A file keeps its id for the run. Home lists more than once at a time
+    /// (a remount, a refresh), the listings run in parallel, and whichever
+    /// answer lands last is what the page shows: retiring ids per listing let
+    /// a slower listing retire the ids on screen, so a card failed to open.
+    /// An id whose file is gone fails to open as a missing file, which it is.
     fn remember(&self, prefix: &str, paths: &[PathBuf]) -> Vec<String> {
         let mut table = self.table();
-        table.generation = table.generation.saturating_add(1);
-        let generation = table.generation;
-        table.paths.retain(|id, _| !id.starts_with(prefix));
         paths
             .iter()
-            .enumerate()
-            .map(|(index, path)| {
-                let id = format!("{prefix}{generation}-{index}");
-                table.paths.insert(id.clone(), path.clone());
-                id
+            .map(|path| {
+                let known = table
+                    .paths
+                    .iter()
+                    .find(|(id, known)| id.starts_with(prefix) && *known == path)
+                    .map(|(id, _)| id.clone());
+                known.unwrap_or_else(|| {
+                    table.generation = table.generation.saturating_add(1);
+                    let id = format!("{prefix}{}", table.generation);
+                    table.paths.insert(id.clone(), path.clone());
+                    id
+                })
             })
             .collect()
     }
@@ -488,7 +498,7 @@ mod tests {
         fs::write(dir.join("notes.txt"), "not a profile").unwrap();
         let files = profile_files(&dir);
         assert_eq!(files.len(), 1);
-        let card = card_facts("lib-1-0".to_owned(), &files[0], false);
+        let card = card_facts("lib-1".to_owned(), &files[0], false);
         assert_eq!(card.name, "Racing");
         assert_eq!(card.title, "");
         assert_eq!((card.modes, card.bindings), (2, 3));
@@ -500,9 +510,17 @@ mod tests {
         let cards = LibraryCards::default();
         let ids = cards.remember("lib-", &files);
         assert_eq!(cards.path(&ids[0]).unwrap(), files[0]);
-        // A new listing retires the old ids.
-        let _ = cards.remember("lib-", &files);
-        assert!(cards.path(&ids[0]).is_err());
+        // The same file keeps its id across listings, so a listing that
+        // lands late cannot retire the ids on screen.
+        assert_eq!(cards.remember("lib-", &files), ids);
+        assert_eq!(cards.path(&ids[0]).unwrap(), files[0]);
+        // Even a listing that missed it (a file made mid-listing) keeps it.
+        let _ = cards.remember("lib-", &[]);
+        assert_eq!(cards.path(&ids[0]).unwrap(), files[0]);
+        // Template ids are a separate table.
+        let tpl = cards.remember("tpl-", &files);
+        assert_ne!(tpl, ids);
+        assert!(cards.remember("lib-", &files)[0] != tpl[0]);
         let _ = fs::remove_dir_all(&dir);
     }
 
