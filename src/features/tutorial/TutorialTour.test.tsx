@@ -1,10 +1,34 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { I18nProvider } from "../../i18n";
 import { TutorialTour } from "./TutorialTour";
 
+afterEach(() => {
+  delete (Element.prototype as { getAnimations?: unknown }).getAnimations;
+});
+
 describe("TutorialTour", () => {
+  // Closed, the tour stays on the page while it fades. A press that still
+  // reaches it then (a synthetic click ignores inert) must not finish it twice:
+  // each finish writes the settings again with a revision already spent.
+  it("finishes once, even if pressed again while fading out", () => {
+    Element.prototype.getAnimations = () => [];
+    const onDone = vi.fn();
+    const view = (open: boolean) => (
+      <I18nProvider initialPreference="en">
+        <TutorialTour open={open} onDone={onDone} />
+      </I18nProvider>
+    );
+    const { rerender } = render(view(true));
+    fireEvent.click(screen.getByRole("button", { name: "Skip the tutorial" }));
+    rerender(view(false));
+    expect(document.querySelector("dialog.closing")).not.toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Next step", hidden: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Skip the tutorial", hidden: true }));
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+
   it("walks steps then finishes", () => {
     const onDone = vi.fn();
     render(

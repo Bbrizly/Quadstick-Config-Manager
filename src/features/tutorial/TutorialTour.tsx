@@ -28,9 +28,14 @@ export function TutorialTour({ open, onDone }: TutorialTourProps) {
   const step = STEPS[index] ?? STEPS[0]!;
   const title = t(step.title);
   const last = index >= STEPS.length - 1;
+  // Closed, it stays while it fades. Nothing pressed then counts: a second
+  // finish would save the settings again on a spent revision.
+  const finish = (): void => {
+    if (open) onDone();
+  };
 
   return (
-    <Dialog open={open} title={title} onClose={onDone}>
+    <Dialog open={open} title={title} onClose={finish}>
       <p aria-live="polite">{t("Tour_StepTourIndex1OfTourSteps", [index + 1, STEPS.length])}</p>
       <p>{t(step.body)}</p>
       <div className="home-start-actions">
@@ -38,11 +43,13 @@ export function TutorialTour({ open, onDone }: TutorialTourProps) {
           type="button"
           disabled={index === 0}
           aria-label={t("Tour_BackToThePreviousStep")}
-          onClick={() => setIndex((value) => Math.max(0, value - 1))}
+          onClick={() => {
+            if (open) setIndex((value) => Math.max(0, value - 1));
+          }}
         >
           {t("Tour_Back")}
         </button>
-        <button type="button" aria-label={t("Tour_SkipTheTutorial")} onClick={onDone}>
+        <button type="button" aria-label={t("Tour_SkipTheTutorial")} onClick={finish}>
           {t("Tour_Skip")}
         </button>
         <button
@@ -50,6 +57,7 @@ export function TutorialTour({ open, onDone }: TutorialTourProps) {
           className="primary-action"
           aria-label={t("Tour_NextStep")}
           onClick={() => {
+            if (!open) return;
             if (last) onDone();
             else setIndex((value) => value + 1);
           }}

@@ -49,7 +49,10 @@ function matches(name: string, want: string | RegExp): boolean {
   return typeof want === "string" ? name === want : want.test(name);
 }
 
+/** On screen and pressable: a closing overlay is inert, and a person cannot
+ *  reach it, so neither does the walk (a synthetic click ignores inert). */
 function visible(element: Element): boolean {
+  if (element.closest("[inert]") !== null) return false;
   return !(element instanceof HTMLElement) || element.offsetParent !== null || element.getClientRects().length > 0;
 }
 

@@ -31,6 +31,69 @@ describe("createFrameCoalescer", () => {
     expect(delivered).toEqual([3, 4]);
   });
 
+  // The stray frame request on a still screen: with no QuadStick, the worker
+  // still says "searching" or "unavailable" now and then (a rescan, a window
+  // coming back). A status is one render, not a stream, so it needs no frame,
+  // and one that says what the screen already shows needs nothing at all.
+  it("asks for no animation frame for a status, only for motion", () => {
+    const runs: (() => void)[] = [];
+    const delivered: string[] = [];
+    const coalescer = createFrameCoalescer(
+      (next) => delivered.push(next.status.kind),
+      (run) => runs.push(run),
+      () => undefined,
+    );
+    coalescer.push({ seq: 1, atMillis: 1, status: { kind: "searching" } });
+    coalescer.push({ seq: 2, atMillis: 2, status: { kind: "unavailable", code: "QCM_DEVICE_IO" } });
+    expect(runs).toHaveLength(0);
+    expect(delivered).toEqual(["searching", "unavailable"]);
+  });
+
+  it("delivers nothing for a frame that draws what the last one drew", () => {
+    const runs: (() => void)[] = [];
+    const delivered: number[] = [];
+    const coalescer = createFrameCoalescer(
+      (next) => delivered.push(next.seq),
+      (run) => runs.push(run),
+      () => undefined,
+    );
+    coalescer.push({ seq: 1, atMillis: 1, status: { kind: "unavailable", code: "QCM_DEVICE_IO" } });
+    coalescer.push({ seq: 2, atMillis: 9, status: { kind: "unavailable", code: "QCM_DEVICE_IO" } });
+    coalescer.push(frame(3));
+    runs[0]?.();
+    coalescer.push(frame(4));
+    coalescer.push({ ...frame(3), seq: 5 });
+    // Frame 4 was overtaken within its frame by one the screen already shows.
+    runs[1]?.();
+    expect(delivered).toEqual([1, 3]);
+    expect(runs).toHaveLength(2);
+  });
+
+  it("a status cancels motion still waiting for its frame, so order holds", () => {
+    const cancel = vi.fn();
+    const runs: (() => void)[] = [];
+    const delivered: string[] = [];
+    const coalescer = createFrameCoalescer(
+      (next) => delivered.push(next.status.kind),
+      (run) => runs.push(run) - 1,
+      cancel,
+    );
+    coalescer.push(frame(1));
+    coalescer.push({ seq: 2, atMillis: 2, status: { kind: "stale", product: "QuadStick" } });
+    expect(cancel).toHaveBeenCalledWith(0);
+    runs[0]?.();
+    expect(delivered).toEqual(["stale"]);
+  });
+
+  it("after a cancel the next status is delivered even if it repeats", () => {
+    const delivered: number[] = [];
+    const coalescer = createFrameCoalescer((next) => delivered.push(next.seq), () => 0, () => undefined);
+    coalescer.push({ seq: 1, atMillis: 1, status: { kind: "searching" } });
+    coalescer.cancel();
+    coalescer.push({ seq: 2, atMillis: 2, status: { kind: "searching" } });
+    expect(delivered).toEqual([1, 2]);
+  });
+
   it("drops a pending frame when cancelled", () => {
     const cancel = vi.fn();
     const delivered: number[] = [];

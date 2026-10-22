@@ -316,11 +316,13 @@ async function walk(): Promise<void> {
   await step("first-run consent and tour", async () => {
     click(await waitButton("No thanks, do not share usage data"));
     await waitFor("tour", () => bodyHas(/Step 1 of \d+/u));
-    for (let n = 0; n < 12 && bodyHas(/Step \d+ of \d+/u); n += 1) {
-      click(await waitButton("Next step"));
+    // Only the open tour: once closed it fades out inert, and is not pressed.
+    for (let n = 0, tour = dialog(/Step \d+ of \d+/u); n < 12 && tour !== null; n += 1, tour = dialog(/Step \d+ of \d+/u)) {
+      click(await waitButton("Next step", tour));
       await sleep(150);
     }
-    await waitFor("tour to close", () => !bodyHas(/Step \d+ of \d+/u));
+    // Its exit is 140 ms; well past that it is stuck, not slow.
+    await waitFor("tour to close", () => !bodyHas(/Step \d+ of \d+/u), 2000);
   });
 
   await step("Home", async () => {

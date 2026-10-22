@@ -10,11 +10,19 @@ export interface FrameCoalescer {
   cancel(): void;
 }
 
+/** What a frame draws: its status, without the sequence and clock. */
+function drawn(frame: LiveSnapshot): string {
+  return JSON.stringify(frame.status);
+}
+
 /**
  * At most one delivery per animation frame, always the newest frame. The
  * stick can report a few hundred times a second; the screen only draws sixty,
  * so every report past the first in a frame would be a React render nobody
- * sees.
+ * sees. Only motion streams: a status (searching, unavailable, stale) is one
+ * render, so it goes at once and asks for no frame, and anything that draws
+ * what the screen already shows is dropped. A still screen with no QuadStick
+ * then requests no frames at all, however often the worker rescans.
  */
 export function createFrameCoalescer(
   deliver: (frame: LiveSnapshot) => void,
@@ -23,21 +31,38 @@ export function createFrameCoalescer(
 ): FrameCoalescer {
   let pending: LiveSnapshot | null = null;
   let handle: number | null = null;
+  let shown: string | null = null;
+  const show = (frame: LiveSnapshot): void => {
+    const key = drawn(frame);
+    if (key === shown) return;
+    shown = key;
+    deliver(frame);
+  };
+  const drop = (): void => {
+    if (handle !== null) cancel(handle);
+    handle = null;
+    pending = null;
+  };
   return {
     push(frame) {
+      if (frame.status.kind !== "reading") {
+        // Motion still waiting for its frame is older than this: drop it.
+        drop();
+        show(frame);
+        return;
+      }
       pending = frame;
       if (handle !== null) return;
       handle = schedule(() => {
         handle = null;
         const latest = pending;
         pending = null;
-        if (latest !== null) deliver(latest);
+        if (latest !== null) show(latest);
       });
     },
     cancel() {
-      if (handle !== null) cancel(handle);
-      handle = null;
-      pending = null;
+      drop();
+      shown = null;
     },
   };
 }
