@@ -23,6 +23,9 @@ const IPC_GLOBAL = new RegExp(`__${"TAURI"}_INTERNALS__`);
 /** The one file allowed to import the Tauri API. */
 const ADAPTER = "./tauriQcmClient.ts";
 
+/** The smoke test's native calls. Built only in Vite mode `e2e`, never shipped. */
+const E2E_ADAPTER = "../e2e/native.ts";
+
 /** The one file allowed to look for the IPC global, to pick a client. */
 const RESOLVER = "./resolve.ts";
 
@@ -53,7 +56,20 @@ describe("import boundary", () => {
   });
 
   it("keeps Tauri imports inside the platform adapter", () => {
-    expect(offenders(TAURI_IMPORT, [ADAPTER])).toEqual([]);
+    expect(Object.keys(sources)).toContain(E2E_ADAPTER);
+    expect(offenders(TAURI_IMPORT, [ADAPTER, E2E_ADAPTER])).toEqual([]);
+  });
+
+  // The smoke test ships in no build but `vite build --mode e2e`: one dynamic
+  // import, behind a mode check Vite folds to false everywhere else.
+  it("reaches the smoke test only from main.tsx, behind Vite mode e2e", () => {
+    const E2E_IMPORT = new RegExp(`(from|import)\\s*\\(?\\s*["'][./]*/${"e2e"}/`);
+    const importers = offenders(E2E_IMPORT, []).filter((path) => !path.startsWith("../e2e/"));
+    expect(importers).toEqual(["../main.tsx"]);
+    const main = sources["../main.tsx"] ?? "";
+    const gate = main.indexOf('import.meta.env.MODE === "e2e"');
+    expect(gate).toBeGreaterThan(-1);
+    expect(main.search(E2E_IMPORT)).toBeGreaterThan(gate);
   });
 
   // A component reaching for the IPC global directly would be the same bug

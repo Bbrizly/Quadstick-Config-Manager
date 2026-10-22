@@ -55,6 +55,24 @@ impl<V> NativeProfilePicker<V> {
 }
 
 impl<V: VolumeSource + Send + Sync> ProfilePicker for NativeProfilePicker<V> {
+    #[cfg(feature = "e2e")]
+    fn pick_open(&self) -> Result<Option<LocalProfileRef>, QcmError> {
+        Ok(None)
+    }
+
+    // The smoke test answers Save As with the dialog's own defaults: the
+    // library folder and the suggested name, `.csv` added as the filter does.
+    #[cfg(feature = "e2e")]
+    fn pick_save_as(&self, suggested: &str) -> Result<Option<LocalProfileRef>, QcmError> {
+        let name = if suggested.to_ascii_lowercase().ends_with(".csv") {
+            suggested.to_owned()
+        } else {
+            format!("{suggested}.csv")
+        };
+        Ok(Some(self.library.adopt(&save_start_dir().join(name))))
+    }
+
+    #[cfg(not(feature = "e2e"))]
     fn pick_open(&self) -> Result<Option<LocalProfileRef>, QcmError> {
         // Blocking, and the commands are synchronous, so this runs on the main
         // thread where a native modal belongs.
@@ -65,6 +83,7 @@ impl<V: VolumeSource + Send + Sync> ProfilePicker for NativeProfilePicker<V> {
         Ok(chosen.map(|path| self.library.adopt(&path)))
     }
 
+    #[cfg(not(feature = "e2e"))]
     fn pick_save_as(&self, suggested: &str) -> Result<Option<LocalProfileRef>, QcmError> {
         let chosen = rfd::FileDialog::new()
             .set_title("Save profile as")

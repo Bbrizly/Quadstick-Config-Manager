@@ -20,6 +20,8 @@ pub mod diagnostics;
 pub mod drive;
 pub mod drive_auto;
 pub mod drive_commands;
+#[cfg(feature = "e2e")]
+pub mod e2e;
 pub mod follow;
 pub mod follow_commands;
 pub mod follow_shell;
@@ -164,6 +166,8 @@ fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 }
 
 pub fn run() {
+    #[cfg(feature = "e2e")]
+    e2e::guard();
     diagnostics::install_panic_hook();
     // A `qcm://profile/<id>` link this launch was given (Windows passes it in
     // argv). Read once; the window asks for it after it mounts.
@@ -181,16 +185,19 @@ pub fn run() {
     // started unless it is a yes to the current notice and the build has a
     // token.
     profiles.apply_telemetry_consent();
-    tauri::Builder::default()
-        // First, so a second launch exits before building anything. With the
-        // deep-link feature it forwards the link to `on_open_url` below; this
-        // callback only brings the running window forward.
-        .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.unminimize();
-                let _ = window.set_focus();
-            }
-        }))
+    let builder = tauri::Builder::default();
+    // First, so a second launch exits before building anything. With the
+    // deep-link feature it forwards the link to `on_open_url` below; this
+    // callback only brings the running window forward. The smoke test build
+    // leaves it out so it can never hand itself to a real running copy.
+    #[cfg(not(feature = "e2e"))]
+    let builder = builder.plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.unminimize();
+            let _ = window.set_focus();
+        }
+    }));
+    builder
         .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
             use tauri_plugin_deep_link::DeepLinkExt;
@@ -335,6 +342,14 @@ pub fn run() {
             close_guard::unsubscribe_close_requests,
             close_guard::ack_close_request,
             close_guard::quit_app,
+            #[cfg(feature = "e2e")]
+            e2e::e2e_log,
+            #[cfg(feature = "e2e")]
+            e2e::e2e_request_close,
+            #[cfg(feature = "e2e")]
+            e2e::e2e_report,
+            #[cfg(feature = "e2e")]
+            e2e::e2e_exit,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")

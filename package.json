@@ -20,7 +20,8 @@
     "test": "vitest run",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "tauri": "tauri",
-    "stage:bridge": "sh scripts/stage-qs-bridge.sh"
+    "stage:bridge": "sh scripts/stage-qs-bridge.sh",
+    "e2e:mac": "sh scripts/e2e-mac.sh"
   },
   "dependencies": {
     "@tauri-apps/api": "2.11.1",

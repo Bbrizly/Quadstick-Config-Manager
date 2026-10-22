@@ -66,10 +66,14 @@ impl NativeDeviceFolderPicker {
 
 impl DeviceFolderPicker for NativeDeviceFolderPicker {
     fn pick_device_folder(&self) -> Result<bool, QcmError> {
-        let Some(root) = rfd::FileDialog::new()
+        // The smoke test's stand-in drive, from the runner's environment.
+        #[cfg(feature = "e2e")]
+        let chosen = crate::e2e::device_dir();
+        #[cfg(not(feature = "e2e"))]
+        let chosen = rfd::FileDialog::new()
             .set_title("Choose QuadStick drive")
-            .pick_folder()
-        else {
+            .pick_folder();
+        let Some(root) = chosen else {
             return Ok(false);
         };
 

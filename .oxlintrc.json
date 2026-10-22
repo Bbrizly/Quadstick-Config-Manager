@@ -55,6 +55,23 @@
       "rules": {
         "no-restricted-imports": "off"
       }
+    },
+    {
+      "files": [
+        "src/e2e/native.ts"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": [
+        "src/e2e/**"
+      ],
+      "rules": {
+        "no-console": "off",
+        "no-await-in-loop": "off"
+      }
     }
   ]
 }

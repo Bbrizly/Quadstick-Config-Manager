@@ -15,6 +15,10 @@ workspace = true
 name = "qcm_tauri_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
 
+[features]
+# The self-driving smoke test (`pnpm e2e:mac`). Never on in a shipped build.
+e2e = []
+
 [build-dependencies]
 tauri-build = { version = "=2.6.3", features = [] }
 

@@ -15,7 +15,13 @@ if (container === null) {
 }
 
 async function mount(): Promise<void> {
-  const client = await resolveQcmClient();
+  let client = await resolveQcmClient();
+  // `vite build --mode e2e` only (`pnpm e2e:mac`). Any other build folds this
+  // to `if (false)` and the smoke test is never bundled.
+  if (import.meta.env.MODE === "e2e") {
+    const { startE2e } = await import("./e2e/runner");
+    client = startE2e(client);
+  }
   createRoot(container as HTMLElement).render(
     <StrictMode>
       <App client={client} />

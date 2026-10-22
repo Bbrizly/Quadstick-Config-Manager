@@ -21,7 +21,21 @@ pnpm dev          # tauri dev
 pnpm test         # fast frontend + Rust unit/parity subset
 pnpm check        # fmt/lint/typecheck/clippy
 pnpm build        # production Tauri build on current OS
+pnpm e2e:mac      # smoke test: the real app walks its own UI (macOS)
 ```
+
+`pnpm e2e:mac` (`scripts/e2e-mac.sh`) builds with the `e2e` cargo feature and
+Vite mode `e2e`, then launches the real binary with HOME set to a throwaway
+`qcm-e2e-home.*` folder, so real profiles, settings and the rescue draft are
+never touched. The WebView walks the UI with real DOM events against the real
+Rust backend (consent, Home, new profile, edit, Save As, undo, problems bar,
+dialog and menu exits, device pages with a stand-in drive, Settings, Arabic,
+the unsaved-changes prompts, quit), checks each screen is idle, writes
+`report.json` and quits. Two runs by default (`QCM_E2E_RUNS`); a failed run
+keeps its folder. No Accessibility or Screen Recording permission is needed.
+Normal builds contain none of it: the feature is off and Vite drops the
+`src/e2e` import outside mode `e2e`. With the screen locked the walk still
+runs, but animation timing is reported as not observable.
 
 Keep `make` as a compatibility/convenience façade if useful:
 
