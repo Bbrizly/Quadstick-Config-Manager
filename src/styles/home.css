@@ -262,13 +262,13 @@
 }
 
 .library-card .card {
-  padding-right: 44px;
+  padding-inline-end: 44px;
 }
 
 .card-menu {
   position: absolute;
   top: 6px;
-  right: 20px;
+  inset-inline-end: 20px;
 }
 
 .card-menu .icon {

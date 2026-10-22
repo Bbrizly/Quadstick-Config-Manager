@@ -9,7 +9,11 @@ const FOCUSABLE = [
 
 export function focusableElements(root: HTMLElement): HTMLElement[] {
   return [...root.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(
-    (element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true",
+    // A closing dialog or menu is inert while it fades: not a Tab stop.
+    (element) =>
+      !element.hasAttribute("hidden") &&
+      element.getAttribute("aria-hidden") !== "true" &&
+      element.closest("[inert]") === null,
   );
 }
 

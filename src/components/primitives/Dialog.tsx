@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 
 import { focusFirst, restoreFocus, trapTabKey } from "./focus";
+import { usePresence } from "./presence";
 
 export interface DialogProps {
   readonly open: boolean;
@@ -14,7 +15,11 @@ export interface DialogProps {
 
 export function Dialog({ open, title, onClose, children, actions, wide = false }: DialogProps) {
   const panelRef = useRef<HTMLDialogElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  // Closed, it stays only while it fades out: inert, so nothing in it can be
+  // pressed twice, and its keys are already gone with the effect below.
+  const { mounted, closing } = usePresence(open, backdropRef);
   // Callers pass a fresh onClose each render; the effect must not rerun for
   // it, or focus jumps back to the first button mid-task.
   const onCloseRef = useRef(onClose);
@@ -38,7 +43,7 @@ export function Dialog({ open, title, onClose, children, actions, wide = false }
     const onKeyDown = (event: KeyboardEvent) => {
       // A dialog opened inside this one (the files window's delete question)
       // owns the keys until it closes.
-      if (panel.querySelector(".dialog-panel") !== null) return;
+      if (panel.querySelector(".dialog-panel:not(.closing)") !== null) return;
       if (event.key === "Escape") {
         event.preventDefault();
         onCloseRef.current();
@@ -54,16 +59,21 @@ export function Dialog({ open, title, onClose, children, actions, wide = false }
     };
   }, [open]);
 
-  if (!open) {
+  if (!mounted) {
     return null;
   }
 
   return (
-    <div className="dialog-backdrop" data-testid="dialog-backdrop">
+    <div
+      ref={backdropRef}
+      className={closing ? "dialog-backdrop closing" : "dialog-backdrop"}
+      data-testid="dialog-backdrop"
+      inert={closing}
+    >
       <dialog
         ref={panelRef}
         open
-        className={wide ? "dialog-panel wide" : "dialog-panel"}
+        className={`dialog-panel${wide ? " wide" : ""}${closing ? " closing" : ""}`}
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}

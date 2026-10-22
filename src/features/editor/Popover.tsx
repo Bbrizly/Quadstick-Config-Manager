@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
+import { usePresence } from "../../components/primitives/presence";
+
 export interface PopoverProps {
   /** The trigger's content (an icon, a label). */
   readonly label: ReactNode;
@@ -23,6 +25,8 @@ export function Popover({ label, name, title, className, disabled = false, align
   const panelId = useId();
   const triggerId = useId();
   const rootRef = useRef<HTMLSpanElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const { mounted, closing } = usePresence(open, panelRef);
   // Closed from inside (Escape, a choice): focus goes back to the button.
   const backToTrigger = (): void => {
     document.getElementById(triggerId)?.focus();
@@ -72,8 +76,13 @@ export function Popover({ label, name, title, className, disabled = false, align
       >
         {label}
       </button>
-      {open ? (
-        <div id={panelId} className={alignEnd ? "popover-panel end" : "popover-panel"}>
+      {mounted ? (
+        <div
+          ref={panelRef}
+          id={panelId}
+          className={`popover-panel${alignEnd ? " end" : ""}${closing ? " closing" : ""}`}
+          inert={closing}
+        >
           {children(close)}
         </div>
       ) : null}

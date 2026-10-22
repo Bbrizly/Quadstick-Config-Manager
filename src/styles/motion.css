@@ -40,10 +40,30 @@
   animation: qcm-drop var(--qcm-dur) var(--qcm-ease-out) backwards;
 }
 
-/* The panel is placed by left/right, not by reading direction, so its
-   origin follows the same physical corner. */
-.popover-panel.end {
+/* It grows from the corner it hangs from, which flips with the language. */
+.popover-panel.end,
+:root[dir="rtl"] .popover-panel {
   transform-origin: top right;
+}
+
+:root[dir="rtl"] .popover-panel.end {
+  transform-origin: top left;
+}
+
+/* Closing is quicker than opening and lets the page through at once. The
+   element is dropped when its "-out" animation finishes (presence.ts). */
+.dialog-backdrop.closing {
+  pointer-events: none;
+  animation: qcm-fade-out var(--qcm-dur-fast) ease-in forwards;
+}
+
+.dialog-panel.closing {
+  animation: qcm-panel-out 140ms ease-in forwards;
+}
+
+.popover-panel.closing {
+  pointer-events: none;
+  animation: qcm-drop-out var(--qcm-dur-fast) ease-in forwards;
 }
 
 /* The problems list rises out of the bar it opens from. */
@@ -134,6 +154,26 @@ input.qcm-switch:checked:active:not(:disabled)::before {
 @keyframes qcm-fade {
   from {
     opacity: 0;
+  }
+}
+
+@keyframes qcm-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes qcm-panel-out {
+  to {
+    opacity: 0;
+    transform: translateY(calc(var(--qcm-rise) * 0.5)) scale(var(--qcm-pop));
+  }
+}
+
+@keyframes qcm-drop-out {
+  to {
+    opacity: 0;
+    transform: translateY(calc(var(--qcm-rise) * -0.5)) scale(var(--qcm-pop));
   }
 }
 

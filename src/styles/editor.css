@@ -847,7 +847,7 @@ button.command.danger svg {
   position: absolute;
   z-index: 50;
   top: calc(100% + 6px);
-  left: 0;
+  inset-inline-start: 0;
   min-width: 220px;
   max-width: 380px;
   padding: 6px;
@@ -857,9 +857,11 @@ button.command.danger svg {
   box-shadow: 0 6px 18px rgb(0 0 0 / 0.16);
 }
 
+/* Avalonia mirrors flyouts in a right-to-left language, so the panel
+   anchors to the trigger's start and end edges, not left and right. */
 .popover-panel.end {
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
 }
 
 .share-menu,
