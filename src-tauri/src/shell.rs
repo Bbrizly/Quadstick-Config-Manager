@@ -36,6 +36,9 @@ pub struct Shell<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> {
     custom_names: FollowLinks,
     pending_follow: Mutex<BTreeMap<SessionId, String>>,
     latest: Mutex<LatestTable>,
+    /// Keep the unsaved-edits draft in the rescue folder. Off for a new shell,
+    /// so tests never write, or clear, the person's real draft.
+    autosave: bool,
 }
 
 impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
@@ -48,6 +51,20 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             custom_names: FollowLinks::in_memory(),
             pending_follow: Mutex::new(BTreeMap::new()),
             latest: Mutex::new(LatestTable::default()),
+            autosave: false,
+        }
+    }
+
+    /// Write the rescue draft as edits happen (the shipped app's autosave).
+    #[must_use]
+    pub const fn with_autosave(mut self) -> Self {
+        self.autosave = true;
+        self
+    }
+
+    fn clear_draft(&self) {
+        if self.autosave {
+            crate::diagnostics::clear_autosave_draft();
         }
     }
 
@@ -211,7 +228,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             .sessions()
             .save(session, request.expected_revision)
             .map(|receipt| SaveReceiptDto::from(&receipt))?;
-        crate::diagnostics::clear_autosave_draft();
+        self.clear_draft();
         self.remember_follow(session);
         Ok(receipt)
     }
@@ -241,7 +258,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             .save_as(session, request.expected_revision, target)
             .map(|receipt| Some(SaveReceiptDto::from(&receipt)))?;
         if receipt.is_some() {
-            crate::diagnostics::clear_autosave_draft();
+            self.clear_draft();
             self.remember_follow(session);
         }
         Ok(receipt)
@@ -273,7 +290,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             outcome,
             CloseOutcomeDto::Closed | CloseOutcomeDto::SavedAndClosed { .. }
         ) {
-            crate::diagnostics::clear_autosave_draft();
+            self.clear_draft();
             self.forget_pending_follow(session);
         }
         if let (CloseOutcomeDto::SavedAndClosed { .. }, Some((key, link))) = (&outcome, follow_key)
@@ -415,6 +432,9 @@ where
     P: ProfilePicker,
     S: SettingsStore,
 {
+    if !shell.autosave {
+        return;
+    }
     if !snapshot.dirty {
         crate::diagnostics::clear_autosave_draft();
         return;
@@ -471,4 +491,5 @@ pub fn native_shell() -> ShellState {
     Shell::new(library, picker, SettingsFile::default_location())
         .with_follow_links(FollowLinks::file(follow))
         .with_custom_names(FollowLinks::file(names))
+        .with_autosave()
 }
