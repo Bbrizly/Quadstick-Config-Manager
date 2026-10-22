@@ -380,6 +380,23 @@ export function EditorWorkspace({
   const selectedMode = snapshot.modes.find(
     (mode) => mode.index === selectedSheet && mode.kind === "mode",
   ) ?? profileModes[0] ?? null;
+  // Saving can add the version header and the blank separators the firmware
+  // needs, moving every row of the mode down. The selection follows its
+  // mapping instead of landing on whatever moved into its old row number.
+  const selectedModeIndex = selectedMode?.index ?? null;
+  const selectedModeStart = selectedMode?.startRow ?? null;
+  const modeStart = useRef<{ readonly sheet: number; readonly start: number } | null>(null);
+  useLayoutEffect(() => {
+    const previous = modeStart.current;
+    modeStart.current =
+      selectedModeIndex === null || selectedModeStart === null ? null : { sheet: selectedModeIndex, start: selectedModeStart };
+    if (previous === null || selectedModeStart === null || previous.sheet !== selectedModeIndex) return;
+    const shift = selectedModeStart - previous.start;
+    if (shift === 0) return;
+    setSelectedRow((row) => (row === null ? row : row + shift));
+    setSelectedRows((picked) => (picked.size === 0 ? picked : new Set([...picked].map((row) => row + shift))));
+    setArmedDelete(null);
+  }, [selectedModeIndex, selectedModeStart]);
   const rows = useMemo(() => bindingRows(snapshot, selectedMode), [snapshot, selectedMode]);
   const wholeZoneRows = useMemo(() => {
     if (selectedZone === null) return rows;
@@ -490,8 +507,15 @@ export function EditorWorkspace({
     [apply],
   );
 
+  // Ctrl+Z or Ctrl+S pressed while an edit is still on its way to native
+  // (leaving a field commits it) waits for that edit, then runs. Dropping it
+  // left the change in place, or unsaved, with no word why.
+  const queuedKey = useRef<"undo" | "save" | null>(null);
   const undo = useCallback(async (): Promise<void> => {
-    if (busy) return;
+    if (busy) {
+      queuedKey.current = "undo";
+      return;
+    }
     setBusy(true);
     try {
       const current = await client.getProfileSnapshot(snapshot.sessionId);
@@ -514,7 +538,10 @@ export function EditorWorkspace({
   }, [busy, client, onSnapshot, refreshAfterConflict, snapshot.sessionId, t]);
 
   const save = useCallback(async (): Promise<void> => {
-    if (busy) return;
+    if (busy) {
+      queuedKey.current = "save";
+      return;
+    }
     setBusy(true);
     try {
       const receipt = snapshot.saveTarget === null
@@ -530,6 +557,13 @@ export function EditorWorkspace({
       setBusy(false);
     }
   }, [busy, client, onSnapshot, refreshAfterConflict, snapshot, t]);
+
+  useEffect(() => {
+    const queued = queuedKey.current;
+    if (busy || queued === null) return;
+    queuedKey.current = null;
+    void (queued === "undo" ? undo() : save());
+  }, [busy, save, undo]);
 
   const saveTemplate = async (name: string): Promise<void> => {
     const write = client.saveTemplate;
