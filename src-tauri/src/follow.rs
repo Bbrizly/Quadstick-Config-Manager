@@ -403,10 +403,9 @@ impl FollowLinks {
         };
         let temp = path.with_extension("json.tmp");
         let written = fs::create_dir_all(parent).is_ok() && fs::write(&temp, bytes).is_ok();
-        #[cfg(target_os = "windows")]
-        if written && path.exists() {
-            let _ = fs::remove_file(path);
-        }
+        // `fs::rename` replaces an existing file on every platform (Windows
+        // too, MOVEFILE_REPLACE_EXISTING), so the old copy is never deleted
+        // first and a crash leaves one whole file or the other.
         if written && fs::rename(&temp, path).is_ok() {
             return true;
         }

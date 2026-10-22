@@ -224,6 +224,19 @@ impl DriveService {
             .collect()
     }
 
+    /// The newest ticket of one profile, without taking a new one. An open
+    /// that retries a failed push uses this: minting its own would stand down
+    /// a save queued just before it, whose bytes it may not have.
+    pub fn current_ticket(&self, key: &str) -> u64 {
+        self.tickets
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .1
+            .get(key)
+            .copied()
+            .unwrap_or(0)
+    }
+
     fn is_latest(&self, key: &str, ticket: u64) -> bool {
         self.tickets
             .lock()
@@ -263,6 +276,7 @@ impl DriveService {
         &self,
         profile: DriveProfileSnapshot,
         ticket: u64,
+        voided: &dyn Fn(String),
     ) -> Option<Result<DriveBackupOutcomeDto, QcmError>> {
         let _gate = self.gate();
         let dirty = self
@@ -270,8 +284,14 @@ impl DriveService {
             .links
             .get(&profile.persistent_key)
             .is_some_and(|link| link.backup_dirty);
-        (dirty && self.is_latest(&profile.persistent_key, ticket) && self.auth.connected())
-            .then(|| self.backup_locked(profile))
+        if !(dirty && self.is_latest(&profile.persistent_key, ticket) && self.auth.connected()) {
+            return None;
+        }
+        // Pushing the file as it is now: older questions are about older bytes.
+        for id in self.drop_conflicts_for(&profile.persistent_key) {
+            voided(id);
+        }
+        Some(self.backup_locked(profile))
     }
 
     fn state(&self) -> MutexGuard<'_, DriveState> {
@@ -281,8 +301,11 @@ impl DriveService {
         self.pending.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
+    /// A Back up press. Like a save, it voids the profile's older questions,
+    /// so a late Yes to one can never put older bytes over this push.
     pub fn backup(&self, profile: DriveProfileSnapshot) -> Result<DriveBackupOutcomeDto, QcmError> {
         let _gate = self.gate();
+        self.drop_conflicts_for(&profile.persistent_key);
         self.backup_locked(profile)
     }
 
@@ -588,6 +611,10 @@ impl DriveService {
     }
 
     pub fn share(&self, profile_key: &str) -> Result<DriveShareDto, QcmError> {
+        // Inside the gate: the link is read, sent and written back whole, and a
+        // push between those steps would have its dirty flag or a recreated
+        // sheet id put back to the old values.
+        let _gate = self.gate();
         let mut link = self
             .state()
             .links
@@ -880,7 +907,11 @@ impl DriveService {
             fs::create_dir_all(parent)
                 .map_err(|error| drive_internal("create Drive state directory", error))?;
         }
-        let text = serde_json::to_vec_pretty(&*self.state())
+        // The lock is held through the write: every caller shares one temp
+        // file, and two saves interleaving would rename a half-written one.
+        // Held, the last save to finish is also the newest state.
+        let state = self.state();
+        let text = serde_json::to_vec_pretty(&*state)
             .map_err(|error| drive_internal("serialize Drive state", error))?;
         let temp = path.with_extension("json.qscm-tmp");
         fs::write(&temp, text).map_err(|error| drive_internal("write Drive state", error))?;
@@ -1207,11 +1238,9 @@ fn read_bounded(mut response: Response, limit: usize) -> std::io::Result<Vec<u8>
 fn read_state(path: &Path) -> Option<DriveState> {
     serde_json::from_slice(&fs::read(path).ok()?).ok()
 }
+// `fs::rename` replaces an existing file on every platform (Windows too,
+// MOVEFILE_REPLACE_EXISTING), so the old state is never deleted first.
 fn replace_file(temp: &Path, target: &Path) -> std::io::Result<()> {
-    #[cfg(target_os = "windows")]
-    if target.exists() {
-        fs::remove_file(target)?;
-    }
     fs::rename(temp, target)
 }
 fn config_dir() -> Option<PathBuf> {

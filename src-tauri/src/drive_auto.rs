@@ -50,8 +50,17 @@ pub fn run_backup(
     profile: DriveProfileSnapshot,
     mode: BackupMode,
 ) -> Option<DriveBackupEventDto> {
-    let ticket = drive.ticket(&profile.persistent_key);
+    let ticket = ticket_for(drive, &profile.persistent_key, mode);
     run_ticketed(drive, profile, mode, ticket, &|_| {})
+}
+
+/// A save takes a new ticket, in save order. A retry only reads the newest
+/// one, so it never supersedes a save queued before it.
+fn ticket_for(drive: &DriveService, key: &str, mode: BackupMode) -> u64 {
+    match mode {
+        BackupMode::AfterSave => drive.ticket(key),
+        BackupMode::RetryIfDirty => drive.current_ticket(key),
+    }
 }
 
 fn run_ticketed(
@@ -65,7 +74,9 @@ fn run_ticketed(
         BackupMode::AfterSave => drive.backup_after_save(profile, ticket, &|resolution_id| {
             deliver(DriveBackupEventDto::Superseded { resolution_id });
         }),
-        BackupMode::RetryIfDirty => drive.retry_if_dirty(profile, ticket),
+        BackupMode::RetryIfDirty => drive.retry_if_dirty(profile, ticket, &|resolution_id| {
+            deliver(DriveBackupEventDto::Superseded { resolution_id });
+        }),
     }?;
     Some(event_of(result))
 }
@@ -96,8 +107,8 @@ pub fn spawn_backup(
     deliver: impl Fn(DriveBackupEventDto) + Send + 'static,
 ) {
     let Some(profile) = profile else { return };
-    // The ticket is taken here, on the saving thread, so save order holds.
-    let ticket = drive.ticket(&profile.persistent_key);
+    // Taken here, on the saving thread, so save order holds.
+    let ticket = ticket_for(&drive, &profile.persistent_key, mode);
     std::thread::spawn(move || {
         if let Some(event) = run_ticketed(&drive, profile, mode, ticket, &deliver) {
             deliver(event);
@@ -499,6 +510,62 @@ mod tests {
                 .is_err()
         );
         assert_eq!(fake.lock().expect("fake").pushes.len(), 1);
+    }
+
+    // A save queued behind other Drive work, then the same file opened: the
+    // open's retry must not stand the save down, or the save never uploads.
+    #[test]
+    fn an_open_right_after_a_save_does_not_cancel_its_push() {
+        let fake = Arc::new(Mutex::new(FakeDrive::default()));
+        let state = state_file("open-after-save");
+        let drive = service(&serve(Arc::clone(&fake)), true, &state);
+        run_backup(&drive, profile("mouse"), BackupMode::AfterSave);
+
+        let save = ticket_for(&drive, "/profiles/Game.csv", BackupMode::AfterSave);
+        // The open runs first and finds nothing dirty yet.
+        assert_eq!(
+            run_backup(&drive, profile("joystick"), BackupMode::RetryIfDirty),
+            None
+        );
+        assert_eq!(
+            run_ticketed(
+                &drive,
+                profile("joystick"),
+                BackupMode::AfterSave,
+                save,
+                &|_| {}
+            ),
+            Some(DriveBackupEventDto::Pushed)
+        );
+        let d = fake.lock().expect("fake");
+        assert!(
+            d.pushes
+                .last()
+                .is_some_and(|body| body.contains("joystick"))
+        );
+    }
+
+    // A Back up press after an unanswered question: the old question goes, so
+    // a late Yes to it cannot put the older bytes back over the newer ones.
+    #[test]
+    fn a_back_up_press_voids_older_questions() {
+        let fake = Arc::new(Mutex::new(FakeDrive::default()));
+        let state = state_file("press-void");
+        let drive = service(&serve(Arc::clone(&fake)), true, &state);
+        run_backup(&drive, profile("mouse"), BackupMode::AfterSave);
+        fake.lock().expect("fake").modified += 1;
+        let Some(DriveBackupEventDto::Conflict {
+            resolution_id: older,
+        }) = run_backup(&drive, profile("joystick"), BackupMode::AfterSave)
+        else {
+            panic!("expected a conflict");
+        };
+        let _ = drive.backup(profile("buttons"));
+        assert!(
+            drive
+                .resolve(&older, ConflictChoice::ReplaceWithMine)
+                .is_err()
+        );
     }
 
     #[test]
