@@ -282,7 +282,7 @@ pub fn global() -> &'static Telemetry {
     GLOBAL.get_or_init(|| {
         Telemetry::new(
             build_token(),
-            kill_switch_from_env(),
+            kill_switch_from_env() || !crate::host::network(),
             Arc::new(PostHogSink::default()),
         )
     })

@@ -39,7 +39,9 @@ impl SettingsFile {
     /// The per-user location for this install.
     #[must_use]
     pub fn default_location() -> Self {
-        config_dir().map_or(Self::Nowhere, |dir| Self::at(dir.join(FILE_NAME)))
+        crate::host::data_dir()
+            .or_else(config_dir)
+            .map_or(Self::Nowhere, |dir| Self::at(dir.join(FILE_NAME)))
     }
 
     fn path(&self) -> Option<&Path> {

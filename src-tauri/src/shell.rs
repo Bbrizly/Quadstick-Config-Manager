@@ -429,6 +429,12 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     pub fn open_unsaved_profile(&self, csv_text: &str) -> EditorSnapshot {
         self.sessions().open_unsaved(csv_text)
     }
+
+    /// For a host: rescue drafts and crash reports go to `dir` from now on.
+    /// Call it between closing one profile and opening the next.
+    pub fn set_recovery_dir(&self, dir: Option<std::path::PathBuf>) {
+        crate::diagnostics::set_recovery_dir(dir);
+    }
 }
 
 fn sync_autosave_draft<L, P, S>(shell: &Shell<L, P, S>, snapshot: &EditorSnapshot)

@@ -27,6 +27,7 @@ pub mod follow_commands;
 pub mod follow_shell;
 pub mod google_auth;
 pub mod google_commands;
+pub mod host;
 pub mod ipc;
 pub mod library_shell;
 pub mod names_shell;
@@ -166,24 +167,32 @@ fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 }
 
 pub fn run() {
+    run_with(host::HostConfig::free(), tauri::generate_context!());
+}
+
+/// The shell inside a host app, with the host's own context (identifier,
+/// icon, assets, capabilities). `run()` is this with the free app's.
+///
+/// # Panics
+///
+/// If a host command shadows a free one, or this is called twice.
+pub fn run_with(mut config: host::HostConfig, context: tauri::Context<tauri::Wry>) {
     #[cfg(feature = "e2e")]
     e2e::guard();
+    if let Err(problem) = config.check() {
+        panic!("{problem}");
+    }
+    host::install(&config);
     diagnostics::install_panic_hook();
     // A `qcm://profile/<id>` link this launch was given (Windows passes it in
     // argv). Read once; the window asks for it after it mounts.
-    registry::remember_launch_args();
-    let google = Arc::new(
-        google_auth::GoogleAuthService::native()
-            .expect("failed to build native Google auth client"),
-    );
-    let drive = Arc::new(
-        drive::DriveService::native(Arc::clone(&google))
-            .expect("failed to build native Drive client"),
-    );
+    if config.deep_links {
+        registry::remember_launch_args();
+    }
     let profiles = shell::native_shell();
     // The saved answer, before any window can ask for anything. Nothing is
     // started unless it is a yes to the current notice and the build has a
-    // token.
+    // token. With network off the telemetry kill switch is on.
     profiles.apply_telemetry_consent();
     let builder = tauri::Builder::default();
     // First, so a second launch exits before building anything. With the
@@ -197,17 +206,49 @@ pub fn run() {
             let _ = window.set_focus();
         }
     }));
+    let deep_links = config.deep_links;
+    let builder = if deep_links {
+        builder.plugin(tauri_plugin_deep_link::init())
+    } else {
+        builder
+    };
+    // Network off: no Google, Drive, Community or Sheets client exists, and
+    // the invoke handler refuses every command that would want one.
+    let builder = if config.network {
+        let google = Arc::new(
+            google_auth::GoogleAuthService::native()
+                .expect("failed to build native Google auth client"),
+        );
+        let drive = Arc::new(
+            drive::DriveService::native(Arc::clone(&google))
+                .expect("failed to build native Drive client"),
+        );
+        builder
+            .manage(
+                community::CommunityService::native()
+                    .expect("failed to build native Community HTTP client"),
+            )
+            .manage(follow_commands::SheetsState::new(Arc::new(
+                follow::NativeSheetFetcher::new().expect("failed to build native Sheets client"),
+            )))
+            .manage(google)
+            .manage(drive)
+            .manage(Arc::new(drive_auto::DriveBackupHub::default()))
+    } else {
+        builder
+    };
     builder
-        .plugin(tauri_plugin_deep_link::init())
-        .setup(|app| {
-            use tauri_plugin_deep_link::DeepLinkExt;
-            // `ProtocolRegistration.cs`: a per-user registration at runtime on
-            // Windows and Linux. macOS takes it from the bundle. Best effort.
-            #[cfg(any(windows, target_os = "linux"))]
-            let _ = app.deep_link().register_all();
-            app.deep_link().on_open_url(|event| {
-                registry::deliver_links(event.urls().iter().map(tauri::Url::as_str));
-            });
+        .setup(move |app| {
+            if deep_links {
+                use tauri_plugin_deep_link::DeepLinkExt;
+                // `ProtocolRegistration.cs`: a per-user registration at runtime on
+                // Windows and Linux. macOS takes it from the bundle. Best effort.
+                #[cfg(any(windows, target_os = "linux"))]
+                let _ = app.deep_link().register_all();
+                app.deep_link().on_open_url(|event| {
+                    registry::deliver_links(event.urls().iter().map(tauri::Url::as_str));
+                });
+            }
             // `StartBridgeIfOn`: left on last time, so on again for this run.
             controller::start_if_on(
                 &app.state::<controller::BridgeRuntime>(),
@@ -231,131 +272,124 @@ pub fn run() {
         .manage(library_shell::LibraryCards::default())
         .manage(workbook_shell::native_workbook_shell())
         .manage(device_shell::native_device_shell())
-        .manage(
-            community::CommunityService::native()
-                .expect("failed to build native Community HTTP client"),
-        )
-        .manage(follow_commands::SheetsState::new(Arc::new(
-            follow::NativeSheetFetcher::new().expect("failed to build native Sheets client"),
-        )))
-        .manage(google)
-        .manage(drive)
-        .manage(Arc::new(drive_auto::DriveBackupHub::default()))
         .manage(console_shell::native_console_shell())
         .manage(streaming::LiveRuntime::new())
         .manage(controller::BridgeRuntime::default())
         .manage(streaming::DeviceInvalidationHub::default())
-        .invoke_handler(tauri::generate_handler![
-            commands::get_app_snapshot,
-            commands::get_settings,
-            commands::update_settings,
-            commands::new_profile,
-            commands::choose_and_open_profile,
-            commands::get_profile_snapshot,
-            commands::apply_editor_ops,
-            commands::undo_editor,
-            commands::save_profile,
-            commands::save_profile_as,
-            commands::close_profile,
-            commands::choose_and_import_workbook,
-            commands::repair_workbook_tab,
-            commands::accept_workbook_import,
-            commands::cancel_workbook_import,
-            commands::export_profile_xlsx,
-            commands::get_preference_catalog,
-            community_commands::load_community_catalog,
-            community_commands::import_community_profile,
-            community_commands::open_community_sheet,
-            google_commands::get_google_auth_status,
-            google_commands::connect_google,
-            google_commands::disconnect_google,
-            drive_commands::backup_profile_to_drive,
-            drive_commands::resolve_drive_conflict,
-            drive_commands::list_drive_backups,
-            drive_commands::restore_drive_backup,
-            drive_commands::restore_drive_backups,
-            drive_commands::share_drive_profile,
-            drive_auto::subscribe_drive_backups,
-            drive_auto::unsubscribe_drive_backups,
-            commands::list_devices,
-            commands::refresh_devices,
-            commands::choose_device_folder,
-            commands::get_device_library,
-            commands::prepare_install,
-            commands::commit_install,
-            commands::prepare_delete_device_profile,
-            commands::commit_delete_device_profile,
-            commands::rename_device_profile,
-            commands::open_device_profile,
-            commands::open_device_preferences,
-            commands::start_live_input,
-            commands::stop_live_input,
-            commands::subscribe_devices_changed,
-            commands::unsubscribe_devices_changed,
-            updates::check_for_update,
-            updates::open_external_url,
-            diagnostics::send_feedback,
-            diagnostics::track_telemetry_event,
-            diagnostics::get_pending_crash_report,
-            diagnostics::resolve_crash_report,
-            diagnostics::get_pending_rescue,
-            diagnostics::open_rescue_profile,
-            diagnostics::discard_pending_rescues,
-            console_shell::list_console_ports,
-            console_shell::connect_console,
-            console_shell::close_console,
-            console_shell::choose_console_profile,
-            console_shell::console_send_profile,
-            console_shell::console_strength_begin,
-            console_shell::console_calibrate,
-            console_shell::console_set_threshold,
-            console_shell::console_strength_end,
-            console_shell::console_record_strength,
-            registry::take_launch_profile_link,
-            registry::open_registry_profile,
-            commands::record_install_cancelled,
-            updates::open_privacy_policy,
-            registry::subscribe_profile_links,
-            registry::unsubscribe_profile_links,
-            controller::get_controller_options,
-            controller::set_controller_bridge,
-            follow_commands::import_sheets_link,
-            follow_commands::get_follow_state,
-            follow_commands::forget_follow_link,
-            follow_commands::check_latest_from_link,
-            follow_commands::replace_with_latest,
-            controller::set_mac_gamepad,
-            controller::subscribe_controller_bridge,
-            controller::unsubscribe_controller_bridge,
-            commands::list_library_profiles,
-            commands::open_library_profile,
-            commands::delete_library_profile,
-            commands::list_templates,
-            commands::open_template,
-            commands::save_template,
-            commands::rename_template,
-            commands::delete_template,
-            commands::device_location,
-            commands::get_custom_name_drafts,
-            commands::set_custom_name_drafts,
-            close_guard::subscribe_close_requests,
-            close_guard::unsubscribe_close_requests,
-            close_guard::ack_close_request,
-            close_guard::quit_app,
-            #[cfg(feature = "e2e")]
-            e2e::e2e_log,
-            #[cfg(feature = "e2e")]
-            e2e::e2e_bring_forward,
-            #[cfg(feature = "e2e")]
-            e2e::e2e_window_state,
-            #[cfg(feature = "e2e")]
-            e2e::e2e_request_close,
-            #[cfg(feature = "e2e")]
-            e2e::e2e_report,
-            #[cfg(feature = "e2e")]
-            e2e::e2e_exit,
-        ])
-        .build(tauri::generate_context!())
+        .invoke_handler(host::invoke_handler(
+            &mut config,
+            tauri::generate_handler![
+                commands::get_app_snapshot,
+                commands::get_settings,
+                commands::update_settings,
+                commands::new_profile,
+                commands::choose_and_open_profile,
+                commands::get_profile_snapshot,
+                commands::apply_editor_ops,
+                commands::undo_editor,
+                commands::save_profile,
+                commands::save_profile_as,
+                commands::close_profile,
+                commands::choose_and_import_workbook,
+                commands::repair_workbook_tab,
+                commands::accept_workbook_import,
+                commands::cancel_workbook_import,
+                commands::export_profile_xlsx,
+                commands::get_preference_catalog,
+                community_commands::load_community_catalog,
+                community_commands::import_community_profile,
+                community_commands::open_community_sheet,
+                google_commands::get_google_auth_status,
+                google_commands::connect_google,
+                google_commands::disconnect_google,
+                drive_commands::backup_profile_to_drive,
+                drive_commands::resolve_drive_conflict,
+                drive_commands::list_drive_backups,
+                drive_commands::restore_drive_backup,
+                drive_commands::restore_drive_backups,
+                drive_commands::share_drive_profile,
+                drive_auto::subscribe_drive_backups,
+                drive_auto::unsubscribe_drive_backups,
+                commands::list_devices,
+                commands::refresh_devices,
+                commands::choose_device_folder,
+                commands::get_device_library,
+                commands::prepare_install,
+                commands::commit_install,
+                commands::prepare_delete_device_profile,
+                commands::commit_delete_device_profile,
+                commands::rename_device_profile,
+                commands::open_device_profile,
+                commands::open_device_preferences,
+                commands::start_live_input,
+                commands::stop_live_input,
+                commands::subscribe_devices_changed,
+                commands::unsubscribe_devices_changed,
+                updates::check_for_update,
+                updates::open_external_url,
+                diagnostics::send_feedback,
+                diagnostics::track_telemetry_event,
+                diagnostics::get_pending_crash_report,
+                diagnostics::resolve_crash_report,
+                diagnostics::get_pending_rescue,
+                diagnostics::open_rescue_profile,
+                diagnostics::discard_pending_rescues,
+                console_shell::list_console_ports,
+                console_shell::connect_console,
+                console_shell::close_console,
+                console_shell::choose_console_profile,
+                console_shell::console_send_profile,
+                console_shell::console_strength_begin,
+                console_shell::console_calibrate,
+                console_shell::console_set_threshold,
+                console_shell::console_strength_end,
+                console_shell::console_record_strength,
+                registry::take_launch_profile_link,
+                registry::open_registry_profile,
+                commands::record_install_cancelled,
+                updates::open_privacy_policy,
+                registry::subscribe_profile_links,
+                registry::unsubscribe_profile_links,
+                controller::get_controller_options,
+                controller::set_controller_bridge,
+                follow_commands::import_sheets_link,
+                follow_commands::get_follow_state,
+                follow_commands::forget_follow_link,
+                follow_commands::check_latest_from_link,
+                follow_commands::replace_with_latest,
+                controller::set_mac_gamepad,
+                controller::subscribe_controller_bridge,
+                controller::unsubscribe_controller_bridge,
+                commands::list_library_profiles,
+                commands::open_library_profile,
+                commands::delete_library_profile,
+                commands::list_templates,
+                commands::open_template,
+                commands::save_template,
+                commands::rename_template,
+                commands::delete_template,
+                commands::device_location,
+                commands::get_custom_name_drafts,
+                commands::set_custom_name_drafts,
+                close_guard::subscribe_close_requests,
+                close_guard::unsubscribe_close_requests,
+                close_guard::ack_close_request,
+                close_guard::quit_app,
+                #[cfg(feature = "e2e")]
+                e2e::e2e_log,
+                #[cfg(feature = "e2e")]
+                e2e::e2e_bring_forward,
+                #[cfg(feature = "e2e")]
+                e2e::e2e_window_state,
+                #[cfg(feature = "e2e")]
+                e2e::e2e_request_close,
+                #[cfg(feature = "e2e")]
+                e2e::e2e_report,
+                #[cfg(feature = "e2e")]
+                e2e::e2e_exit,
+            ],
+        ))
+        .build(context)
         .expect("failed to start the QuadStick Config Manager window")
         .run(|app, event| {
             // A quit the app did not ask for (the menu's Quit) is held the

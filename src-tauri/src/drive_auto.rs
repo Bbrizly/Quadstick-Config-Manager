@@ -129,6 +129,26 @@ pub fn fire(
     });
 }
 
+/// The push a save or an open makes on its own, when this run backs up on
+/// save. A host with backup or network off has nothing to push to.
+pub fn fire_auto<R: tauri::Runtime>(
+    app: &tauri::AppHandle<R>,
+    profile: Option<DriveProfileSnapshot>,
+    mode: BackupMode,
+) {
+    use tauri::Manager;
+    if !crate::host::drive_auto_backup() {
+        return;
+    }
+    let (Some(drive), Some(hub)) = (
+        app.try_state::<Arc<DriveService>>(),
+        app.try_state::<Arc<DriveBackupHub>>(),
+    ) else {
+        return;
+    };
+    fire(&drive, &hub, profile, mode);
+}
+
 #[derive(Default)]
 pub struct DriveBackupHub {
     listeners: Mutex<BTreeMap<u64, Channel<DriveBackupEventDto>>>,

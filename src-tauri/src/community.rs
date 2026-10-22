@@ -186,6 +186,9 @@ fn save_cache(path: &Path, bytes: &[u8]) {
 }
 
 pub(crate) fn app_data_dir() -> PathBuf {
+    if let Some(dir) = crate::host::data_dir() {
+        return dir;
+    }
     #[cfg(target_os = "windows")]
     let base = std::env::var_os("APPDATA").map(PathBuf::from);
     #[cfg(target_os = "macos")]

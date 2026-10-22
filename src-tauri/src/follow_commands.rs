@@ -166,9 +166,8 @@ pub async fn check_latest_from_link(
 
 #[tauri::command]
 pub fn replace_with_latest(
+    app: tauri::AppHandle,
     profiles: State<'_, ShellState>,
-    drive: State<'_, Arc<crate::drive::DriveService>>,
-    backups: State<'_, Arc<crate::drive_auto::DriveBackupHub>>,
     request: Value,
 ) -> Result<LatestReplaceDto, Failure> {
     let replaced = redact(profiles.replace_with_latest(request))?;
@@ -176,12 +175,7 @@ pub fn replace_with_latest(
     // hand them over, in the background: offline never holds up the replace.
     if let LatestReplaceDto::Replaced { snapshot } = &replaced {
         let profile = profiles.drive_snapshot(&snapshot.session_id);
-        crate::drive_auto::fire(
-            &drive,
-            &backups,
-            profile,
-            crate::drive_auto::BackupMode::AfterSave,
-        );
+        crate::drive_auto::fire_auto(&app, profile, crate::drive_auto::BackupMode::AfterSave);
     }
     Ok(replaced)
 }

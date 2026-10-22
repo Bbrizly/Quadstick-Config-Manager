@@ -291,6 +291,14 @@ impl ShellState {
         sessions.open_local(target)
     }
 
+    /// For a host's own Rust: open a file it names, so the path never crosses
+    /// IPC. Saves go back to that file.
+    pub fn open_hosted(&self, path: &Path) -> Result<EditorSnapshot, QcmError> {
+        let mut sessions = self.sessions();
+        let target = sessions.store().adopt(path);
+        sessions.open_local(target)
+    }
+
     /// Delete a card's file, then the link it followed (`DeleteProfileAsync`).
     /// The Google Sheet copy is left alone.
     pub fn delete_library_card(

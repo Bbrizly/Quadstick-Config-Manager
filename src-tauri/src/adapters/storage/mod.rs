@@ -591,9 +591,13 @@ impl FileSystemBackupStore {
         Self { folder }
     }
 
-    /// The shipped location: `QuadStickBackups` in the user's home directory.
+    /// The shipped location: `QuadStickBackups` in the user's home directory,
+    /// or in a host's data folder.
     #[must_use]
     pub fn default_location() -> Self {
+        if let Some(dir) = crate::host::data_dir() {
+            return Self::new(dir.join("QuadStickBackups"));
+        }
         let home = std::env::var_os("HOME")
             .or_else(|| std::env::var_os("USERPROFILE"))
             .map_or_else(std::env::temp_dir, PathBuf::from);

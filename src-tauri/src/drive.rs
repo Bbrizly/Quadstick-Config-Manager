@@ -159,7 +159,9 @@ pub struct DriveService {
 
 impl DriveService {
     pub fn native(auth: Arc<GoogleAuthService>) -> Result<Self, QcmError> {
-        let state_path = config_dir().map(|dir| dir.join("drive-links.json"));
+        let state_path = crate::host::data_dir()
+            .or_else(config_dir)
+            .map(|dir| dir.join("drive-links.json"));
         Self::with_endpoints(auth, SHEETS_BASE, DRIVE_BASE, state_path)
     }
 
@@ -1048,6 +1050,9 @@ fn xlsx_name(name: &str) -> String {
 /// - Linux: [`linux_documents_dir`], the .NET XDG lookup.
 #[must_use]
 pub fn library_dir() -> PathBuf {
+    if let Some(dir) = crate::host::library_dir() {
+        return dir;
+    }
     #[cfg(target_os = "windows")]
     let documents = dirs::document_dir()
         .or_else(|| {

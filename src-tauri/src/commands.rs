@@ -11,8 +11,7 @@ use crate::device_ipc::{
 };
 use crate::device_rename_ipc::RenameDeviceProfileReceiptDto;
 use crate::device_shell::{DeviceOperationError, DeviceShellState};
-use crate::drive::DriveService;
-use crate::drive_auto::{BackupMode, DriveBackupHub, fire};
+use crate::drive_auto::{BackupMode, fire_auto};
 use crate::ipc::{AppSnapshotDto, CloseOutcomeDto, parse};
 use crate::preference_ipc::{PreferenceCatalogDto, preference_catalog};
 use crate::shell::ShellState;
@@ -27,7 +26,6 @@ use qcm_core::profiles::{EditorSnapshot, SaveReceiptDto};
 use qcm_core::settings::AppSettingsDto;
 use serde::Serialize;
 use serde_json::Value;
-use std::sync::Arc;
 use tauri::ipc::Channel;
 use tauri::{AppHandle, Manager, State};
 
@@ -35,9 +33,6 @@ use crate::telemetry::{self, AppFeature, InstallFailure, ProfileSource};
 use qcm_core::ErrorCode;
 
 type Failure = Box<QcmErrorDto>;
-
-type Drive<'a> = State<'a, Arc<DriveService>>;
-type Backups<'a> = State<'a, Arc<DriveBackupHub>>;
 
 fn request_session(request: &Value) -> Option<&str> {
     request.get("sessionId").and_then(Value::as_str)
@@ -114,16 +109,15 @@ pub fn new_profile(
 
 #[tauri::command]
 pub fn choose_and_open_profile(
+    app: AppHandle,
     state: State<'_, ShellState>,
-    drive: Drive<'_>,
-    backups: Backups<'_>,
 ) -> Result<Option<EditorSnapshot>, Failure> {
     let opened = redact(state.choose_and_open_profile())?;
     if let Some(snapshot) = &opened {
         telemetry::global().opened(ProfileSource::File, None);
         // A profile opened from a path retries its backup if it was left dirty.
         let profile = state.drive_snapshot(&snapshot.session_id);
-        fire(&drive, &backups, profile, BackupMode::RetryIfDirty);
+        fire_auto(&app, profile, BackupMode::RetryIfDirty);
     }
     Ok(opened)
 }
@@ -154,9 +148,8 @@ pub fn undo_editor(
 
 #[tauri::command]
 pub fn save_profile(
+    app: AppHandle,
     state: State<'_, ShellState>,
-    drive: Drive<'_>,
-    backups: Backups<'_>,
     request: Value,
 ) -> Result<SaveReceiptDto, Failure> {
     let session = request_session(&request).map(str::to_owned);
@@ -164,15 +157,14 @@ pub fn save_profile(
     telemetry::global().saved();
     // `FireBackupPush`: the local save is done; the push never holds it up.
     let profile = session.and_then(|session| state.drive_snapshot(&session));
-    fire(&drive, &backups, profile, BackupMode::AfterSave);
+    fire_auto(&app, profile, BackupMode::AfterSave);
     Ok(saved)
 }
 
 #[tauri::command]
 pub fn save_profile_as(
+    app: AppHandle,
     state: State<'_, ShellState>,
-    drive: Drive<'_>,
-    backups: Backups<'_>,
     request: Value,
 ) -> Result<Option<SaveReceiptDto>, Failure> {
     let session = request_session(&request).map(str::to_owned);
@@ -180,16 +172,15 @@ pub fn save_profile_as(
     if saved.is_some() {
         telemetry::global().saved();
         let profile = session.and_then(|session| state.drive_snapshot(&session));
-        fire(&drive, &backups, profile, BackupMode::AfterSave);
+        fire_auto(&app, profile, BackupMode::AfterSave);
     }
     Ok(saved)
 }
 
 #[tauri::command]
 pub fn close_profile(
+    app: AppHandle,
     state: State<'_, ShellState>,
-    drive: Drive<'_>,
-    backups: Backups<'_>,
     request: Value,
 ) -> Result<CloseOutcomeDto, Failure> {
     // The session is gone once it closes, so what a save on the way out
@@ -200,7 +191,7 @@ pub fn close_profile(
         .and_then(|session| state.drive_snapshot_before_close(session));
     let outcome = redact(state.close_profile(request))?;
     if matches!(outcome, CloseOutcomeDto::SavedAndClosed { .. }) {
-        fire(&drive, &backups, profile, BackupMode::AfterSave);
+        fire_auto(&app, profile, BackupMode::AfterSave);
     }
     Ok(outcome)
 }
@@ -555,12 +546,7 @@ pub async fn open_library_profile(
         let opened = redact(state.open_library_card(&app.state::<Cards>(), request))?;
         telemetry::global().opened(ProfileSource::Library, None);
         let profile = state.drive_snapshot(&opened.session_id);
-        fire(
-            &app.state::<Arc<DriveService>>(),
-            &app.state::<Arc<DriveBackupHub>>(),
-            profile,
-            BackupMode::RetryIfDirty,
-        );
+        fire_auto(app, profile, BackupMode::RetryIfDirty);
         Ok(opened)
     })
     .await

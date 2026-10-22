@@ -198,6 +198,13 @@ pub fn set_rescue_dir_override(path: Option<PathBuf>) {
         .unwrap_or_else(std::sync::PoisonError::into_inner) = path;
 }
 
+/// A host keeps rescue files, and the crash reports beside them in
+/// `reports`, in one folder it can switch at runtime (`None` puts both back).
+pub fn set_recovery_dir(dir: Option<PathBuf>) {
+    set_pending_dir_override(dir.as_ref().map(|dir| dir.join("reports")));
+    set_rescue_dir_override(dir);
+}
+
 fn pending_dir() -> PathBuf {
     PENDING_DIR_OVERRIDE
         .lock()
@@ -220,6 +227,9 @@ pub fn app_data_dir() -> PathBuf {
 }
 
 fn default_app_data_dir() -> PathBuf {
+    if let Some(dir) = crate::host::data_dir() {
+        return dir;
+    }
     #[cfg(target_os = "macos")]
     {
         std::env::var_os("HOME")
@@ -947,6 +957,19 @@ mod tests {
         assert!(pending_rescue_offer().is_none());
         set_rescue_dir_override(None);
         let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn recovery_dir_moves_rescue_and_reports_together() {
+        let _rescue = RESCUE_TEST_LOCK.lock().expect("rescue test lock");
+        let _pending = PENDING_TEST_LOCK.lock().expect("pending test lock");
+        let defaults = (rescue_dir(), pending_dir());
+        let dir = std::env::temp_dir().join("qcm-recovery-dir-test");
+        set_recovery_dir(Some(dir.clone()));
+        assert_eq!(rescue_dir(), dir);
+        assert_eq!(pending_dir(), dir.join("reports"));
+        set_recovery_dir(None);
+        assert_eq!((rescue_dir(), pending_dir()), defaults);
     }
 
     #[test]
