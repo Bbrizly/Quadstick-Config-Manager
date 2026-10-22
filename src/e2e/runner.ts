@@ -9,6 +9,7 @@
  */
 import type { QcmClient } from "../platform";
 import { all, bodyHas, button, choose, click, dialog, key, nameOf, one, sleep, typeInto, waitButton, waitFor } from "./dom";
+import { type AnimationInfo, describeAnimation, formatAnimation, IdleWatch, judge, settle } from "./idle";
 import * as native from "./native";
 
 interface Problem {
@@ -28,6 +29,7 @@ interface IdleResult {
   readonly screen: string;
   readonly rafCalls: number;
   readonly runningAnimations: readonly string[];
+  readonly excused: readonly string[];
   readonly pageVisible: boolean;
   readonly pass: boolean;
 }
@@ -178,41 +180,56 @@ async function makeVisible(timeoutMs = 3000): Promise<string> {
 }
 
 function animationNames(): string[] {
-  return document.getAnimations().map((animation) => {
-    const name = animation instanceof CSSAnimation ? animation.animationName : animation.id || "animation";
-    const endless = animation.effect?.getTiming().iterations === Infinity;
-    return `${name}:${animation.playState}${endless ? " (infinite)" : ""}`;
-  });
+  return document.getAnimations().map((animation) => `${formatAnimation(describeAnimation(animation))} (${animation.playState})`);
 }
 
-/** At rest the page asks for no frames and holds no animation at all. */
+/** At rest the page asks for no frames and holds no animation at all.
+ *  Rest is measured: entrances are waited out through `finished`, one-shot
+ *  work (the first live-input status once HID is scanned) through a run of
+ *  frame-free seconds, then a 2 s window must start nothing new. */
 async function idle(screen: string): Promise<void> {
   const why = await makeVisible();
-  // Settle first: entrances, and one-shot work such as the first live-input
-  // status arriving once HID has been scanned. Then 2 s must be silent.
-  await sleep(800);
+  // Hidden, WebKit holds animations still, so `finished` would never come.
+  const wait = (ms: number): Promise<AnimationInfo[]> => settle(() => document.getAnimations(), hidden() ? 0 : ms);
+  await wait(3000);
   for (let quietSince = rafCalls, waited = 0; waited < 5000; waited += 1000) {
     await sleep(1000);
     if (rafCalls === quietSince) break;
     quietSince = rafCalls;
   }
+  // Still running after its wait: it would cross the window unseen.
+  const unsettled = await wait(3000);
+  const starts = new IdleWatch(document);
   const before = rafCalls;
-  await sleep(2000);
+  const windowStart = Math.round(performance.now());
+  starts.start(document.getAnimations());
+  // By the clock: a hidden page stretches each short timer.
+  for (const end = performance.now() + 2000; performance.now() < end;) {
+    await sleep(100);
+    starts.sample(document.getAnimations());
+  }
+  const started = starts.stop();
   const raf = rafCalls - before;
-  const animations = animationNames();
+  // Anything still running now started in the window (and is in `started`)
+  // unless it never ends; give a late one its own duration to finish.
+  const left = await wait(1000);
   const visible = !hidden();
   // Hidden, a one-shot entrance is frozen at its start rather than running:
   // only an endless one would still be work once the window shows.
-  const busy = visible ? animations : animations.filter((name) => name.endsWith("(infinite)"));
-  const pass = raf === 0 && busy.length === 0;
-  idles.push({ screen, rafCalls: raf, runningAnimations: animations, pageVisible: visible, pass });
+  const stuck = [...new Set([...unsettled, ...left].map(formatAnimation))]
+    .map((text) => [...unsettled, ...left].find((info) => formatAnimation(info) === text))
+    .filter((info): info is AnimationInfo => info !== undefined && (visible || info.endless));
+  const verdict = judge({ raf, started, stuck });
+  idles.push({ screen, rafCalls: raf, runningAnimations: verdict.busy, excused: verdict.excused, pageVisible: visible, pass: verdict.pass });
   await native.log(
-    `${pass ? "IDLE" : "BUSY"} ${screen}: rAF ${String(raf)}, animations [${animations.join(", ")}]${visible ? "" : `, page hidden: ${why || await hiddenReason()}`}`,
+    `${verdict.pass ? "IDLE" : "BUSY"} ${screen}: rAF ${String(raf)}, window from ${String(windowStart)}ms, animations [${verdict.busy.join("; ")}]`
+      + `${verdict.excused.length === 0 ? "" : `, excused [${verdict.excused.join("; ")}]`}`
+      + `${visible ? "" : `, page hidden: ${why || await hiddenReason()}`}`,
   ).catch(() => undefined);
-  if (!pass) {
+  if (!verdict.pass) {
     for (const stack of rafStacks.slice(-Math.max(raf, 1))) await native.log(`  rAF from ${stack}`).catch(() => undefined);
+    throw new Error(`${screen} is not idle: ${String(raf)} rAF calls, animations [${verdict.busy.join("; ")}]`);
   }
-  if (!pass) throw new Error(`${screen} is not idle: ${String(raf)} rAF calls, animations [${busy.join(", ")}]`);
 }
 
 const UNSAVED = "This profile has unsaved changes. Save them before leaving?";
