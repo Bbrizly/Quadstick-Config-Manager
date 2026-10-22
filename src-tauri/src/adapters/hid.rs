@@ -42,6 +42,9 @@ const USAGE_Y: u16 = 0x31;
 // that a stick at rest costs two wakeups a second, not ten. A report still
 // returns the read at once; only silence waits this long.
 const READ_TIMEOUT_MS: i32 = 500;
+/// The largest input report a descriptor may describe, in bits (4 KiB). A
+/// QuadStick report is a few bytes; this only bounds hostile descriptors.
+const MAX_REPORT_BITS: usize = 8 * 4096;
 
 #[derive(Debug, Default)]
 struct DeviceMap {
@@ -353,6 +356,14 @@ impl HidLayout {
                 // collection are retained for decoding.
                 (0, 0x8) => {
                     let offset = *layout.report_bits.get(&global.report_id).unwrap_or(&0);
+                    // The count is device-supplied. Checked before the field
+                    // loop, so a descriptor claiming billions of fields is
+                    // refused instead of exhausting memory.
+                    let bits = global.report_count.checked_mul(global.report_size)?;
+                    let end = offset.checked_add(bits)?;
+                    if end > MAX_REPORT_BITS {
+                        return None;
+                    }
                     let constant = unsigned & 0x01 != 0;
                     let variable = unsigned & 0x02 != 0;
                     if !constant
@@ -374,10 +385,7 @@ impl HidLayout {
                             }
                         }
                     }
-                    let bits = global.report_count.checked_mul(global.report_size)?;
-                    layout
-                        .report_bits
-                        .insert(global.report_id, offset.checked_add(bits)?);
+                    layout.report_bits.insert(global.report_id, end);
                     local.clear();
                 }
 
@@ -522,7 +530,9 @@ fn normalize(value: i32, minimum: i32, maximum: i32) -> f64 {
     if maximum <= minimum {
         return 0.0;
     }
-    let fraction = f64::from(value - minimum) / f64::from(maximum - minimum);
+    // In f64: a full 32-bit signed range overflows `maximum - minimum` in i32.
+    let fraction =
+        (f64::from(value) - f64::from(minimum)) / (f64::from(maximum) - f64::from(minimum));
     (fraction * 2.0 - 1.0).clamp(-1.0, 1.0)
 }
 
@@ -568,6 +578,26 @@ mod tests {
         assert!(known_identity(0x054C, 0x0268));
         assert!(known_identity(0x057E, 0x2009));
         assert!(!known_identity(0x045E, 0x028E));
+    }
+
+    #[test]
+    fn a_descriptor_claiming_billions_of_fields_is_refused_not_expanded() {
+        let descriptor = [
+            0x05, 0x01, 0x09, 0x05, 0xA1, 0x01, // Generic Desktop, Game Pad, Application
+            0x75, 0x08, // Report Size 8
+            0x97, 0xFF, 0xFF, 0xFF, 0xFF, // Report Count 0xFFFFFFFF
+            0x09, 0x30, // X, repeated for every field
+            0x81, 0x02, // Input (Data, Variable)
+            0xC0,
+        ];
+        assert!(HidLayout::parse(&descriptor).is_none());
+    }
+
+    #[test]
+    fn a_full_32_bit_signed_axis_range_does_not_overflow() {
+        assert_eq!(normalize(i32::MIN, i32::MIN, i32::MAX), -1.0);
+        assert_eq!(normalize(i32::MAX, i32::MIN, i32::MAX), 1.0);
+        assert!(normalize(0, i32::MIN, i32::MAX).abs() < 1e-6);
     }
 
     #[test]
