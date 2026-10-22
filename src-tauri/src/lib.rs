@@ -146,7 +146,12 @@ pub fn registered_commands() -> &'static [&'static str] {
     ]
 }
 
-fn navigation_allowed_for(url: &tauri::webview::Url, development: bool) -> bool {
+/// `dev_url` is the host's own `build.devUrl`, only in debug builds, so a
+/// host app on another dev port is allowed and nothing else is.
+fn navigation_allowed_for(
+    url: &tauri::webview::Url,
+    dev_url: Option<&tauri::webview::Url>,
+) -> bool {
     let packaged = matches!(
         (url.scheme(), url.host_str(), url.port()),
         ("tauri", Some("localhost"), None) | ("http", Some("tauri.localhost"), None)
@@ -154,15 +159,18 @@ fn navigation_allowed_for(url: &tauri::webview::Url, development: bool) -> bool 
     if packaged {
         return true;
     }
-    development
-        && url.scheme() == "http"
-        && url.host_str() == Some("localhost")
-        && url.port() == Some(1420)
+    dev_url.is_some_and(|dev| {
+        url.scheme() == dev.scheme()
+            && url.host_str() == dev.host_str()
+            && url.port_or_known_default() == dev.port_or_known_default()
+    })
 }
 
-fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
+fn navigation_guard<R: tauri::Runtime>(
+    dev_url: Option<tauri::webview::Url>,
+) -> tauri::plugin::TauriPlugin<R> {
     tauri::plugin::Builder::new("qcm-navigation-guard")
-        .on_navigation(|_webview, url| navigation_allowed_for(url, cfg!(debug_assertions)))
+        .on_navigation(move |_webview, url| navigation_allowed_for(url, dev_url.as_ref()))
         .build()
 }
 
@@ -177,6 +185,9 @@ pub fn run() {
 ///
 /// If a host command shadows a free one, or this is called twice.
 pub fn run_with(mut config: host::HostConfig, context: tauri::Context<tauri::Wry>) {
+    let dev_url = cfg!(debug_assertions)
+        .then(|| context.config().build.dev_url.clone())
+        .flatten();
     #[cfg(feature = "e2e")]
     e2e::guard();
     if let Err(problem) = config.check() {
@@ -256,7 +267,7 @@ pub fn run_with(mut config: host::HostConfig, context: tauri::Context<tauri::Wry
             );
             Ok(())
         })
-        .plugin(navigation_guard())
+        .plugin(navigation_guard(dev_url))
         // `MainWindow.Closing`: unsaved work holds the close and the window
         // asks Save / Don't save / Cancel.
         .on_window_event(|window, event| {
@@ -487,7 +498,7 @@ mod tests {
             "http://tauri.localhost/index.html",
         ] {
             let url = Url::parse(allowed).expect("valid app URL");
-            assert!(super::navigation_allowed_for(&url, false), "{allowed}");
+            assert!(super::navigation_allowed_for(&url, None), "{allowed}");
         }
         for forbidden in [
             "https://example.com/",
@@ -499,14 +510,19 @@ mod tests {
             "https://tauri.localhost/index.html",
         ] {
             let url = Url::parse(forbidden).expect("valid forbidden URL");
-            assert!(!super::navigation_allowed_for(&url, false), "{forbidden}");
+            assert!(!super::navigation_allowed_for(&url, None), "{forbidden}");
         }
     }
 
     #[test]
-    fn development_navigation_allows_only_the_pinned_vite_origin() {
-        let vite = Url::parse("http://localhost:1420/").expect("valid Vite URL");
-        assert!(super::navigation_allowed_for(&vite, true));
+    fn development_navigation_allows_only_the_host_dev_origin() {
+        let dev = Url::parse("http://localhost:1420").expect("valid dev URL");
+        let vite = Url::parse("http://localhost:1420/editor").expect("valid Vite URL");
+        assert!(super::navigation_allowed_for(&vite, Some(&dev)));
+        let clinic = Url::parse("http://localhost:1430").expect("valid dev URL");
+        let page = Url::parse("http://localhost:1430/").expect("valid URL");
+        assert!(super::navigation_allowed_for(&page, Some(&clinic)));
+        assert!(!super::navigation_allowed_for(&vite, Some(&clinic)));
         for forbidden in [
             "http://localhost:1421/",
             "https://localhost:1420/",
@@ -514,7 +530,10 @@ mod tests {
             "https://example.com/",
         ] {
             let url = Url::parse(forbidden).expect("valid forbidden URL");
-            assert!(!super::navigation_allowed_for(&url, true), "{forbidden}");
+            assert!(
+                !super::navigation_allowed_for(&url, Some(&dev)),
+                "{forbidden}"
+            );
         }
     }
 }
