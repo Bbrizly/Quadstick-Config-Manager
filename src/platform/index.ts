@@ -38,3 +38,4 @@ export { asQcmError, isQcmCommandError, QcmCommandError, type QcmClient } from "
 export { resolveQcmClient, runningUnderTauri } from "./resolve";
 export { FUNCTIONS, INPUTS, KNOWN_OUTPUTS, LEGACY_INPUTS, PICKER_INPUTS, REAR_JOYSTICK } from "./vocab";
 export type { CustomNameDrafts, LibraryCard, TemplateEntry, TemplateReceipt, TemplateRename } from "./libraryContracts";
+export { NETWORK_METHODS, withoutNetwork, type NetworkMethod } from "./network";

@@ -411,28 +411,30 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
 
               {extra}
 
-              <div className="settings-field">
-                <span className="settings-label">{t("Settings_Updates")}</span>
-                <p className="settings-caption">{t("Settings_UpdatesCaption")}</p>
-                <div className="settings-buttons">
-                  <button
-                    type="button"
-                    disabled={busy || client.checkForUpdate === undefined}
-                    aria-label={t("Settings_CheckUpdates")}
-                    onClick={() => void checkUpdates()}
-                  >
-                    {busy ? t("Settings_Checking") : t("Settings_CheckUpdates")}
-                  </button>
-                  {update?.isNewer === true && update.downloadUrl !== null ? (
-                    <button type="button" disabled={busy} aria-label={t("Settings_OpenDownloadHelp")} onClick={() => void openDownload()}>
-                      {t("Settings_OpenDownload")}
+              {client.checkForUpdate === undefined ? null : (
+                <div className="settings-field">
+                  <span className="settings-label">{t("Settings_Updates")}</span>
+                  <p className="settings-caption">{t("Settings_UpdatesCaption")}</p>
+                  <div className="settings-buttons">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      aria-label={t("Settings_CheckUpdates")}
+                      onClick={() => void checkUpdates()}
+                    >
+                      {busy ? t("Settings_Checking") : t("Settings_CheckUpdates")}
                     </button>
-                  ) : null}
+                    {update?.isNewer === true && update.downloadUrl !== null ? (
+                      <button type="button" disabled={busy} aria-label={t("Settings_OpenDownloadHelp")} onClick={() => void openDownload()}>
+                        {t("Settings_OpenDownload")}
+                      </button>
+                    ) : null}
+                  </div>
+                  <p className="muted settings-version" aria-live="polite">
+                    {update === null ? (version === "" ? "" : t("Settings_YouAreOn", [version])) : updateLine(update, t)}
+                  </p>
                 </div>
-                <p className="muted settings-version" aria-live="polite">
-                  {update === null ? (version === "" ? "" : t("Settings_YouAreOn", [version])) : updateLine(update, t)}
-                </p>
-              </div>
+              )}
             </>
           ) : null}
 
@@ -586,34 +588,37 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
             <>
               <h2 className="settings-heading">{t("Settings_TabContact")}</h2>
               <p className="settings-caption">{t("Settings_ContactIntro")}</p>
-              <h3 className="settings-heading">{t("Settings_SendFeedback")}</h3>
-              <p className="settings-caption">{t("Settings_FeedbackCaption")}</p>
-              <div className="settings-field">
-                <label>
-                  <span>{t("Settings_FeedbackLabel")}</span>
-                  <textarea
-                    aria-label={t("Settings_FeedbackLabel")}
-                    placeholder={t("Settings_FeedbackWatermark")}
-                    value={feedback}
-                    disabled={busy || !settings.usageAnalytics || client.sendFeedback === undefined}
-                    rows={4}
-                    onChange={(event) => setFeedback(event.currentTarget.value)}
-                  />
-                </label>
-                <button
-                  className="primary"
-                  type="button"
-                  disabled={
-                    busy
-                    || !settings.usageAnalytics
-                    || client.sendFeedback === undefined
-                    || feedback.trim() === ""
-                  }
-                  onClick={() => void sendFeedback()}
-                >
-                  {t("Settings_SendFeedback")}
-                </button>
-              </div>
+              {client.sendFeedback === undefined ? null : (
+                <>
+                  <h3 className="settings-heading">{t("Settings_SendFeedback")}</h3>
+                  <p className="settings-caption">{t("Settings_FeedbackCaption")}</p>
+                  <div className="settings-field">
+                    <label>
+                      <span>{t("Settings_FeedbackLabel")}</span>
+                      <textarea
+                        aria-label={t("Settings_FeedbackLabel")}
+                        placeholder={t("Settings_FeedbackWatermark")}
+                        value={feedback}
+                        disabled={busy || !settings.usageAnalytics}
+                        rows={4}
+                        onChange={(event) => setFeedback(event.currentTarget.value)}
+                      />
+                    </label>
+                    <button
+                      className="primary"
+                      type="button"
+                      disabled={
+                        busy
+                        || !settings.usageAnalytics
+                        || feedback.trim() === ""
+                      }
+                      onClick={() => void sendFeedback()}
+                    >
+                      {t("Settings_SendFeedback")}
+                    </button>
+                  </div>
+                </>
+              )}
             </>
           ) : null}
         </div>

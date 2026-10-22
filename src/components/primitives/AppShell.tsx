@@ -14,6 +14,8 @@ export interface AppShellProps {
   readonly onThemePreferenceChange: (preference: ThemePreference) => void;
   readonly onOpenSettings: () => void;
   readonly settingsOpen?: boolean;
+  /** Destinations this client cannot serve (no network: no community). */
+  readonly hidden?: readonly ShellDestination[];
   readonly children: ReactNode;
 }
 
@@ -34,6 +36,7 @@ export function AppShell({
   onThemePreferenceChange,
   onOpenSettings,
   settingsOpen = false,
+  hidden = [],
   children,
 }: AppShellProps) {
   const { t } = useI18n();
@@ -56,7 +59,7 @@ export function AppShell({
           </span>
         </button>
         <nav className="shell-nav" aria-label={t("Rewrite_PrimaryNavigation")}>
-          {DESTINATIONS.map((destination) => (
+          {DESTINATIONS.filter((destination) => !hidden.includes(destination.id)).map((destination) => (
             <button
               className={
                 activeDestination === destination.id && !settingsOpen

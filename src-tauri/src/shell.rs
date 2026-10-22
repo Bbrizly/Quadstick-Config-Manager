@@ -114,19 +114,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         AppSnapshotDto {
             version: env!("CARGO_PKG_VERSION").to_owned(),
             platform: std::env::consts::OS.to_owned(),
-            capabilities: CapabilitiesDto {
-                profile_editing: true,
-                device_install: true,
-                live_input: true,
-                community_catalog: true,
-                google_backup: cfg!(any(
-                    target_os = "macos",
-                    target_os = "windows",
-                    target_os = "linux"
-                )),
-                agent: qcm_core::agent_feature::ENABLED,
-                usage_data: !crate::telemetry::global().disabled_by_environment(),
-            },
+            capabilities: capabilities(crate::host::network()),
             settings: self.settings().snapshot(),
         }
     }
@@ -525,9 +513,36 @@ pub fn native_shell() -> ShellState {
         .with_autosave()
 }
 
+/// What the page may show. Off means gone: a host without the network reports
+/// none of its features, so the page hides them rather than greying them.
+pub(crate) fn capabilities(network: bool) -> CapabilitiesDto {
+    CapabilitiesDto {
+        profile_editing: true,
+        device_install: true,
+        live_input: true,
+        community_catalog: network,
+        google_backup: network
+            && cfg!(any(
+                target_os = "macos",
+                target_os = "windows",
+                target_os = "linux"
+            )),
+        agent: qcm_core::agent_feature::ENABLED,
+        usage_data: network && !crate::telemetry::global().disabled_by_environment(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::suggested_save_name;
+
+    #[test]
+    fn network_off_reports_no_network_features() {
+        let off = super::capabilities(false);
+        assert!(!off.community_catalog && !off.google_backup && !off.usage_data);
+        assert!(off.profile_editing && off.device_install && off.live_input);
+        assert!(super::capabilities(true).community_catalog);
+    }
 
     #[test]
     fn save_as_offers_the_profile_name_not_the_first_mode() {

@@ -51,8 +51,9 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
     return () => { disposed = true; };
   }, [client, showFailure, status]);
 
-  // Avalonia `BackupArea`: the section is always there; a build without
-  // Google says so and greys the switch instead of leaving a gap.
+  // Avalonia `BackupArea`: a build without a Google client says so and greys
+  // the switch. A client with no Google methods at all (network off) has no
+  // section: off means gone.
   const available = status !== undefined && connect !== undefined && disconnect !== undefined;
   const configured = available && auth?.configured !== false && auth?.supported !== false;
   const connected = auth?.connected === true;
@@ -87,6 +88,8 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
     }
   };
 
+  if (!available) return null;
+
   return (
     <section className="settings-drive" aria-labelledby="settings-drive-title">
       <h3 id="settings-drive-title" className="settings-heading">{t("Settings_Backup")}</h3>
@@ -111,14 +114,16 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
             {t("Settings_ReconnectShort")}
           </button>
         ) : null}
-        <button
-          type="button"
-          disabled={busy || !connected || list === undefined}
-          aria-label={t("Settings_ImportDriveHelp")}
-          onClick={() => setPicker({ preCheck: false })}
-        >
-          {t("Settings_ImportDrive")}
-        </button>
+        {list === undefined ? null : (
+          <button
+            type="button"
+            disabled={busy || !connected}
+            aria-label={t("Settings_ImportDriveHelp")}
+            onClick={() => setPicker({ preCheck: false })}
+          >
+            {t("Settings_ImportDrive")}
+          </button>
+        )}
       </div>
       <RestoreAfterConnect
         open={askRestore}

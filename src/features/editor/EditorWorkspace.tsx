@@ -91,16 +91,18 @@ export interface EditorWorkspaceProps {
   readonly snapshot: EditorSnapshot;
   readonly onSnapshot: (snapshot: EditorSnapshot) => void;
   /** Install, the destination, pinned at the right of the command bar. */
-  readonly onInstall?: () => void;
+  readonly onInstall?: (() => void) | undefined;
   /** The quick guide behind `?` (F1). */
-  readonly onHelp?: () => void;
+  readonly onHelp?: (() => void) | undefined;
   /**
    * The Share flyout's body. The shell owns the Drive and follow actions and
    * puts their buttons into this element while the flyout is open; their
    * dialogs and messages stay mounted in the shell.
    */
-  readonly onShareSlot?: (element: HTMLElement | null) => void;
+  readonly onShareSlot?: ((element: HTMLElement | null) => void) | undefined;
   readonly busyExternal?: boolean;
+  /** A line from whoever hosts the editor, shown in its header. */
+  readonly hostBanner?: string | undefined;
 }
 
 type EditorView = "device" | "parts" | "rows";
@@ -238,6 +240,7 @@ export function EditorWorkspace({
   onInstall,
   onHelp,
   onShareSlot,
+  hostBanner,
   busyExternal = false,
 }: EditorWorkspaceProps) {
   const { t, plural } = useI18n();
@@ -797,14 +800,16 @@ export function EditorWorkspace({
           disabled={locked}
           onCommit={(bare) => setCell(fileNameRow(snapshot), 0, `${bare}.csv`)}
         />
-        <Popover
-          label={<Icon name="share" />}
-          name={t("Shell_ShareThisProfileAsA")}
-          title={t("Shell_ShareAsAGoogleSheet")}
-          className="command quiet"
-        >
-          {() => <div className="share-menu" ref={onShareSlot} />}
-        </Popover>
+        {onShareSlot === undefined ? null : (
+          <Popover
+            label={<Icon name="share" />}
+            name={t("Shell_ShareThisProfileAsA")}
+            title={t("Shell_ShareAsAGoogleSheet")}
+            className="command quiet"
+          >
+            {() => <div className="share-menu" ref={onShareSlot} />}
+          </Popover>
+        )}
         <span className="editorchrome-rule" aria-hidden="true" />
         {selectedMode !== null && !onCustomNames ? (
           <UnusedButton
@@ -920,26 +925,29 @@ export function EditorWorkspace({
         >
           <Icon name="save" />
         </button>
-        <button
-          className="primary install"
-          type="button"
-          disabled={locked || onInstall === undefined}
-          aria-label={t("Shell_InstallThisProfileOntoA")}
-          onClick={onInstall}
-        >
-          <Icon name="install" />
-          <span>{t("Shell_InstallToQuadStick")}</span>
-        </button>
-        <button
-          className="command quiet"
-          type="button"
-          disabled={onHelp === undefined}
-          aria-label={t("Shell_OpenTheQuickGuideShortcut")}
-          title={t("Shell_HowItWorksF1")}
-          onClick={onHelp}
-        >
-          <Icon name="help" />
-        </button>
+        {onInstall === undefined ? null : (
+          <button
+            className="primary install"
+            type="button"
+            disabled={locked}
+            aria-label={t("Shell_InstallThisProfileOntoA")}
+            onClick={onInstall}
+          >
+            <Icon name="install" />
+            <span>{t("Shell_InstallToQuadStick")}</span>
+          </button>
+        )}
+        {onHelp === undefined ? null : (
+          <button
+            className="command quiet"
+            type="button"
+            aria-label={t("Shell_OpenTheQuickGuideShortcut")}
+            title={t("Shell_HowItWorksF1")}
+            onClick={onHelp}
+          >
+            <Icon name="help" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -1344,6 +1352,9 @@ export function EditorWorkspace({
       {snapshot.dirty ? (
         <span className="visually-hidden" role="img" aria-label={t("Main_ThisProfileHasUnsavedChanges")}>*</span>
       ) : null}
+      {hostBanner === undefined || hostBanner === "" ? null : (
+        <p className="editor-host-banner" data-testid="editor-host-banner">{hostBanner}</p>
+      )}
       {chrome}
       <div className="editor-plate">
         {sidebar}

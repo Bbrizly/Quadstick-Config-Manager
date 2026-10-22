@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { AppShell, type ShellDestination } from "../components/primitives/AppShell";
-import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { DriveBackupNotices } from "../features/cloud/DriveBackupNotices";
 import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/GoogleDrivePanel";
@@ -41,6 +40,8 @@ import {
   applyThemePreference,
   type ThemePreference,
 } from "./theme";
+import { hasShareActions } from "./shareActions";
+import { saveThenClose, UnsavedChangesDialog } from "./unsavedChanges";
 
 const DESTINATION_COPY: Record<ShellDestination, { title: MessageKey; detail: MessageKey }> = {
   home: { title: "Rewrite_ProductName", detail: "Shell_ProfilesYouSaveWillShow" },
@@ -52,6 +53,8 @@ const DESTINATION_COPY: Record<ShellDestination, { title: MessageKey; detail: Me
 };
 
 const DEFAULT_CLIENT = new MockQcmClient();
+const NO_HIDDEN: readonly ShellDestination[] = [];
+const HIDE_COMMUNITY: readonly ShellDestination[] = ["community"];
 
 interface AppProps {
   readonly client?: QcmClient;
@@ -534,16 +537,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     if (editor === null || closing) return;
     setClosing(true);
     try {
-      if (editor.saveTarget === null) {
-        const receipt = await client.saveProfileAs(editor.sessionId, editor.revision);
-        if (receipt === null) return;
-        const outcome = await client.closeProfile(editor.sessionId, "if_clean");
-        if (outcome.kind === "keptOpenUnsavedChanges") {
-          throw new Error("profile remained dirty after save as");
-        }
-      } else {
-        await client.closeProfile(editor.sessionId, "save");
-      }
+      if (!(await saveThenClose(client, editor))) return;
       finishEditorClose(pendingDestination ?? "home");
     } catch (reason) {
       showFailure(reason);
@@ -701,7 +695,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
             setSettingsTab("help");
             setSettingsOpen(true);
           }}
-          onShareSlot={setShareSlot}
+          onShareSlot={hasShareActions(client) ? setShareSlot : undefined}
           busyExternal={closing}
         />
       </section>
@@ -759,7 +753,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           setReviewFromSheet(false);
           setMessage("");
         }}
-        onOpenCommunity={() => setActiveDestination("community")}
+        onOpenCommunity={client.loadCommunityCatalog === undefined ? undefined : () => setActiveDestination("community")}
         onManageDevice={() => setFilesOpen(true)}
         onOpenHelp={() => {
           setSettingsTab("help");
@@ -826,6 +820,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           setSettingsOpen((open) => !open);
         }}
         settingsOpen={settingsOpen}
+        hidden={client.loadCommunityCatalog === undefined ? HIDE_COMMUNITY : NO_HIDDEN}
       >
         {content}
       </AppShell>
@@ -877,25 +872,14 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         onAccept={() => void acceptWorkbook()}
         onCancel={() => void cancelWorkbook()}
       />
-      <Dialog
+      <UnsavedChangesDialog
         open={closePromptOpen}
-        title={t("Shell_Profile")}
-        onClose={cancelClose}
-        actions={
-          <>
-            <button type="button" disabled={closing} onClick={cancelClose}>{t("Device_Cancel")}</button>
-            <button type="button" disabled={closing} onClick={() => void discardAndClose()}>{t("Main_DonTSave")}</button>
-            {closePromptFor === "prefs" ? null : (
-              <button className="primary" type="button" data-autofocus disabled={closing} onClick={() => void saveAndClose()}>
-                {t("Shell_SaveCtrlS")}
-              </button>
-            )}
-          </>
-        }
-      >
-        <p>{t("Main_ThisProfileHasUnsavedChanges")}</p>
-        {closePromptFor === "prefs" ? <p>{t("Rewrite_SaveFromThePageFirst")}</p> : null}
-      </Dialog>
+        closing={closing}
+        canSave={closePromptFor !== "prefs"}
+        onCancel={cancelClose}
+        onDiscard={() => void discardAndClose()}
+        onSave={() => void saveAndClose()}
+      />
       <DeviceFilesDialog
         client={client}
         open={filesOpen}

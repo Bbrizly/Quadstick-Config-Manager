@@ -32,7 +32,8 @@ export interface HomePageProps {
   readonly sheetsMessage?: string;
   /** A single Drive backup restored into the review (no bulk restore). */
   readonly onDriveReview?: (review: WorkbookImportReview) => void;
-  readonly onOpenCommunity: () => void;
+  /** Left out when the client has no community list: no button. */
+  readonly onOpenCommunity?: (() => void) | undefined;
   readonly onManageDevice: () => void;
   readonly onOpenHelp: () => void;
   readonly onOpenRescue: () => void;
@@ -330,15 +331,17 @@ export function HomePage({
             <Icon name="template" size={28} />
             <span>{t("Shell_UseTemplate")}</span>
           </button>
-          <button
-            className="homeaction"
-            type="button"
-            aria-label={t("Shell_BrowseTheCommunityListOf")}
-            onClick={onOpenCommunity}
-          >
-            <Icon name="community" size={28} />
-            <span>{t("Shell_CommunityProfiles")}</span>
-          </button>
+          {onOpenCommunity === undefined ? null : (
+            <button
+              className="homeaction"
+              type="button"
+              aria-label={t("Shell_BrowseTheCommunityListOf")}
+              onClick={onOpenCommunity}
+            >
+              <Icon name="community" size={28} />
+              <span>{t("Shell_CommunityProfiles")}</span>
+            </button>
+          )}
           <button
             className="homeaction"
             type="button"
