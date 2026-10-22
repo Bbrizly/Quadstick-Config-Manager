@@ -3,6 +3,7 @@
 @import "./settings.css";
 @import "./editor.css";
 @import "./surfaces.css";
+@import "./motion.css";
 
 * {
   box-sizing: border-box;
@@ -55,6 +56,43 @@ select {
   border-radius: var(--qcm-radius-field);
   background-color: var(--qcm-field-bg);
   color: var(--qcm-text);
+}
+
+/* Fluent fields brighten under the pointer and grey out when off. */
+:where(select, textarea, input:not([type="checkbox"], [type="radio"], [type="range"])) {
+  transition:
+    background-color 100ms ease,
+    border-color 100ms ease;
+}
+
+:where(select, textarea, input:not([type="checkbox"], [type="radio"], [type="range"])):where(:hover:not(:disabled)) {
+  background-color: var(--qcm-surface);
+}
+
+:where(select, textarea, input:not([type="checkbox"], [type="radio"], [type="range"])):where(:disabled) {
+  border-color: var(--qcm-border);
+  color: var(--qcm-disabled-text);
+  cursor: not-allowed;
+}
+
+/* The parts of the page the browser draws, in the app's own colours. */
+:root {
+  scrollbar-color: var(--qcm-border) transparent;
+}
+
+::selection {
+  background: var(--qcm-selection-tint);
+  color: var(--qcm-text);
+}
+
+input,
+textarea {
+  caret-color: var(--qcm-accent);
+}
+
+input[type="number"],
+.problems-toggle {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Avalonia Fluent ComboBox: the native popup button gives way to the same
@@ -727,7 +765,6 @@ input.qcm-switch::before {
   height: 12px;
   border-radius: 50%;
   background: var(--qcm-text-secondary);
-  transition: left 100ms ease-out;
 }
 
 input.qcm-switch:checked {
@@ -736,7 +773,7 @@ input.qcm-switch:checked {
 }
 
 input.qcm-switch:checked::before {
-  left: 23px;
+  transform: translateX(20px);
   background: var(--qcm-on-accent);
 }
 

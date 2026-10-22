@@ -521,3 +521,11 @@ button.link-close {
 .device-page-copy {
   gap: 0;
 }
+
+/* "Installing to" and its drive picker sit on one line, 8 apart. */
+.device-picker-label {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--qcm-space-sm);
+}

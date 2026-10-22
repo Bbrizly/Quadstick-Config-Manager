@@ -1022,9 +1022,9 @@ export function EditorWorkspace({
           </select>
           <span className="device-status" title={connected ? t("Main_WhatALitRowMeans") : undefined}>
             {connected ? (
-              <StatusChip status={{ kind: "ready", text: t("Main_QuadStickConnected") }} />
+              <StatusChip key="connected" status={{ kind: "ready", text: t("Main_QuadStickConnected") }} />
             ) : (
-              <span className="status-chip status-info">
+              <span key="absent" className="status-chip status-info">
                 <span className="status-dot" aria-hidden="true" />
                 <span>{t("Main_NoQuadStickDetected")}</span>
               </span>

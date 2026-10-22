@@ -135,7 +135,7 @@ export function ProblemsDock({ issues, status, onFocusIssue, onStatus, onMoveToN
           <span>{label}</span>
         </button>
         <div className="problems-status" role="status" aria-live={status.kind === "error" ? "assertive" : "polite"}>
-          <StatusChip status={status} />
+          <StatusChip key={`${status.kind}:${status.text}`} status={status} />
         </div>
         {expanded && errors > 0 ? (
           <button

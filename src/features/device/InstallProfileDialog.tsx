@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
+import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
@@ -77,6 +78,11 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         reportCancel("cancelled_device");
       }
     }
+    // This install's result belongs to this time it was open.
+    setPlan(null);
+    setReceipt(null);
+    setMessage("");
+    setPrepared(false);
     onClose();
   };
 
@@ -183,7 +189,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
             )}
           </>
         ) : (
-          <button className="primary-action" type="button" data-autofocus onClick={onClose}>
+          <button className="primary-action" type="button" data-autofocus onClick={close}>
             {t("Install_Close")}
           </button>
         )
@@ -245,7 +251,17 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         {receipt?.backup === null || receipt?.backup === undefined ? null : (
           <p>{t("Install_BackupPath", [receipt.backup])}</p>
         )}
-        {message === "" ? null : <output className="feature-status">{message}</output>}
+        {message === "" ? null : receipt === null ? (
+          <output className="feature-status">{message}</output>
+        ) : (
+          // The profile is on the QuadStick: the one moment that gets a mark.
+          <output className="feature-status install-landed">
+            <span className="install-landed-mark" aria-hidden="true">
+              <Icon name="check" size={20} />
+            </span>
+            <span>{message}</span>
+          </output>
+        )}
       </div>
     </Dialog>
   );
