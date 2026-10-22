@@ -7,6 +7,7 @@ use std::sync::Arc;
 use tauri::Manager;
 
 pub mod adapters;
+pub mod close_guard;
 pub mod commands;
 pub mod community;
 pub mod community_commands;
@@ -135,6 +136,10 @@ pub fn registered_commands() -> &'static [&'static str] {
         "device_location",
         "get_custom_name_drafts",
         "set_custom_name_drafts",
+        "subscribe_close_requests",
+        "unsubscribe_close_requests",
+        "ack_close_request",
+        "quit_app",
     ]
 }
 
@@ -204,6 +209,17 @@ pub fn run() {
             Ok(())
         })
         .plugin(navigation_guard())
+        // `MainWindow.Closing`: unsaved work holds the close and the window
+        // asks Save / Don't save / Cancel.
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                let unsaved = window.state::<shell::ShellState>().has_unsaved_work();
+                if window.state::<close_guard::CloseGuard>().hold(unsaved) {
+                    api.prevent_close();
+                }
+            }
+        })
+        .manage(close_guard::CloseGuard::default())
         .manage(profiles)
         .manage(library_shell::LibraryCards::default())
         .manage(workbook_shell::native_workbook_shell())
@@ -315,10 +331,25 @@ pub fn run() {
             commands::device_location,
             commands::get_custom_name_drafts,
             commands::set_custom_name_drafts,
+            close_guard::subscribe_close_requests,
+            close_guard::unsubscribe_close_requests,
+            close_guard::ack_close_request,
+            close_guard::quit_app,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")
         .run(|app, event| {
+            // A quit the app did not ask for (the menu's Quit) is held the
+            // same way while there is unsaved work.
+            if let tauri::RunEvent::ExitRequested {
+                code: None, api, ..
+            } = &event
+            {
+                let unsaved = app.state::<shell::ShellState>().has_unsaved_work();
+                if app.state::<close_guard::CloseGuard>().hold(unsaved) {
+                    api.prevent_exit();
+                }
+            }
             if let tauri::RunEvent::Exit = event {
                 // Every button on the virtual pad is let go before it goes.
                 app.state::<controller::BridgeRuntime>().stop();
@@ -345,7 +376,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 92);
+        assert_eq!(commands.len(), 96);
         for expected in [
             "import_sheets_link",
             "check_latest_from_link",

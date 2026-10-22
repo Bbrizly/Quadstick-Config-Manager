@@ -277,7 +277,16 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     };
   }, [client, t]);
 
+  // The window's close button while a profile has unsaved work
+  // (`MainWindow.Closing`): the same prompt as leaving the profile, and the
+  // app quits once it is answered. Cancel keeps the window.
+  const quitAfterCloseRef = useRef(false);
+  const closeRequestRef = useRef<() => void>(() => undefined);
   const finishEditorClose = useCallback((destination: ShellDestination): void => {
+    if (quitAfterCloseRef.current) {
+      quitAfterCloseRef.current = false;
+      void client.quitApp?.().catch(() => undefined);
+    }
     setEditor(null);
     setDevicePreferences(null);
     setInstallOpen(false);
@@ -288,7 +297,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     const replacement = pendingReplacementRef.current;
     pendingReplacementRef.current = null;
     if (replacement !== null) showEditor(replacement);
-  }, [showEditor]);
+  }, [client, showEditor]);
 
   // Every way a profile arrives (a link, a workbook, a file, recovered
   // work) goes through here. The open profile is closed first, its session
@@ -559,6 +568,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
 
   const cancelClose = useCallback((): void => {
     if (closing) return;
+    quitAfterCloseRef.current = false;
     setClosePromptOpen(false);
     setPendingDestination(null);
     const replacement = pendingReplacementRef.current;
@@ -584,6 +594,45 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     },
     [devicePreferences, editor, requestEditorClose, requestPreferencesClose],
   );
+
+  useEffect(() => {
+    closeRequestRef.current = () => {
+      quitAfterCloseRef.current = true;
+      if (closePromptOpen) return;
+      if (devicePreferences !== null) {
+        void requestPreferencesClose("device");
+      } else if (editor !== null) {
+        void requestEditorClose("home");
+      } else {
+        // Nothing on screen holds the unsaved work, so there is nothing to ask.
+        quitAfterCloseRef.current = false;
+        void client.quitApp?.().catch(() => undefined);
+      }
+    };
+  });
+  useEffect(() => {
+    const subscribe = client.subscribeCloseRequests;
+    if (subscribe === undefined) return undefined;
+    let cancelled = false;
+    let subscription: { dispose(): void } | null = null;
+    void subscribe
+      .call(client, () => {
+        if (cancelled) return;
+        void client.ackCloseRequest?.().catch(() => undefined);
+        closeRequestRef.current();
+      })
+      .then(
+        (next) => {
+          if (cancelled) next.dispose();
+          else subscription = next;
+        },
+        () => undefined,
+      );
+    return () => {
+      cancelled = true;
+      subscription?.dispose();
+    };
+  }, [client]);
 
   let content;
   if (settingsOpen) {

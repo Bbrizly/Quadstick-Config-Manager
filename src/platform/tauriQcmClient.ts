@@ -130,6 +130,13 @@ export class TauriQcmClient implements QcmClient {
     const native = await callArgs<NativeSubscription>("subscribe_profile_links", { onLink: channel });
     return disposal("unsubscribe_profile_links", native.subscriptionId);
   }
+  async subscribeCloseRequests(onRequest: () => void): Promise<Subscription> {
+    const channel = new Channel<boolean>(() => onRequest());
+    const native = await callArgs<NativeSubscription>("subscribe_close_requests", { onRequest: channel });
+    return disposal("unsubscribe_close_requests", native.subscriptionId);
+  }
+  ackCloseRequest(): Promise<void> { return call("ack_close_request"); }
+  quitApp(): Promise<void> { return call("quit_app"); }
   openRegistryProfile(profileId: string): Promise<EditorSnapshot> { return call("open_registry_profile", { profileId }); }
   loadCommunityCatalog(refresh: boolean): Promise<CommunityCatalog> { return call("load_community_catalog", { refresh }); }
   importCommunityProfile(sheetId: string, csvName: string): Promise<WorkbookImportReview> { return call("import_community_profile", { sheetId, csvName }); }
@@ -197,7 +204,9 @@ export const TAURI_COMMANDS = [
   "console_send_profile", "console_strength_begin", "console_calibrate", "console_set_threshold",
   "console_strength_end", "console_record_strength",
   "take_launch_profile_link", "open_registry_profile", "subscribe_profile_links",
-  "unsubscribe_profile_links", "get_controller_options", "set_controller_bridge", "set_mac_gamepad",
+  "unsubscribe_profile_links", "subscribe_close_requests", "unsubscribe_close_requests", "ack_close_request",
+  "quit_app",
+  "get_controller_options", "set_controller_bridge", "set_mac_gamepad",
   "subscribe_controller_bridge", "unsubscribe_controller_bridge",
   "import_sheets_link", "get_follow_state", "forget_follow_link", "check_latest_from_link",
   "replace_with_latest", "restore_drive_backups",

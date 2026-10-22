@@ -87,6 +87,11 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         &self.custom_names
     }
 
+    /// True while any open profile has edits that are not on disk.
+    pub fn has_unsaved_work(&self) -> bool {
+        self.sessions().any_dirty()
+    }
+
     pub(crate) fn sessions(&self) -> MutexGuard<'_, ProfileSessions<Arc<L>>> {
         self.sessions.lock().unwrap_or_else(PoisonError::into_inner)
     }
@@ -245,9 +250,9 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
                 }
                 .into());
             }
-            open.save_target_name().map_or_else(
-                || open.file().document.title().to_owned(),
-                ToString::to_string,
+            suggested_save_name(
+                open.save_target_name().map(ToString::to_string),
+                open.file().document.csv_file_name(),
             )
         };
         let Some(target) = self.picker.pick_save_as(&suggested)? else {
@@ -468,6 +473,26 @@ fn drive_snapshot_of<L: LocalProfileStore>(
     })
 }
 
+/// The name Save As offers (Avalonia `SaveAsync`): the file it already has,
+/// else the profile name from the editor's name box without `.csv`, else
+/// "profile". Never the first mode's name, which is not a file name.
+fn suggested_save_name(target: Option<String>, csv_file_name: Option<&str>) -> String {
+    if let Some(target) = target {
+        return target;
+    }
+    let name = csv_file_name.unwrap_or("").trim();
+    let bare = name
+        .len()
+        .checked_sub(4)
+        .filter(|&cut| name.is_char_boundary(cut) && name[cut..].eq_ignore_ascii_case(".csv"))
+        .map_or(name, |cut| &name[..cut]);
+    if bare.is_empty() {
+        "profile".to_owned()
+    } else {
+        bare.to_owned()
+    }
+}
+
 pub type ShellState = Shell<
     crate::adapters::library::FileSystemProfileLibrary<
         crate::adapters::storage::volumes::PlatformVolumes,
@@ -492,4 +517,24 @@ pub fn native_shell() -> ShellState {
         .with_follow_links(FollowLinks::file(follow))
         .with_custom_names(FollowLinks::file(names))
         .with_autosave()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::suggested_save_name;
+
+    #[test]
+    fn save_as_offers_the_profile_name_not_the_first_mode() {
+        assert_eq!(suggested_save_name(None, Some("untitled.csv")), "untitled");
+        assert_eq!(suggested_save_name(None, Some("Forza.CSV")), "Forza");
+        assert_eq!(suggested_save_name(None, Some("racing")), "racing");
+        assert_eq!(suggested_save_name(None, Some("")), "profile");
+        assert_eq!(suggested_save_name(None, Some(".csv")), "profile");
+        assert_eq!(suggested_save_name(None, None), "profile");
+        assert_eq!(suggested_save_name(None, Some("é.csv")), "é");
+        assert_eq!(
+            suggested_save_name(Some("Kept.csv".to_owned()), Some("untitled.csv")),
+            "Kept.csv"
+        );
+    }
 }

@@ -79,6 +79,13 @@ export interface QcmClient {
   takeLaunchProfileLink?(): Promise<string | null>;
   /** Links the OS hands the running app (macOS, or a second launch). Pending ones arrive at once. */
   subscribeProfileLinks?(onLink: (profileId: string) => void): Promise<Subscription>;
+  /** The window's close button (or the menu's Quit) while a profile has unsaved
+   *  changes: native holds the close and asks the page to prompt. */
+  subscribeCloseRequests?(onRequest: () => void): Promise<Subscription>;
+  /** The page got a close request; without this the next close goes through. */
+  ackCloseRequest?(): Promise<void>;
+  /** The prompt was answered (saved, or Don't save): quit now. */
+  quitApp?(): Promise<void>;
   /** Open an Adaptive Profiles registry profile in the editor, unsaved. */
   openRegistryProfile?(profileId: string): Promise<EditorSnapshot>;
   loadCommunityCatalog?(refresh: boolean): Promise<CommunityCatalog>;
