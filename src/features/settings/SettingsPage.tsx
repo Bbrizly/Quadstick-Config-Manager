@@ -72,6 +72,29 @@ interface SettingsPageProps {
   readonly onReplayTutorial?: () => void;
 }
 
+
+// The keys the update check answers with (`updates.rs`), so a line from it is
+// shown in the person's language rather than in the English it also carries.
+const UPDATE_KEYS: ReadonlySet<string> = new Set<MessageKey>([
+  "Update_CouldNotCheckForUpdates",
+  "Update_CouldNotReachGitHubTo",
+  "Update_GitHubDidNotNameA",
+  "Update_GitHubIsAskingUsTo",
+  "Update_GitHubSentSomethingWeCould",
+  "Update_YouAreOnCurrentLabel",
+  "Update_YouAreOnCurrentWhich",
+]);
+
+function updateLine(result: UpdateResult, t: (key: MessageKey, values?: readonly unknown[]) => string): string {
+  const key = result.messageKey;
+  if (key === undefined || !UPDATE_KEYS.has(key)) return result.message;
+  const args = [...(result.messageArgs ?? [])];
+  if (result.preview === true && args.length === 2) {
+    args[1] = t("Update_LatestAPreviewRelease", [args[1]]);
+  }
+  return t(key as MessageKey, args);
+}
+
 export function SettingsPage({ client, onThemeChange, extra, initialTab = "general", onReplayTutorial }: SettingsPageProps) {
   const { t, preference, setPreference } = useI18n();
   const [settings, setSettings] = useState<AppSettings | null>(null);
@@ -199,7 +222,7 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
     try {
       const result = await check.call(client);
       setUpdate(result);
-      setMessage(result.message);
+      setMessage(updateLine(result, t));
     } catch (reason) {
       setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
     } finally {
@@ -407,7 +430,7 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
                   ) : null}
                 </div>
                 <p className="muted settings-version" aria-live="polite">
-                  {update?.message ?? (version === "" ? "" : t("Settings_YouAreOn", [version]))}
+                  {update === null ? (version === "" ? "" : t("Settings_YouAreOn", [version])) : updateLine(update, t)}
                 </p>
               </div>
             </>

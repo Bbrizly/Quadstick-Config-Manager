@@ -22,13 +22,30 @@ fn redact<T>(result: Result<T, QcmError>) -> Result<T, Failure> {
     result.map_err(|error| Box::new(QcmErrorDto::from(&error)))
 }
 
-/// What a check found, already in words the settings line can show.
+/// What a check found. `message` is the English line; the window shows the
+/// catalog string `message_key` with `message_args` instead, so the line is in
+/// the person's language (`UpdateCheck.cs` uses the same `Update_*` strings).
+/// `preview` means the second argument is a preview release's version.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateResultDto {
     pub message: String,
+    pub message_key: String,
+    pub message_args: Vec<String>,
+    pub preview: bool,
     pub download_url: Option<String>,
     pub is_newer: bool,
+}
+
+fn said(key: &str, args: &[&str], message: String) -> UpdateResultDto {
+    UpdateResultDto {
+        message,
+        message_key: key.to_owned(),
+        message_args: args.iter().map(|arg| (*arg).to_owned()).collect(),
+        preview: false,
+        download_url: None,
+        is_newer: false,
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -87,55 +104,44 @@ fn latest_with_client(http: &Client, current: &str) -> UpdateResultDto {
     {
         Ok(response) => response,
         Err(_) => {
-            return UpdateResultDto {
-                message: format!(
-                    "Could not reach GitHub to check for updates. You are on {current}."
-                ),
-                download_url: None,
-                is_newer: false,
-            };
+            return said(
+                "Update_CouldNotReachGitHubTo",
+                &[current],
+                format!("Could not reach GitHub to check for updates. You are on {current}."),
+            );
         }
     };
 
     let status = response.status().as_u16();
     if status == 403 || status == 429 {
-        return UpdateResultDto {
-            message:
-                "GitHub is asking us to wait before checking again. Try again in a few minutes."
-                    .to_owned(),
-            download_url: None,
-            is_newer: false,
-        };
+        return said(
+            "Update_GitHubIsAskingUsTo",
+            &[],
+            "GitHub is asking us to wait before checking again. Try again in a few minutes."
+                .to_owned(),
+        );
     }
     if !response.status().is_success() {
-        return UpdateResultDto {
-            message: format!(
+        return said(
+            "Update_CouldNotCheckForUpdates",
+            &[&status.to_string(), current],
+            format!(
                 "Could not check for updates (GitHub answered {status}). You are on {current}."
             ),
-            download_url: None,
-            is_newer: false,
-        };
+        );
     }
 
     let body = match response.text() {
         Ok(body) => body,
         Err(_) => {
-            return UpdateResultDto {
-                message: format!("GitHub sent something we could not read. You are on {current}."),
-                download_url: None,
-                is_newer: false,
-            };
+            return unreadable(current);
         }
     };
 
     let root: Value = match serde_json::from_str(&body) {
         Ok(root) => root,
         Err(_) => {
-            return UpdateResultDto {
-                message: format!("GitHub sent something we could not read. You are on {current}."),
-                download_url: None,
-                is_newer: false,
-            };
+            return unreadable(current);
         }
     };
 
@@ -151,41 +157,57 @@ fn latest_with_client(http: &Client, current: &str) -> UpdateResultDto {
     let latest = normalize_tag(tag);
 
     if latest.is_empty() {
-        return UpdateResultDto {
-            message: format!("GitHub did not name a release. You are on {current}."),
-            download_url: None,
-            is_newer: false,
-        };
+        return said(
+            "Update_GitHubDidNotNameA",
+            &[current],
+            format!("GitHub did not name a release. You are on {current}."),
+        );
     }
 
     if compare(&latest, current) <= 0 {
         return UpdateResultDto {
-            message: format!("You are on {current}, which is the latest."),
             download_url: page,
-            is_newer: false,
+            ..said(
+                "Update_YouAreOnCurrentWhich",
+                &[current],
+                format!("You are on {current}, which is the latest."),
+            )
         };
     }
 
     let label = if prerelease {
         format!("{latest} (a preview release)")
     } else {
-        latest
+        latest.clone()
     };
     UpdateResultDto {
-        message: format!("You are on {current}. {label} is out."),
+        preview: prerelease,
         download_url: page,
         is_newer: true,
+        ..said(
+            "Update_YouAreOnCurrentLabel",
+            &[current, &latest],
+            format!("You are on {current}. {label} is out."),
+        )
     }
+}
+
+fn unreadable(current: &str) -> UpdateResultDto {
+    said(
+        "Update_GitHubSentSomethingWeCould",
+        &[current],
+        format!("GitHub sent something we could not read. You are on {current}."),
+    )
 }
 
 /// Soft check against GitHub latest. Network failures become a message, never a panic.
 pub fn latest_async(current: &str) -> UpdateResultDto {
     let Ok(http) = Client::builder().timeout(Duration::from_secs(15)).build() else {
-        return UpdateResultDto {
-            message: format!("Could not reach GitHub to check for updates. You are on {current}."),
-            download_url: None,
-            is_newer: false,
-        };
+        return said(
+            "Update_CouldNotReachGitHubTo",
+            &[current],
+            format!("Could not reach GitHub to check for updates. You are on {current}."),
+        );
     };
     latest_with_client(&http, current)
 }
@@ -265,6 +287,23 @@ pub fn open_privacy_policy() -> Result<(), Failure> {
 #[cfg(test)]
 mod tests {
     use super::{compare, normalize_tag};
+
+    // Every key the check answers with is a string the window can show.
+    #[test]
+    fn every_update_message_key_is_in_the_catalog() {
+        let catalog: serde_json::Value =
+            serde_json::from_str(include_str!("../../src/i18n/catalogs/en.json"))
+                .expect("en catalog");
+        let source = include_str!("updates.rs");
+        let keys: Vec<&str> = source
+            .split('"')
+            .filter(|part| part.len() > 7 && part.starts_with("Update_") && !part.contains(' '))
+            .collect();
+        assert!(keys.len() >= 7, "found {keys:?}");
+        for key in keys {
+            assert!(catalog.get(key).is_some(), "{key} is not in en.json");
+        }
+    }
 
     #[test]
     fn normalize_strips_a_leading_v() {

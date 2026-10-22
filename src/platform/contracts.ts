@@ -137,7 +137,13 @@ export interface SettingsPatch {
 }
 
 export interface UpdateResult {
+  /** English, for anything that cannot show `messageKey`. */
   readonly message: string;
+  /** The `Update_*` catalog string to show, with its arguments. */
+  readonly messageKey?: string;
+  readonly messageArgs?: readonly string[];
+  /** The second argument is a preview release's version. */
+  readonly preview?: boolean;
   readonly downloadUrl: string | null;
   readonly isNewer: boolean;
 }
