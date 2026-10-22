@@ -315,3 +315,32 @@ fn a_stopped_sweep_stops_at_once() {
     assert_eq!(result, Err("stopped"));
     assert_eq!(tries, 1);
 }
+
+// Written in place (the console has no rename), so a send that fails partway
+// puts the old file back while the line still answers, and says where the
+// backup is.
+#[test]
+fn a_failed_send_puts_the_old_file_back_and_names_the_backup() {
+    let mut fake = FakeConsole::new();
+    fake.files
+        .insert("game.csv".to_owned(), "the old one\n".to_owned());
+    fake.corrupt_writes = true;
+    let mut console = console(fake);
+    let error = console
+        .send_profile(&profile("game.csv"), &FakeBackupStore::new(), false, false)
+        .expect_err("refused");
+    assert!(matches!(
+        &error,
+        ConsoleError::ReadBackDiffers {
+            backup: Some(_),
+            ..
+        }
+    ));
+    let opens = console
+        .port_mut()
+        .commands
+        .iter()
+        .filter(|c| c.as_str() == "write_file,0,game.csv")
+        .count();
+    assert_eq!(opens, 2, "the send, then the old file put back");
+}

@@ -364,23 +364,37 @@ impl<P: Read + Write> DeviceConsole<P> {
         let text = outgoing.to_csv_text().replace("\r\n", "\n");
 
         let mut backup = None;
+        let mut previous = None;
         if let Some(old) = self.read_file(name.as_str())? {
             let receipt = backups
                 .store(name.as_device_name(), old.as_bytes())
                 .map_err(|error| ConsoleError::Rejected(error.into()))?;
             backup = Some(receipt.location);
+            previous = Some(old);
         }
 
-        self.write_file(name.as_str(), &text)?;
-
-        // f_gets and printf may each turn \n into \r\n on the way back, so the
-        // comparison ignores carriage returns and nothing else.
-        let back = self.read_file(name.as_str())?;
-        if back.is_none_or(|back| back.replace('\r', "") != text) {
-            return Err(ConsoleError::ReadBackDiffers {
-                name: name.as_str().to_owned(),
-                backup,
-            });
+        // The console has no rename, so the file is written in place. If the
+        // write stops partway or reads back wrong, put the old one back while
+        // the line still answers: a half-written default.csv or prefs.csv is
+        // what the firmware reads on its next start. Either way the answer
+        // names where the backup is.
+        let written = self.write_file(name.as_str(), &text).and_then(|()| {
+            // f_gets and printf may each turn \n into \r\n on the way back, so
+            // the comparison ignores carriage returns and nothing else.
+            self.read_file(name.as_str())
+        });
+        let matches = matches!(&written, Ok(Some(back)) if back.replace('\r', "") == text);
+        if !matches {
+            if let Some(old) = &previous {
+                let _ = self.write_file(name.as_str(), &old.replace('\r', ""));
+            }
+            return match written {
+                Err(error) if backup.is_none() => Err(error),
+                _ => Err(ConsoleError::ReadBackDiffers {
+                    name: name.as_str().to_owned(),
+                    backup,
+                }),
+            };
         }
 
         self.load(name.as_str())?;
