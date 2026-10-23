@@ -936,6 +936,10 @@ impl DriveHttpError {
 }
 
 fn backup_title(profile: &DriveProfileSnapshot) -> String {
+    // A host can name every sheet the same, so no profile text names the file.
+    if let Some(fixed) = crate::host::sheet_title() {
+        return fixed.to_owned();
+    }
     let title = profile.file.document.title().trim();
     if title.is_empty() {
         profile.display_name.trim_end_matches(".csv").to_owned()

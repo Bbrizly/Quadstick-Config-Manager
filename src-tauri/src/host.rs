@@ -40,6 +40,9 @@ pub struct DriveShare {
     /// The name the Google sign-in is kept under in the OS credential store,
     /// so a host never signs in as the free app or signs it out.
     pub credential_service: &'static str,
+    /// The name every sheet the share makes gets in Drive, in place of the
+    /// profile's own title, so nothing typed into a profile names the file.
+    pub sheet_title: &'static str,
     /// Asked on every one of those commands; no refuses it like any other
     /// network command. A host answers yes only while its own share runs.
     pub allowed: Box<dyn Fn() -> bool + Send + Sync>,
@@ -101,6 +104,7 @@ struct Installed {
     network: bool,
     drive_auto_backup: bool,
     credential_service: Option<&'static str>,
+    sheet_title: Option<&'static str>,
 }
 
 static INSTALLED: OnceLock<Installed> = OnceLock::new();
@@ -116,6 +120,7 @@ pub(crate) fn install(config: &HostConfig) {
             .drive_share
             .as_ref()
             .map(|share| share.credential_service),
+        sheet_title: config.drive_share.as_ref().map(|share| share.sheet_title),
     });
     assert!(installed.is_ok(), "the host config is set once per run");
 }
@@ -143,6 +148,11 @@ pub(crate) fn drive_auto_backup() -> bool {
 /// The credential store name a host gave its Google sign-in, if any.
 pub(crate) fn credential_service() -> Option<&'static str> {
     INSTALLED.get().and_then(|host| host.credential_service)
+}
+
+/// The fixed sheet name a host gave its Drive share, if any.
+pub(crate) fn sheet_title() -> Option<&'static str> {
+    INSTALLED.get().and_then(|host| host.sheet_title)
 }
 
 /// What a Drive share needs, and no more: the sign-in, the upload that
@@ -259,6 +269,7 @@ mod tests {
         assert!(network());
         assert!(drive_auto_backup());
         assert_eq!(credential_service(), None);
+        assert_eq!(sheet_title(), None);
     }
 
     #[test]
@@ -325,6 +336,7 @@ mod tests {
         let (o, a) = (Arc::clone(&open), Arc::clone(&asked));
         let share = DriveShare {
             credential_service: "Host",
+            sheet_title: "Profile",
             allowed: Box::new(move || {
                 a.fetch_add(1, Ordering::SeqCst);
                 o.load(Ordering::SeqCst)
