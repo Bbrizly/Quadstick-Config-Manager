@@ -140,6 +140,14 @@ export function formatMessage(
   });
 }
 
+/** `t` outside React, for a locale whose catalog it loads first. */
+export async function translatorFor(
+  locale: LocaleTag,
+): Promise<(key: MessageKey, values?: readonly unknown[]) => string> {
+  const catalog = await loadCatalog(locale);
+  return (key, values = []) => formatMessage(catalog[key] ?? en[key] ?? String(key), values, locale);
+}
+
 export function pluralCategory(locale: LocaleTag | "qps-ploc", count: number): "one" | "other" {
   if (locale === "fr") return count === 0 || count === 1 ? "one" : "other";
   return count === 1 ? "one" : "other";
@@ -159,26 +167,33 @@ const I18nContext = createContext<I18nValue | null>(null);
 export interface I18nProviderProps {
   readonly children: ReactNode;
   readonly initialPreference?: LocalePreference;
+  /**
+   * A language the host decides. Given, it wins over the preference and the
+   * system, and the page's own `lang` and `dir` are left to the host.
+   */
+  readonly locale?: LocaleTag | undefined;
 }
 
 function currentSystemLocales(): readonly string[] {
   return typeof navigator === "undefined" ? ["en"] : [...navigator.languages];
 }
 
-export function I18nProvider({ children, initialPreference = "system" }: I18nProviderProps) {
+export function I18nProvider({ children, initialPreference = "system", locale: pinned }: I18nProviderProps) {
   const [preference, setPreference] = useState<LocalePreference>(initialPreference);
   const [systemLocales, setSystemLocales] = useState<readonly string[]>(currentSystemLocales);
-  const locale = useMemo(
+  const resolved = useMemo(
     () => resolveLocale(preference, systemLocales),
     [preference, systemLocales],
   );
+  const locale = pinned ?? resolved;
+  const hosted = pinned !== undefined;
 
   // Bumped when a catalog chunk lands, so the strings re-resolve.
   const [, setLoaded] = useState(0);
   const catalog = CATALOGS.get(locale);
 
   useEffect(() => {
-    applyDocumentLocale(locale);
+    if (!hosted) applyDocumentLocale(locale);
     if (CATALOGS.has(locale)) return undefined;
     let current = true;
     void loadCatalog(locale).then(() => {
@@ -187,7 +202,7 @@ export function I18nProvider({ children, initialPreference = "system" }: I18nPro
     return () => {
       current = false;
     };
-  }, [locale]);
+  }, [hosted, locale]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

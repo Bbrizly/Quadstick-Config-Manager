@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
-import { I18nProvider, useI18n } from "../i18n";
+import { I18nProvider, useI18n, type LocaleTag } from "../i18n";
 import { localizedErrorMessage } from "../i18n/errors";
 import { asQcmError, type EditorSnapshot, type QcmClient } from "../platform";
 import { saveThenClose, UnsavedChangesDialog } from "./unsavedChanges";
@@ -34,6 +34,12 @@ export interface EditorHostProps {
   readonly onSnapshot?: ((snapshot: EditorSnapshot) => void) | undefined;
   /** One line shown in the editor header. Empty or left out: nothing shown. */
   readonly hostBanner?: string | undefined;
+  /**
+   * The editor's language, the host's own setting. Given, the editor follows
+   * it and leaves the page's `lang` and `dir` to the host. Left out, the
+   * editor picks from the system and sets them itself.
+   */
+  readonly locale?: LocaleTag | undefined;
   /** The `?` button and F1. Left out, there is no help button. */
   readonly onHelp?: (() => void) | undefined;
   readonly ref?: Ref<EditorHostHandle> | undefined;
@@ -47,7 +53,7 @@ export interface EditorHostProps {
  */
 export function EditorHost(props: EditorHostProps) {
   return (
-    <I18nProvider>
+    <I18nProvider locale={props.locale}>
       <HostedEditor {...props} />
     </I18nProvider>
   );
@@ -62,7 +68,7 @@ function HostedEditor({
   hostBanner,
   onHelp,
   ref,
-}: EditorHostProps) {
+}: Omit<EditorHostProps, "locale">) {
   const { t } = useI18n();
   const [editor, setEditor] = useState<EditorSnapshot>(given);
   const [shownSession, setShownSession] = useState(given.sessionId);

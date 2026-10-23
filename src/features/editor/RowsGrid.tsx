@@ -3,9 +3,9 @@ import { useState, type ReactNode } from "react";
 import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import { KNOWN_OUTPUTS, type EditorOp, type Issue } from "../../platform";
-import { humanize, stripInput, tokenLabel, zoneOf } from "../visualizer/deviceSummary";
+import { tokenLabel } from "../visualizer/deviceSummary";
+import { inputLabel, type LabelStyle } from "./labels";
 import { OutputPrompt, promptSrc } from "../visualizer/OutputPrompt";
-import type { MessageKey } from "../../i18n";
 import { DuplicateMark } from "./DuplicateMark";
 import { NO_DUPLICATES, type DuplicateCounts } from "./duplicates";
 
@@ -16,40 +16,15 @@ const LAST_INPUT = 9;
 /** The firmware's function 0, what a blank cell means. A token, not prose. */
 const NORMAL_TOKEN = "normal";
 
-/** `MainWindow._labelStyle`: raw list names, plain English, Xbox style. */
-export type LabelStyle = 0 | 1 | 2;
+export type { LabelStyle } from "./labels";
 
 export interface GridRow {
   readonly row: number;
   readonly cells: readonly string[];
 }
 
-const ZONE_DISPLAY: Partial<Record<string, MessageKey>> = {
-  joystick: "Main_Joystick",
-  mp_left: "Main_Left",
-  mp_center: "Main_Center",
-  mp_right: "Main_Right",
-  side: "Main_SideTube",
-  lip: "Main_LipSwitch",
-  jacks: "Main_SwitchJacks",
-};
-
 function columnLetter(column: number): string {
   return String.fromCharCode(65 + column);
-}
-
-/** `InputOptionLabel` for a row cell: the part, then what is done to it. */
-function inputLabel(token: string, style: LabelStyle, t: (key: MessageKey) => string): string {
-  if (token === "" || style === 0) return token;
-  const zone = zoneOf(token);
-  const bare = humanize(stripInput(token, zone));
-  if (bare === "") return bare;
-  const first = bare.split(" ")[0] ?? "";
-  const low = first === first.toUpperCase() ? bare : bare.charAt(0).toLowerCase() + bare.slice(1);
-  if (zone === "other" || zone === "unset") return bare;
-  const part = ZONE_DISPLAY[zone];
-  if (part === undefined) return bare;
-  return `${t(part)} · ${low}`;
 }
 
 /**
