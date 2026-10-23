@@ -47,7 +47,8 @@ interface DeviceLinkDialogProps {
   readonly open: boolean;
   readonly onClose: () => void;
   readonly timing?: DeviceLinkTiming;
-  /** Test seam: read live buttons from here instead of subscribing. */
+  /** Read the held buttons from here instead of `client.startLiveInput` (a host
+   *  with its own gamepad reading, or a test). */
   readonly live?: LiveButtons;
   /** Test seam: the last strength measured, puff then sip. */
   readonly onMeasured?: (puff: number, sip: number) => void;
@@ -208,11 +209,14 @@ export function DeviceLinkDialog({
     }
   };
 
+  const choose = link.chooseConsoleProfile;
+  const sendProfile = link.consoleSendProfile;
+  const canSend = choose !== undefined && sendProfile !== undefined;
   const send = async (): Promise<void> => {
-    if (!connected || busy) return;
+    if (!connected || busy || !canSend) return;
     let pick;
     try {
-      pick = await link.chooseConsoleProfile();
+      pick = await choose.call(link);
     } catch (reason) {
       failed(reason);
       return;
@@ -228,7 +232,7 @@ export function DeviceLinkDialog({
     setBusy(true);
     say("Link_Sending", [pick.name ?? ""]);
     try {
-      const sent = await link.consoleSendProfile(pick.pickId, yesDefault, yesPrefs);
+      const sent = await sendProfile.call(link, pick.pickId, yesDefault, yesPrefs);
       if (sent.backup === null) say("Link_SentNew", [sent.name]);
       else say("Link_Sent", [sent.name, sent.backup]);
     } catch (reason) {
@@ -412,9 +416,11 @@ export function DeviceLinkDialog({
         </button>
       </div>
       <div className="link-actions">
-        <button type="button" disabled={busy || !connected} onClick={() => void send()}>
-          {t("Link_SendProfile")}
-        </button>
+        {canSend ? (
+          <button type="button" disabled={busy || !connected} onClick={() => void send()}>
+            {t("Link_SendProfile")}
+          </button>
+        ) : null}
         <button type="button" disabled={busy || !connected} onClick={() => void measure()}>
           {t("Link_Measure")}
         </button>

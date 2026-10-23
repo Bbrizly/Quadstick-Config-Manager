@@ -43,8 +43,9 @@ export interface ConsoleClient {
   listConsolePorts(): Promise<readonly ConsolePort[]>;
   connectConsole(portId: string): Promise<ConsoleConnectOutcome>;
   closeConsole(): Promise<void>;
-  chooseConsoleProfile(): Promise<ConsoleProfilePick | null>;
-  consoleSendProfile(pickId: string, confirmDefaultCsv: boolean, confirmPreferencesCsv: boolean): Promise<ConsoleSent>;
+  /** With `consoleSendProfile`: absent, the window has no Send profile. */
+  chooseConsoleProfile?(): Promise<ConsoleProfilePick | null>;
+  consoleSendProfile?(pickId: string, confirmDefaultCsv: boolean, confirmPreferencesCsv: boolean): Promise<ConsoleSent>;
   consoleStrengthBegin(): Promise<StrengthSetup>;
   consoleCalibrate(): Promise<void>;
   consoleSetThreshold(puff: boolean, value: number): Promise<void>;

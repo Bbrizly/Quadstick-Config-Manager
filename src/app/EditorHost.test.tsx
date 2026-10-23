@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { MockQcmClient, type EditorSnapshot } from "../platform";
 import { EditorHost, type EditorHostHandle } from "../host";
 
-async function hosted(extra: { hostBanner?: string } = {}, strict = false) {
+async function hosted(extra: { hostBanner?: string; onInstall?: (p: EditorSnapshot) => void } = {}, strict = false) {
   const client = new MockQcmClient();
   const snapshot: EditorSnapshot = await client.newProfile("untitled.csv");
   const ref = createRef<EditorHostHandle>();
@@ -143,5 +143,15 @@ describe("host banner (S3)", () => {
   it("shows nothing when left out", async () => {
     await hosted();
     expect(screen.queryByTestId("editor-host-banner")).toBeNull();
+  });
+});
+
+describe("host install", () => {
+  it("hands Install to QuadStick to the host, with the profile as it is now", async () => {
+    const onInstall = vi.fn();
+    const { snapshot } = await hosted({ onInstall });
+    fireEvent.click(screen.getByText("Install to QuadStick"));
+    expect(onInstall).toHaveBeenCalledWith(expect.objectContaining({ sessionId: snapshot.sessionId }));
+    expect(screen.queryByRole("dialog", { name: "Installing profile" })).toBeNull();
   });
 });

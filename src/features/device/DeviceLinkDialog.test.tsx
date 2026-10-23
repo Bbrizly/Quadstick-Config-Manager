@@ -260,6 +260,18 @@ describe("DeviceLinkDialog", () => {
     await waitFor(() => expect(device.commands.at(-1)).toBe("send,pick-1,true"));
   });
 
+  it("has no Send profile when the console cannot send one", async () => {
+    const device = new FakeConsole();
+    // The same console without the send pair.
+    const bare = Object.create(device) as FakeConsole;
+    Object.defineProperty(bare, "chooseConsoleProfile", { value: undefined });
+    Object.defineProperty(bare, "consoleSendProfile", { value: undefined });
+    open(bare, person(device, 50, 50));
+    await connect();
+    expect(screen.queryByRole("button", { name: /Send a profile/u })).toBeNull();
+    expect(screen.getByRole("button", { name: "Measure sip and puff strength" })).toBeEnabled();
+  });
+
   it("lets go of the port when it closes", async () => {
     const device = new FakeConsole();
     const view = open(device, () => []);

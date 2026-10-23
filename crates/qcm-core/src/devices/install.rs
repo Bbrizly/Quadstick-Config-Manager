@@ -38,6 +38,84 @@ use crate::ports::storage::{
 };
 use qcm_config::{ProfileFile, Severity, is_too_long_for_device};
 
+/// What an install puts on a QuadStick, worked out without a device: the
+/// same name rules, blocking problems and protected-name gate a drive install
+/// runs first. For a host that writes the drive itself (a browser, with a
+/// folder the person picked), so the rules stay this one implementation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InstallPayload {
+    pub target: SafeDeviceFileName,
+    /// The profile as the device reads it (`normalize_for_device_csv`).
+    pub bytes: Vec<u8>,
+    /// The question to ask before replacing a protected file, if any.
+    pub confirmation: Option<ConfirmationKind>,
+}
+
+/// # Errors
+///
+/// The name is missing, too long for the device or unsafe, or the profile has
+/// blocking problems.
+pub fn install_payload(file: &ProfileFile) -> Result<InstallPayload, QcmError> {
+    let declared = file.document.csv_file_name();
+    if let Some(declared) = declared
+        && is_too_long_for_device(declared)
+    {
+        return Err(StorageError::NameRejected {
+            reason: NameRejection::TooLongForDevice,
+        }
+        .into());
+    }
+
+    let errors = file
+        .issues
+        .iter()
+        .filter(|issue| issue.severity == Severity::Error)
+        .count();
+    if errors > 0 {
+        return Err(ConfigError::HasBlockingProblems { errors }.into());
+    }
+
+    let Some(declared) = declared else {
+        return Err(StorageError::NameRejected {
+            reason: NameRejection::Empty,
+        }
+        .into());
+    };
+
+    let confirmation = if file.document.is_default_config() {
+        Some(ConfirmationKind::OverwriteDefaultCsv)
+    } else if file.document.is_device_preferences() {
+        Some(ConfirmationKind::OverwriteDevicePreferences)
+    } else {
+        None
+    };
+
+    let target =
+        SafeDeviceFileName::new(declared).map_err(|reason| StorageError::NameRejected { reason })?;
+
+    let mut outgoing = file.clone();
+    outgoing.normalize_for_device_csv();
+    Ok(InstallPayload {
+        target,
+        bytes: outgoing.to_csv_text().into_bytes(),
+        confirmation,
+    })
+}
+
+/// The sentence a protected-file install asks with.
+#[must_use]
+pub fn confirmation_summary(kind: ConfirmationKind, target: &SafeDeviceFileName) -> String {
+    let target = target.as_str();
+    match kind {
+        ConfirmationKind::OverwriteDefaultCsv => format!(
+            "Replace {target} on the QuadStick. It is the profile the device falls back to."
+        ),
+        _ => format!(
+            "Replace {target} on the QuadStick. It is the device's own settings, so it changes every profile at once."
+        ),
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct InstallPlan {
     operation: OperationId,
@@ -136,47 +214,12 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
         device: StorageDeviceId,
         file: &ProfileFile,
     ) -> Result<InstallPlan, QcmError> {
-        let declared = file.document.csv_file_name();
-        if let Some(declared) = declared
-            && is_too_long_for_device(declared)
-        {
-            return Err(StorageError::NameRejected {
-                reason: NameRejection::TooLongForDevice,
-            }
-            .into());
-        }
-
-        let errors = file
-            .issues
-            .iter()
-            .filter(|issue| issue.severity == Severity::Error)
-            .count();
-        if errors > 0 {
-            return Err(ConfigError::HasBlockingProblems { errors }.into());
-        }
-
-        let Some(declared) = declared else {
-            return Err(StorageError::NameRejected {
-                reason: NameRejection::Empty,
-            }
-            .into());
-        };
-
-        let kind = if file.document.is_default_config() {
-            Some(ConfirmationKind::OverwriteDefaultCsv)
-        } else if file.document.is_device_preferences() {
-            Some(ConfirmationKind::OverwriteDevicePreferences)
-        } else {
-            None
-        };
-
+        let InstallPayload {
+            target,
+            bytes,
+            confirmation: kind,
+        } = install_payload(file)?;
         let handle = self.resolve_device(device)?;
-        let target = SafeDeviceFileName::new(declared)
-            .map_err(|reason| StorageError::NameRejected { reason })?;
-
-        let mut outgoing = file.clone();
-        outgoing.normalize_for_device_csv();
-        let bytes = outgoing.to_csv_text().into_bytes();
 
         let operation = self.operations.mint();
         let fingerprint = OperationFingerprint::builder(OperationKind::InstallProfile)
@@ -187,16 +230,11 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             .finish();
 
         let confirmation = kind.map(|kind| {
-            let summary = match kind {
-                ConfirmationKind::OverwriteDefaultCsv => format!(
-                    "Replace {target} on the QuadStick. It is the profile the device falls back to."
-                ),
-                _ => format!(
-                    "Replace {target} on the QuadStick. It is the device's own settings, so it changes every profile at once."
-                ),
-            };
-            self.confirmations
-                .require(kind, fingerprint.clone(), summary)
+            self.confirmations.require(
+                kind,
+                fingerprint.clone(),
+                confirmation_summary(kind, &target),
+            )
         });
 
         Ok(InstallPlan {

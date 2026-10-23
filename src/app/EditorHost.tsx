@@ -42,6 +42,12 @@ export interface EditorHostProps {
   readonly locale?: LocaleTag | undefined;
   /** The `?` button and F1. Left out, there is no help button. */
   readonly onHelp?: (() => void) | undefined;
+  /**
+   * Install to QuadStick, the host's own way (its own confirm, or a drive it
+   * reaches itself). Given the profile as it is now. Left out, the editor's
+   * install dialog.
+   */
+  readonly onInstall?: ((profile: EditorSnapshot) => void) | undefined;
   readonly ref?: Ref<EditorHostHandle> | undefined;
 }
 
@@ -67,6 +73,7 @@ function HostedEditor({
   onSnapshot,
   hostBanner,
   onHelp,
+  onInstall,
   ref,
 }: Omit<EditorHostProps, "locale">) {
   const { t } = useI18n();
@@ -232,7 +239,7 @@ function HostedEditor({
           client={client}
           snapshot={editor}
           onSnapshot={show}
-          onInstall={() => setInstallOpen(true)}
+          onInstall={() => (onInstall === undefined ? setInstallOpen(true) : onInstall(editorRef.current))}
           onHelp={onHelp}
           onShareSlot={client.exportProfileXlsx === undefined ? undefined : setShareSlot}
           busyExternal={closing}
@@ -240,7 +247,9 @@ function HostedEditor({
         />
       </section>
       <LiveRegion>{message}</LiveRegion>
-      <InstallProfileDialog client={client} profile={editor} open={installOpen} onClose={() => setInstallOpen(false)} />
+      {onInstall === undefined ? (
+        <InstallProfileDialog client={client} profile={editor} open={installOpen} onClose={() => setInstallOpen(false)} />
+      ) : null}
       <UnsavedChangesDialog
         open={promptOpen}
         closing={closing}

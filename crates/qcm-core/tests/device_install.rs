@@ -984,3 +984,21 @@ fn a_stick_pulled_while_saving_device_settings_leaves_the_old_ones() {
     assert_eq!(failure.target, TargetState::Unchanged);
     assert_eq!(rig.file("prefs.csv").as_deref(), Some(OLD_PROFILE));
 }
+
+#[test]
+fn the_payload_without_a_device_is_what_an_install_writes() {
+    let rig = Rig::new();
+    let mut devices = rig.devices();
+    let file = profile("racing.csv");
+    let payload = qcm_core::devices::install::install_payload(&file).expect("payload");
+    assert_eq!(payload.target.as_str(), "racing.csv");
+    assert_eq!(payload.confirmation, None);
+    assert!(matches!(install(&rig, &mut devices, &file), InstallOutcome::Installed(_)));
+    assert_eq!(rig.file("racing.csv").as_deref(), Some(payload.bytes.as_slice()));
+
+    let default = qcm_core::devices::install::install_payload(&profile("default.csv")).expect("default");
+    assert_eq!(default.confirmation, Some(ConfirmationKind::OverwriteDefaultCsv));
+    let prefs = qcm_core::devices::install::install_payload(&profile("prefs.csv")).expect("prefs");
+    assert_eq!(prefs.confirmation, Some(ConfirmationKind::OverwriteDevicePreferences));
+    assert!(qcm_core::devices::install::install_payload(&profile("")).is_err());
+}
