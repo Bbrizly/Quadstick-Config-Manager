@@ -75,7 +75,9 @@ struct PlatformTokenStore {
 impl PlatformTokenStore {
     #[cfg(any(target_os = "macos", target_os = "windows"))]
     fn entry() -> Result<keyring::Entry, QcmError> {
-        keyring::Entry::new(SERVICE, ACCOUNT)
+        // A host keeps its own sign-in, never the free app's.
+        let service = crate::host::credential_service().unwrap_or(SERVICE);
+        keyring::Entry::new(service, ACCOUNT)
             .map_err(|error| auth_internal("open credential store", error))
     }
 }

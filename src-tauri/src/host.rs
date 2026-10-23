@@ -32,6 +32,19 @@ impl HostCommands {
     }
 }
 
+/// The one way a host with the network off may still reach Google: sharing
+/// a profile through Drive. Only [`DRIVE_SHARE_COMMANDS`], and only while
+/// `allowed` answers yes. Nothing else comes back: no community list, no
+/// usage data, no update check, no backup on save.
+pub struct DriveShare {
+    /// The name the Google sign-in is kept under in the OS credential store,
+    /// so a host never signs in as the free app or signs it out.
+    pub credential_service: &'static str,
+    /// Asked on every one of those commands; no refuses it like any other
+    /// network command. A host answers yes only while its own share runs.
+    pub allowed: Box<dyn Fn() -> bool + Send + Sync>,
+}
+
 /// What a host changes. [`HostConfig::free`] is the free app, field for field.
 pub struct HostConfig {
     /// Replaces the app's own data folder: settings, rescue, pending crash
@@ -48,6 +61,9 @@ pub struct HostConfig {
     pub deep_links: bool,
     /// Off: a save, open or save-and-close never pushes to Drive.
     pub drive_auto_backup: bool,
+    /// With the network off: the Drive share, and nothing else, behind the
+    /// host's own gate. Ignored when the network is on.
+    pub drive_share: Option<DriveShare>,
     pub commands: Option<HostCommands>,
 }
 
@@ -60,6 +76,7 @@ impl HostConfig {
             network: true,
             deep_links: true,
             drive_auto_backup: true,
+            drive_share: None,
             commands: None,
         }
     }
@@ -83,6 +100,7 @@ struct Installed {
     library_dir: Option<PathBuf>,
     network: bool,
     drive_auto_backup: bool,
+    credential_service: Option<&'static str>,
 }
 
 static INSTALLED: OnceLock<Installed> = OnceLock::new();
@@ -94,6 +112,10 @@ pub(crate) fn install(config: &HostConfig) {
         library_dir: config.library_dir.clone(),
         network: config.network,
         drive_auto_backup: config.drive_auto_backup,
+        credential_service: config
+            .drive_share
+            .as_ref()
+            .map(|share| share.credential_service),
     });
     assert!(installed.is_ok(), "the host config is set once per run");
 }
@@ -117,6 +139,21 @@ pub(crate) fn drive_auto_backup() -> bool {
         .get()
         .is_none_or(|host| host.network && host.drive_auto_backup)
 }
+
+/// The credential store name a host gave its Google sign-in, if any.
+pub(crate) fn credential_service() -> Option<&'static str> {
+    INSTALLED.get().and_then(|host| host.credential_service)
+}
+
+/// What a Drive share needs, and no more: the sign-in, the upload that
+/// creates or refreshes the sheet, its conflict answer, and the link.
+pub const DRIVE_SHARE_COMMANDS: &[&str] = &[
+    "get_google_auth_status",
+    "connect_google",
+    "backup_profile_to_drive",
+    "resolve_drive_conflict",
+    "share_drive_profile",
+];
 
 /// Every free command that reaches the internet, from this process or by
 /// handing a web page to the browser.
@@ -153,11 +190,15 @@ enum Route {
     Free,
 }
 
-fn route(command: &str, network: bool, host_names: &[&str]) -> Route {
+fn route(command: &str, network: bool, share_open: bool, host_names: &[&str]) -> Route {
     if host_names.contains(&command) {
         Route::Host
     } else if !network && NETWORK_COMMANDS.contains(&command) {
-        Route::Refused
+        if share_open && DRIVE_SHARE_COMMANDS.contains(&command) {
+            Route::Free
+        } else {
+            Route::Refused
+        }
     } else {
         Route::Free
     }
@@ -170,6 +211,11 @@ fn network_off() -> QcmErrorDto {
     }))
 }
 
+/// The host's gate, asked only for a share command, and on every one.
+fn share_open(command: &str, share: Option<&DriveShare>) -> bool {
+    DRIVE_SHARE_COMMANDS.contains(&command) && share.is_some_and(|share| (share.allowed)())
+}
+
 /// One invoke handler from the free app's, the network switch and the host's.
 pub(crate) fn invoke_handler(
     config: &mut HostConfig,
@@ -177,9 +223,11 @@ pub(crate) fn invoke_handler(
 ) -> impl Fn(Invoke<Wry>) -> bool + Send + Sync + 'static {
     let network = config.network;
     let host = config.commands.take();
+    let share = config.drive_share.take().filter(|_| !network);
     move |invoke| {
         let names = host.as_ref().map_or(&[][..], |host| host.names);
-        match route(invoke.message.command(), network, names) {
+        let command = invoke.message.command();
+        match route(command, network, share_open(command, share.as_ref()), names) {
             Route::Host => host.as_ref().is_some_and(|host| (host.handler)(invoke)),
             Route::Refused => {
                 invoke.resolver.reject(network_off());
@@ -199,7 +247,7 @@ mod tests {
         let free = HostConfig::free();
         assert!(free.data_dir.is_none() && free.library_dir.is_none());
         assert!(free.network && free.deep_links && free.drive_auto_backup);
-        assert!(free.commands.is_none());
+        assert!(free.commands.is_none() && free.drive_share.is_none());
         assert_eq!(free.check(), Ok(()));
     }
 
@@ -210,6 +258,7 @@ mod tests {
         assert_eq!(library_dir(), None);
         assert!(network());
         assert!(drive_auto_backup());
+        assert_eq!(credential_service(), None);
     }
 
     #[test]
@@ -246,18 +295,55 @@ mod tests {
 
     #[test]
     fn network_off_refuses_only_network_commands() {
-        assert_eq!(route("connect_google", false, &[]), Route::Refused);
-        assert_eq!(route("check_for_update", false, &[]), Route::Refused);
-        assert_eq!(route("save_profile", false, &[]), Route::Free);
-        assert_eq!(route("connect_google", true, &[]), Route::Free);
+        assert_eq!(route("connect_google", false, false, &[]), Route::Refused);
+        assert_eq!(route("check_for_update", false, false, &[]), Route::Refused);
+        assert_eq!(route("save_profile", false, false, &[]), Route::Free);
+        assert_eq!(route("connect_google", true, false, &[]), Route::Free);
+    }
+
+    #[test]
+    fn an_open_share_lets_through_the_share_commands_only() {
+        for name in DRIVE_SHARE_COMMANDS {
+            assert!(NETWORK_COMMANDS.contains(name), "{name}");
+            assert_eq!(route(name, false, true, &[]), Route::Free, "{name}");
+            assert_eq!(route(name, false, false, &[]), Route::Refused, "{name}");
+        }
+        for name in NETWORK_COMMANDS
+            .iter()
+            .filter(|name| !DRIVE_SHARE_COMMANDS.contains(name))
+        {
+            assert_eq!(route(name, false, true, &[]), Route::Refused, "{name}");
+        }
+    }
+
+    #[test]
+    fn the_share_gate_is_asked_on_every_share_command() {
+        use std::sync::Arc;
+        use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+        let open = Arc::new(AtomicBool::new(false));
+        let asked = Arc::new(AtomicUsize::new(0));
+        let (o, a) = (Arc::clone(&open), Arc::clone(&asked));
+        let share = DriveShare {
+            credential_service: "Host",
+            allowed: Box::new(move || {
+                a.fetch_add(1, Ordering::SeqCst);
+                o.load(Ordering::SeqCst)
+            }),
+        };
+        assert!(!share_open("share_drive_profile", Some(&share)));
+        open.store(true, Ordering::SeqCst);
+        assert!(share_open("share_drive_profile", Some(&share)));
+        assert!(!share_open("load_community_catalog", Some(&share)));
+        assert!(!share_open("share_drive_profile", None));
+        assert_eq!(asked.load(Ordering::SeqCst), 2);
     }
 
     #[test]
     fn host_commands_go_to_the_host() {
         let names = ["open_roster", "list_clients"];
-        assert_eq!(route("open_roster", false, &names), Route::Host);
-        assert_eq!(route("list_clients", true, &names), Route::Host);
-        assert_eq!(route("get_settings", false, &names), Route::Free);
+        assert_eq!(route("open_roster", false, false, &names), Route::Host);
+        assert_eq!(route("list_clients", true, false, &names), Route::Host);
+        assert_eq!(route("get_settings", false, false, &names), Route::Free);
     }
 
     #[test]

@@ -225,7 +225,20 @@ pub fn run_with(mut config: host::HostConfig, context: tauri::Context<tauri::Wry
     };
     // Network off: no Google, Drive, Community or Sheets client exists, and
     // the invoke handler refuses every command that would want one.
-    let builder = if config.network {
+    let builder = if !config.network && config.drive_share.is_some() {
+        // The Drive share alone: sign-in and Drive, nothing else. The
+        // invoke handler lets only the share commands reach them, and only
+        // while the host's gate is open.
+        let google = Arc::new(
+            google_auth::GoogleAuthService::native()
+                .expect("failed to build native Google auth client"),
+        );
+        let drive = Arc::new(
+            drive::DriveService::native(Arc::clone(&google))
+                .expect("failed to build native Drive client"),
+        );
+        builder.manage(google).manage(drive)
+    } else if config.network {
         let google = Arc::new(
             google_auth::GoogleAuthService::native()
                 .expect("failed to build native Google auth client"),

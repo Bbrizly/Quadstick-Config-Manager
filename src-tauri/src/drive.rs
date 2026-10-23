@@ -7,7 +7,7 @@
 
 use crate::google_auth::GoogleAuthService;
 use crate::shell::DriveProfileSnapshot;
-use qcm_config::{ProfileFile, SheetType, XLSX_MAX_WORKBOOK_BYTES};
+use qcm_config::{ProfileFile, SheetTab, XLSX_MAX_WORKBOOK_BYTES, sheet_tabs};
 use qcm_core::error::{InternalError, OsDetail, QcmError, RequestError};
 use reqwest::StatusCode;
 use reqwest::blocking::{Client, RequestBuilder, Response};
@@ -719,7 +719,7 @@ impl DriveService {
     }
 
     fn push_tabs(&self, id: &str, profile: &ProfileFile) -> Result<(), QcmError> {
-        let tabs = drive_tabs(profile);
+        let tabs = sheet_tabs(profile);
         if !tabs.iter().any(|tab| {
             tab.rows
                 .iter()
@@ -778,7 +778,7 @@ impl DriveService {
         Ok(())
     }
 
-    fn shape_tabs(&self, id: &str, tabs: &[DriveTab]) -> Result<(), QcmError> {
+    fn shape_tabs(&self, id: &str, tabs: &[SheetTab]) -> Result<(), QcmError> {
         let metadata = self.send_json(
             self.http
                 .get(format!("{}/{id}", self.sheets_base))
@@ -933,80 +933,6 @@ impl DriveHttpError {
             Self::Message(message) => drive_message(&message),
         }
     }
-}
-
-#[derive(Debug, Clone)]
-struct DriveTab {
-    title: String,
-    rows: Vec<Vec<String>>,
-}
-
-fn drive_tabs(profile: &ProfileFile) -> Vec<DriveTab> {
-    if profile.document.sheets.is_empty() {
-        return vec![DriveTab {
-            title: "Profile".to_owned(),
-            rows: profile.grid.clone(),
-        }];
-    }
-    let mut used = BTreeSet::new();
-    profile
-        .document
-        .sheets
-        .iter()
-        .enumerate()
-        .map(|(index, sheet)| {
-            let start = if index == 0 && profile.document.has_version_header {
-                0
-            } else {
-                sheet.start_row.saturating_sub(1).min(profile.grid.len())
-            };
-            let end = profile
-                .document
-                .sheets
-                .get(index + 1)
-                .map_or(profile.grid.len(), |next| {
-                    next.start_row.saturating_sub(1).min(profile.grid.len())
-                });
-            let base = if !sheet.mode_name.trim().is_empty() {
-                sheet.mode_name.as_str()
-            } else {
-                match sheet.sheet_type {
-                    SheetType::ProfileName => "Mode",
-                    SheetType::Preferences => "Preferences",
-                    SheetType::Infrared => "Infrared",
-                }
-            };
-            DriveTab {
-                title: unique_title(base, &mut used),
-                rows: profile.grid[start..end].to_vec(),
-            }
-        })
-        .collect()
-}
-
-fn unique_title(raw: &str, used: &mut BTreeSet<String>) -> String {
-    let cleaned: String = raw
-        .chars()
-        .filter(|c| !c.is_control() && !"[]:*?/\\".contains(*c))
-        .take(31)
-        .collect();
-    let base = if cleaned.trim().is_empty() {
-        "Profile"
-    } else {
-        cleaned.trim()
-    };
-    if used.insert(base.to_lowercase()) {
-        return base.to_owned();
-    }
-    for suffix in 2..10_000usize {
-        let tail = format!(" {suffix}");
-        let keep = 31usize.saturating_sub(tail.chars().count());
-        let candidate = format!("{}{}", base.chars().take(keep).collect::<String>(), tail);
-        if used.insert(candidate.to_lowercase()) {
-            return candidate;
-        }
-    }
-    "Profile".to_owned()
 }
 
 fn backup_title(profile: &DriveProfileSnapshot) -> String {
