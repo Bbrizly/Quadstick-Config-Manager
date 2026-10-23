@@ -1,17 +1,17 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { createRef } from "react";
+import { StrictMode, createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { MockQcmClient, type EditorSnapshot } from "../platform";
 import { EditorHost, type EditorHostHandle } from "../host";
 
-async function hosted(extra: { hostBanner?: string } = {}) {
+async function hosted(extra: { hostBanner?: string } = {}, strict = false) {
   const client = new MockQcmClient();
   const snapshot: EditorSnapshot = await client.newProfile("untitled.csv");
   const ref = createRef<EditorHostHandle>();
   const onClosed = vi.fn();
   const onDirtyChange = vi.fn();
-  render(
+  const editor = (
     <EditorHost
       ref={ref}
       client={client}
@@ -19,10 +19,11 @@ async function hosted(extra: { hostBanner?: string } = {}) {
       onClosed={onClosed}
       onDirtyChange={onDirtyChange}
       {...extra}
-    />,
+    />
   );
+  const view = render(strict ? <StrictMode>{editor}</StrictMode> : editor);
   await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
-  return { client, snapshot, ref, onClosed, onDirtyChange };
+  return { client, snapshot, ref, onClosed, onDirtyChange, view };
 }
 
 async function edit(): Promise<void> {
@@ -100,6 +101,25 @@ describe("leave guard (S2)", () => {
     await expect(answer).resolves.toBe(true);
     expect(save).toHaveBeenCalledTimes(1);
     expect(onClosed).toHaveBeenCalledTimes(1);
+  });
+
+  it("works under StrictMode", async () => {
+    const { ref, onClosed } = await hosted({}, true);
+    await edit();
+    const answer = leave(ref);
+    fireEvent.click(within(await screen.findByRole("dialog", { name: "Profile" })).getByRole("button", { name: "Don't save" }));
+    await expect(answer).resolves.toBe(true);
+    expect(onClosed).toHaveBeenCalledTimes(1);
+  });
+
+  it("a host that unmounts while the prompt waits gets a no", async () => {
+    const { ref, view, onClosed } = await hosted();
+    await edit();
+    const answer = leave(ref);
+    await screen.findByRole("dialog", { name: "Profile" });
+    view.unmount();
+    await expect(answer).resolves.toBe(false);
+    expect(onClosed).not.toHaveBeenCalled();
   });
 
   it("a second ask while the prompt is up is the same question", async () => {

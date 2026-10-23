@@ -119,6 +119,13 @@ function HostedEditor({
     answer?.(leave);
   }, []);
 
+  // A close, save or discard on its way to the client.
+  const requestRef = useRef(false);
+  const setRequest = useCallback((on: boolean): void => {
+    requestRef.current = on;
+    setClosing(on);
+  }, []);
+
   useImperativeHandle(ref, () => ({
     confirmLeave(): Promise<boolean> {
       if (closedRef.current) return Promise.resolve(true);
@@ -127,51 +134,54 @@ function HostedEditor({
         answerRef.current = resolve;
       });
       leavingRef.current = leaving;
-      setClosing(true);
+      setRequest(true);
       client.closeProfile(editorRef.current.sessionId, "if_clean").then(
         (outcome) => {
-          setClosing(false);
+          setRequest(false);
           if (outcome.kind === "keptOpenUnsavedChanges") setPromptOpen(true);
           else finish(true);
         },
         (reason: unknown) => {
-          setClosing(false);
+          setRequest(false);
           showFailure(reason);
           finish(false);
         },
       );
       return leaving;
     },
-  }), [client, finish, showFailure]);
+  }), [client, finish, setRequest, showFailure]);
 
-  // A host that unmounts mid-question gets a no.
+  // A host that unmounts while the prompt waits gets a no. A request already
+  // under way answers for itself: it may close the session.
   useEffect(() => () => {
+    if (requestRef.current) return;
     answerRef.current?.(false);
     answerRef.current = null;
+    leavingRef.current = null;
   }, []);
 
   const save = async (): Promise<void> => {
     if (closing) return;
-    setClosing(true);
+    setRequest(true);
     try {
       if (await saveThenClose(client, editor)) finish(true);
     } catch (reason) {
       showFailure(reason);
     } finally {
-      setClosing(false);
+      setRequest(false);
     }
   };
 
   const discard = async (): Promise<void> => {
     if (closing) return;
-    setClosing(true);
+    setRequest(true);
     try {
       await client.closeProfile(editor.sessionId, "discard");
       finish(true);
     } catch (reason) {
       showFailure(reason);
     } finally {
-      setClosing(false);
+      setRequest(false);
     }
   };
 
