@@ -25,6 +25,70 @@ permissions:
   contents: read
 
 jobs:
+  ios:
+    name: iOS app and kit
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Configure optional Google OAuth
+        run: cp ios/Google.xcconfig.example ios/Google.xcconfig
+      - name: Test the shared iOS profile kit
+        run: swift test --package-path ios/QuadStickKit
+      - name: Resolve locked app dependencies
+        run: xcodebuild -resolvePackageDependencies -project ios/QuadStickConfigManager.xcodeproj -scheme QuadStickConfigManager
+      - name: Build the iOS app
+        run: >-
+          xcodebuild -project ios/QuadStickConfigManager.xcodeproj
+          -scheme QuadStickConfigManager
+          -configuration Release
+          -derivedDataPath "$RUNNER_TEMP/QuadStickConfigManagerDerivedData"
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+          build
+      - name: Verify installed app identity and SDK privacy manifest
+        shell: bash
+        run: |
+          app="$RUNNER_TEMP/QuadStickConfigManagerDerivedData/Build/Products/Release-iphonesimulator/QuadStickConfigManager.app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$app/Info.plist")" = 'QuadStick Config Manager'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist")" = 'dev.bassamkamal.sipstudio'
+          test -n "$(find "$app" -name PrivacyInfo.xcprivacy -print -quit)"
+      - name: Verify optional Google OAuth expands into the app plist
+        shell: bash
+        run: |
+          xcodebuild -project ios/QuadStickConfigManager.xcodeproj \
+            -scheme QuadStickConfigManager \
+            -configuration Release \
+            -derivedDataPath "$RUNNER_TEMP/QuadStickConfigManagerDerivedData" \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            GOOGLE_CLIENT_ID=123-abc.apps.googleusercontent.com \
+            GOOGLE_CLIENT_ID_REVERSED=com.googleusercontent.apps.123-abc \
+            build
+          app="$RUNNER_TEMP/QuadStickConfigManagerDerivedData/Build/Products/Release-iphonesimulator/QuadStickConfigManager.app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :GIDClientID' "$app/Info.plist")" = '123-abc.apps.googleusercontent.com'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleURLTypes:0:CFBundleURLSchemes:0' "$app/Info.plist")" = 'com.googleusercontent.apps.123-abc'
+      - name: Verify required App Store screenshots
+        run: |
+          python3 - <<'PY'
+          import struct
+          from pathlib import Path
+
+          required = {
+              Path("appstore-assets/iphone-17-pro/01-profile-and-mapping.png"): (1206, 2622),
+              Path("appstore-assets/ipad-pro-13/01-profile-and-mapping.png"): (2064, 2752),
+          }
+          for path, dimensions in required.items():
+              data = path.read_bytes()
+              assert data[:8] == b"\x89PNG\r\n\x1a\n", f"{path}: not a PNG"
+              assert data[12:16] == b"IHDR", f"{path}: missing PNG IHDR"
+              width, height = struct.unpack(">II", data[16:24])
+              color_type = data[25]
+              assert (width, height) == dimensions, f"{path}: got {width}x{height}"
+              assert color_type == 2, f"{path}: expected RGB PNG without alpha (color type {color_type})"
+          print("Required iPhone and iPad screenshots have accepted dimensions and no alpha channel.")
+          PY
+
   # Every OS the app ships on runs the whole suite, so a path, line ending
   # or culture bug shows up here and not in somebody's hands.
   test:
