@@ -13,22 +13,33 @@ struct HomeView: View {
                 VStack(spacing: 20) {
                     header
 
-                    Picker("Side of the QuadStick", selection: $model.face) {
-                        Text("Front").tag(DeviceFace.front)
-                        Text("Back").tag(DeviceFace.back)
-                    }
-                    .pickerStyle(.segmented)
-
-                    if model.face == .front {
-                        DevicePhotoView()
+                    if model.profile.modes.isEmpty {
+                        ContentUnavailableView {
+                            Label("No modes to edit", systemImage: "slider.horizontal.3")
+                        } description: {
+                            Text("Add a mode before changing controller assignments.")
+                        } actions: {
+                            NavigationLink("Add a mode", value: Screen.modes)
+                                .buttonStyle(.borderedProminent)
+                        }
                     } else {
-                        DeviceBackView()
-                    }
+                        Picker("Side of the QuadStick", selection: $model.face) {
+                            Text("Front").tag(DeviceFace.front)
+                            Text("Back").tag(DeviceFace.back)
+                        }
+                        .pickerStyle(.segmented)
 
-                    Text("Tap a part of the QuadStick to see and change what it does.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        if model.face == .front {
+                            DevicePhotoView()
+                        } else {
+                            DeviceBackView()
+                        }
+
+                        Text("Tap a part of the QuadStick to see and change what it does.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
                     validationStatus
 
@@ -38,6 +49,22 @@ struct HomeView: View {
                             .foregroundStyle(.orange)
                     }
 
+                    if let saveError = model.saveError {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label(saveError, systemImage: "exclamationmark.triangle.fill")
+                                .font(.footnote)
+                                .foregroundStyle(.orange)
+                                .accessibilityLabel(saveError)
+                            if model.canRetrySave {
+                                Button("Try saving again", systemImage: "arrow.clockwise") {
+                                    model.retryFailedSaves()
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
                     navigationButtons
                 }
                 .padding()
@@ -45,7 +72,7 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity)
             }
             .background(Theme.background)
-            .navigationTitle("SipStudio")
+            .navigationTitle("QuadStick Config Manager")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -112,27 +139,37 @@ struct HomeView: View {
             // short half. Together on one line they strand the arrows against
             // three wrapped lines at accessibility text sizes.
             VStack(spacing: 4) {
-                Text(model.mode.name)
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                HStack(spacing: 16) {
-                    Button("Previous mode", systemImage: "chevron.left") {
-                        model.modeIndex = (model.modeIndex - 1 + model.profile.modes.count) % model.profile.modes.count
-                    }
-                    .labelStyle(.iconOnly)
-                    .frame(minWidth: 44, minHeight: 44)
-                    Text("Mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
+                if model.profile.modes.isEmpty {
+                    Text("No modes in this profile")
+                        .font(.headline)
+                    Text("Add a mode in Modes to edit this profile.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Button("Next mode", systemImage: "chevron.right") {
-                        model.modeIndex = (model.modeIndex + 1) % model.profile.modes.count
+                } else {
+                    Text(model.mode.name)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                    HStack(spacing: 16) {
+                        Button("Previous mode", systemImage: "chevron.left") {
+                            model.modeIndex = (model.modeIndex - 1 + model.profile.modes.count) % model.profile.modes.count
+                        }
+                        .labelStyle(.iconOnly)
+                        .frame(minWidth: 44, minHeight: 44)
+                        Text("Mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Button("Next mode", systemImage: "chevron.right") {
+                            model.modeIndex = (model.modeIndex + 1) % model.profile.modes.count
+                        }
+                        .labelStyle(.iconOnly)
+                        .frame(minWidth: 44, minHeight: 44)
                     }
-                    .labelStyle(.iconOnly)
-                    .frame(minWidth: 44, minHeight: 44)
                 }
             }
             .accessibilityElement(children: .contain)
-            .accessibilityLabel("Current mode: \(model.mode.name), mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
+            .accessibilityLabel(model.profile.modes.isEmpty
+                ? "This profile has no modes. Add a mode in Modes to edit it."
+                : "Current mode: \(model.mode.name), mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
         }
     }
 

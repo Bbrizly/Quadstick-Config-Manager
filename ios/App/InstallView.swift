@@ -47,6 +47,8 @@ struct InstallView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
+                .disabled(errorCount > 0)
+                .accessibilityHint(errorCount > 0 ? "Fix all profile errors before exporting." : "Exports this profile as a CSV file.")
 
                 if let resultText {
                     Label(resultText, systemImage: resultIsError ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
@@ -78,7 +80,7 @@ struct InstallView: View {
             Image(systemName: "exclamationmark.octagon.fill")
                 .foregroundStyle(.red)
                 .accessibilityHidden(true)
-            Text("This profile has \(errorCount) error\(errorCount == 1 ? "" : "s"). It may not work on the QuadStick until they are fixed.")
+            Text("This profile has \(errorCount) error\(errorCount == 1 ? "" : "s"). Fix them before exporting it to the QuadStick.")
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -116,8 +118,8 @@ struct InstallView: View {
         case .success:
             resultIsError = false
             resultText = makeDefault
-                ? "Saved. The QuadStick reloads on its own within a few seconds."
-                : "Saved. Select the profile on the QuadStick to use it."
+                ? "CSV exported. It is installed only if you chose the QuadStick drive. The device reloads default.csv a few seconds after it is written there."
+                : "CSV exported. It is on the QuadStick only if you chose its drive. Select the profile on the device to use it."
         case .failure(let error):
             resultIsError = true
             resultText = error.localizedDescription

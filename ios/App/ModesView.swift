@@ -66,41 +66,44 @@ struct ModesView: View {
     private func modeRow(index: Int, mode: Mode) -> some View {
         let active = index == model.modeIndex
         let assigned = mode.assignments.values.filter { $0.output != nil }.count
-        return Button {
-            model.modeIndex = index
-        } label: {
-            HStack(spacing: 12) {
-                // Mini LED, same language as the device picture.
-                VStack(spacing: 2) {
-                    Circle()
-                        .fill(active ? Color.green : Color(.systemGray4))
-                        .frame(width: 12, height: 12)
-                    Text("\(index + 1)").font(.caption2.bold())
-                        .foregroundStyle(active ? Color.green : Color(white: 0.65))
+        return HStack(spacing: 12) {
+            Button {
+                model.modeIndex = index
+            } label: {
+                HStack(spacing: 12) {
+                    // Mini LED, same language as the device picture.
+                    VStack(spacing: 2) {
+                        Circle()
+                            .fill(active ? Color.green : Color(.systemGray4))
+                            .frame(width: 12, height: 12)
+                        Text("\(index + 1)").font(.caption2.bold())
+                            .foregroundStyle(active ? Color.green : Color(white: 0.65))
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(mode.name).font(.headline).foregroundStyle(.white)
+                        Text("\(assigned) action\(assigned == 1 ? "" : "s") assigned")
+                            .font(.caption)
+                            .foregroundStyle(Color(white: 0.65))
+                    }
+                    Spacer(minLength: 4)
+                    if active {
+                        Text("Active").font(.caption).foregroundStyle(.green)
+                    }
                 }
-                VStack(alignment: .leading, spacing: 2) {
-                    // Concrete colours: the row Button tints its label, and the
-                    // hierarchical styles resolve against that tint, not the theme.
-                    Text(mode.name).font(.headline).foregroundStyle(.white)
-                    Text("\(assigned) action\(assigned == 1 ? "" : "s") assigned")
-                        .font(.caption)
-                        .foregroundStyle(Color(white: 0.65))
-                }
-                Spacer()
-                if active {
-                    Text("Active").font(.caption).foregroundStyle(.green)
-                }
-                Button("Rename", systemImage: "pencil") {
-                    renaming = mode
-                    draftName = mode.name
-                }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderless)
-                .accessibilityLabel("Rename \(mode.name)")
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Mode \(index + 1), \(mode.name), \(assigned) actions assigned\(active ? ", active" : "")")
+            .accessibilityHint(active ? "Currently active" : "Double tap to make this the active mode")
+
+            Button("Rename", systemImage: "pencil") {
+                renaming = mode
+                draftName = mode.name
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+            .frame(minWidth: 44, minHeight: 44)
+            .accessibilityLabel("Rename \(mode.name)")
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Mode \(index + 1), \(mode.name), \(assigned) actions assigned\(active ? ", active" : "")")
-        .accessibilityHint("Double tap to make this the active mode")
     }
 }

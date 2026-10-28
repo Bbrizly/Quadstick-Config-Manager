@@ -81,6 +81,13 @@ public enum ConfigValidator {
                     ?? QuadStickCatalog.action(actionID)?.fullName
                     ?? actionID
 
+                if Firmware.inputKeyword[actionID] == nil {
+                    issues.append(Issue(id: "unknown-input-\(mode.id)-\(actionID)", severity: .error,
+                                        message: "This assignment uses an input the app cannot write to a QuadStick file.",
+                                        location: "\(loc), \(actionName)",
+                                        fix: "Remove this assignment or update it in a version of the app that supports this input."))
+                }
+
                 if let f = a.function {
                     switch f {
                     case .greaterThan(let pct) where !(0...100).contains(pct):

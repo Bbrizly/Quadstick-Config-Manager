@@ -239,6 +239,19 @@ extension KitTests {
         let unknown = issues.filter { $0.id.hasPrefix("unknown-out-") }
         XCTAssertEqual(unknown.count, 1)
         XCTAssertEqual(unknown.first?.severity, .warning, "the device is the judge, not this app")
+        XCTAssertTrue(DeviceFile.export(profile).contains("not_a_firmware_word"),
+                      "an unknown firmware output word must not disappear from an export")
+    }
+
+    func testAnUnknownInputCannotBeExportedAsAWorkingProfile() {
+        let profile = Profile(name: "Odd", modes: [
+            Mode(name: "One", assignments: [
+                "future-input": Assignment(output: OutputAction(id: "controller-a", name: "A", category: .controller))
+            ])
+        ])
+        let issues = ConfigValidator.validate(profile, capabilities: QuadStickCatalog.capabilities)
+        let unknown = issues.first { $0.id.hasPrefix("unknown-input-") }
+        XCTAssertEqual(unknown?.severity, .error)
     }
 }
 

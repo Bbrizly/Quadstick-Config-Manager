@@ -41,9 +41,9 @@ public enum DeviceFile {
             for input in capabilities.inputs {
                 for action in input.actions {
                     guard let assignment = mode.assignments[action.id],
-                          let output = assignment.output,
-                          let outputWord = Firmware.keyword(forOutput: output.id),
-                          let inputWord = Firmware.inputKeyword[action.id] else { continue }
+                          let output = assignment.output else { continue }
+                    guard let inputWord = Firmware.inputKeyword[action.id] else { continue }
+                    let outputWord = Firmware.keyword(forOutput: output.id) ?? output.id
                     var row = [outputWord, functionCell(assignment.function), inputWord]
                     if let label = assignment.label, !label.isEmpty {
                         while row.count < 11 { row.append("") }
