@@ -23,16 +23,33 @@ test('each page prefetches the other, so the switch is instant', () => {
   assert.match(homepage, /rel="prefetch" href="clinic\.html"/);
 });
 
-test('clinician page explains the roster, history, and capability model', () => {
+test('the interactive page remains usable without IntersectionObserver', () => {
+  assert.match(page, /if \('IntersectionObserver' in window\)/);
+  assert.match(page, /else reveals\.forEach\(el => el\.classList\.add\('in'\)\)/);
+});
+
+test('clinician page labels planned roster and history features as a concept', () => {
   for (const phrase of [
     'One record per client, across every visit.',
     'Client history',
     'Capabilities',
     'profile snapshots',
-    'private clinic folder',
+    'Clinic is a product concept, not a released service.',
+    'feature set, privacy and security approach, availability, and pricing shown here are proposals',
+    'final storage, account, security and privacy details have not been implemented or verified',
   ]) {
-    assert.match(page, new RegExp(phrase, 'i'), `missing product promise: ${phrase}`);
+    assert.match(page, new RegExp(phrase, 'i'), `missing concept detail or qualification: ${phrase}`);
   }
+  assert.match(page, /<p class="demo-disclosure" role="note"><strong>Clinic is a product concept/,
+    'the concept and patient-data notice must remain visible without reveal animation JavaScript');
+});
+
+test('search and social previews describe Clinic as an unreleased concept', () => {
+  assert.match(page, /<title>QuadStick Clinic concept/);
+  assert.match(page, /<meta name="description" content="A concept for a clinician workspace/);
+  assert.match(page, /<meta property="og:title" content="QuadStick Clinic concept"/);
+  assert.match(page, /<meta property="og:description" content="A proposed clinician workspace/);
+  assert.doesNotMatch(page.slice(0, page.indexOf('</head>')), /private clinician workspace|paid caseload layer/i);
 });
 
 test('the workspace preview is a roster you can click through', () => {
@@ -43,13 +60,14 @@ test('the workspace preview is a roster you can click through', () => {
   assert.equal((page.match(/name:'/g) ?? []).length, 4, 'the preview roster lost a client');
 });
 
-test('clinician page has a usable demo request form with required fields', () => {
+test('clinician page has a usable concept discussion form with required fields', () => {
   assert.match(page, /<form[^>]+id="demo-form"/);
   for (const field of ['name', 'email', 'organization', 'message']) {
     assert.match(page, new RegExp(`name="${field}"[^>]*required`), `missing required ${field}`);
   }
   assert.match(page, /id="demo-status"[^>]*aria-live="polite"/);
   assert.match(page, /mailto:bassam@bbrizly\.com/);
+  assert.match(page, /If it does not open, email <a href="mailto:bassam@bbrizly\.com">bassam@bbrizly\.com<\/a>/);
 });
 
 test('clinician page includes a reduced-motion path and avoids patient-data claims', () => {
@@ -72,9 +90,10 @@ test('the hero carries the programs band, so it is not a scroll away', () => {
   assert.doesNotMatch(hero, /not customers or endorsements/i);
 });
 
-test('the page sells a free app and a paid workflow, never "open core"', () => {
+test('the page describes a potential paid workflow without claiming availability', () => {
   assert.doesNotMatch(page, /open core/i);
-  assert.match(page, /Free app, paid workflow/);
+  assert.match(page, /Possible paid workflow/);
+  assert.match(page, /Availability and pricing have not been set/);
 });
 
 test('the product is named QuadStick Clinic, never the old misspelling', () => {
@@ -89,7 +108,7 @@ test('the clinic page carries clinic-specific navigation', () => {
   assert.match(header, /href="#what">What changes/);
   assert.match(header, /href="#inside">Inside Clinic/);
   assert.match(header, /href="#principles">Privacy/);
-  assert.match(header, /class="btn primary" href="#demo">\s*Book a demo/);
+  assert.match(header, /class="btn primary" href="#demo">\s*Discuss the concept/);
   assert.doesNotMatch(header, />\s*Download\s*</);
   assert.doesNotMatch(header, /index\.html#/);
   assert.match(page, /\.nav-links \.btn\.primary\{background:var\(--clinic\)/);

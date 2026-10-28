@@ -84,3 +84,14 @@ test('the guide links home and to the downloads', () => {
   assert.match(live, /href="\.\.\/"/);
   assert.match(live, /href="\.\.\/#download"/);
 });
+
+test('the guide covers link sharing, public access, and recipient import', () => {
+  assert.match(live, /<h2 id="share">Share a profile with a link<\/h2>/);
+  assert.match(live, /If the app has not enabled link access for this sheet before/);
+  assert.match(live, /read-only access for anyone with the link/);
+  assert.match(live, /do not share information you want to keep private/);
+  assert.match(live, /You can change access later in Google Drive/);
+  assert.match(live, /choose <b>Import from Sheets<\/b>, paste the link, review the workbook tabs/);
+  assert.match(live, /Import does not install it on their QuadStick/);
+  assert.match(live, /href="#share">sharing a profile<\/a>/);
+});

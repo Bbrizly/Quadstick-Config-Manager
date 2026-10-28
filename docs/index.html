@@ -42,7 +42,7 @@
   "screenshot": "https://bassamkamal.dev/Quadstick-Config-Manager/screenshot-device-view.png",
   "sameAs": [
     "https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12",
-    "https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare",
+    "https://apps.microsoft.com/detail/9ppqzqnl4wkp",
     "https://github.com/Bbrizly/Quadstick-Config-Manager"
   ],
   "author": {"@type": "Person", "name": "Bassam Kamal", "url": "https://bassamkamal.dev/"}
@@ -109,6 +109,8 @@
 
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
   .display{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1.04}
+  .skip{position:absolute;left:16px;top:-60px;z-index:50;padding:10px 16px;border-radius:10px;background:var(--action);color:#fff;font-weight:600}
+  .skip:focus{top:12px}
 
 
   /* ---------- nav: floating island ---------- */
@@ -238,6 +240,8 @@
   /* the break in the headline is hand-placed, so the size has to stay under what one line can hold */
   .hero h1{font-size:clamp(30px,3.6vw,52px);margin:0}
   .hero .lede{font-size:clamp(18px,1.7vw,21px);color:var(--ink-soft);max-width:52ch;margin:22px 0 30px;line-height:1.5}
+  .hero .profile-guide-link{margin:-14px 0 22px;color:var(--ink-soft);font-size:16px}
+  .hero .profile-guide-link a{color:var(--action);font-weight:650;text-underline-offset:3px}
 
   /* the middle band: less room for the stick so the three badges stay one row */
   @media(max-width:1100px){
@@ -405,6 +409,7 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
 <!-- ===== NAV ===== -->
 <header class="nav" id="nav">
@@ -414,7 +419,7 @@
         <img class="glyph" src="QSLogo-64.png" alt="" width="32" height="32">
         QuadStick&nbsp;<span class="sub">Config Manager</span>
       </a>
-      <nav class="nav-links">
+      <nav class="nav-links" aria-label="Main navigation">
         <a class="text" href="#how">How it works</a>
         <a class="text" href="#features">Features</a>
         <a class="text" href="#download">Download</a>
@@ -434,6 +439,7 @@
   </div>
 </header>
 
+<main id="main">
 <a id="top"></a>
 
 <!-- ===== HERO ===== -->
@@ -452,6 +458,7 @@
 <div class="hero-copy">
   <h1 class="display reveal">Set up your QuadStick <br>without the spreadsheet.</h1>
   <p class="lede reveal">Map inputs on a picture of the stick, catch every bad cell, and install straight to the device.</p>
+  <p class="profile-guide-link reveal">New to profile editing? <a href="how-to-make-a-quadstick-profile/">Read the step-by-step profile guide</a>.</p>
 
   <img class="hero-stick" src="hero-device.webp" alt="The device view: a photo of the QuadStick with a labelled box beside each part, showing what a sip, a puff and a soft version of either does." width="750" height="572" fetchpriority="high" decoding="async">
 
@@ -462,7 +469,7 @@
       <span class="mark"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8Zm-2.3-7c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.7-1.3Z"/></svg></span>
       <span class="txt"><small>Download on the</small><span>Mac App Store</span></span>
     </a>
-    <a class="store" href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&amp;gl=EG&amp;ocid=pdpshare">
+    <a class="store" href="https://apps.microsoft.com/detail/9ppqzqnl4wkp">
       <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M2 2h9.4v9.4H2z"/><path fill="#7FBA00" d="M12.6 2H22v9.4h-9.4z"/><path fill="#00A4EF" d="M2 12.6h9.4V22H2z"/><path fill="#FFB900" d="M12.6 12.6H22V22h-9.4z"/></svg></span>
       <span class="txt"><small>Get it from the</small><span>Microsoft Store</span></span>
     </a>
@@ -523,7 +530,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <h2 class="display">A spreadsheet shouldn't be able to take your controller offline.</h2>
-      <p>Today most people edit a QuadStick profile in Google Sheets, export it with an add-on, and copy it over with a Windows-only tool. The device just reads whatever CSV it's handed, and trusts it completely.</p>
+      <p>QuadStick profiles are CSV files. If you build one in a spreadsheet and copy it to the device, a bad value can be hard to spot before it causes trouble.</p>
     </div>
     <div class="stakes">
       <div class="stake bad reveal">
@@ -573,7 +580,7 @@
     <div class="feature reveal">
       <div class="feat-copy">
         <h3>When something's wrong, it tells you what and where.</h3>
-        <p>Which cell, what's off, and how to fix it, in plain English. The bad cell gets a red outline, and errors block the install so nothing broken can reach the device.</p>
+        <p>Which cell is off and how to fix it, in plain English. Blocking validation errors stop an install; warnings stay visible so you can review them before continuing.</p>
         <p>Click any problem to copy it straight into a bug report.</p>
       </div>
       <div class="shot"><img src="screenshot-errors.webp" srcset="screenshot-errors-720.webp 720w, screenshot-errors.webp 1440w" sizes="(max-width:820px) 100vw, 470px" alt="The problems panel: one error and two warnings written out in plain English, each naming its cell, with the bad cells outlined in red." width="1440" height="900" loading="lazy"></div>
@@ -594,7 +601,7 @@
       <div class="feat-copy">
         <h3>Watch the stick working while you set it up.</h3>
         <p>Plug a QuadStick in and the app finds it on its own. While it sends an output, the row bound to that output lights up, in the list and on the picture. Sip on the mouthpiece and the sip row stays lit for as long as the sip lasts.</p>
-        <p>You can check a binding does what you meant without opening the game.</p>
+        <p>The app compares reported outputs with the mappings in the open profile. The device does not report which input or profile produced each output, so this is a check of the current mapping, not proof of its source.</p>
       </div>
       <div class="shot"><img src="screenshot-live.webp" srcset="screenshot-live-720.webp 720w, screenshot-live.webp 1440w" sizes="(max-width:820px) 100vw, 470px" alt="The list view with three rows lit while the QuadStick is sending them, each lit row marked with a dot as well as colour." width="1440" height="900" loading="lazy"></div>
     </div>
@@ -605,8 +612,8 @@
 <section class="download" id="download">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2 class="display">Free, forever. Unzip and run.</h2>
-      <p>No installer, no account, works offline (except the Sheets import and Drive backup). Take it from a store, or grab the plain zip for your computer.</p>
+      <h2 class="display">Free. Unzip and run.</h2>
+      <p>No Config Manager account is required. Core editing works offline. Sheets import and Drive backup need an internet connection. You can browse the saved Community profiles catalog offline; fetching it for the first time or refreshing it needs internet. Manual update checks and opt-in telemetry need internet. Take it from a store, or grab the plain zip for your computer.</p>
     </div>
 
     <div class="stores big reveal">
@@ -614,7 +621,7 @@
         <span class="mark"><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8Zm-2.3-7c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.7-1.3Z"/></svg></span>
         <span class="txt"><small>Download on the</small><span>Mac App Store</span></span>
       </a>
-      <a class="store lg" href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&amp;gl=EG&amp;ocid=pdpshare">
+      <a class="store lg" href="https://apps.microsoft.com/detail/9ppqzqnl4wkp">
         <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#F25022" d="M2 2h9.4v9.4H2z"/><path fill="#7FBA00" d="M12.6 2H22v9.4h-9.4z"/><path fill="#00A4EF" d="M2 12.6h9.4V22H2z"/><path fill="#FFB900" d="M12.6 12.6H22V22h-9.4z"/></svg></span>
         <span class="txt"><small>Get it from the</small><span>Microsoft Store</span></span>
       </a>
@@ -626,25 +633,25 @@
 
     <p class="dl-or reveal">Or take the plain zip</p>
     <div class="dl-grid" style="margin-top:20px">
-      <a class="dl-card reveal" href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">
+      <a class="dl-card reveal" href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases/latest/download/QuadStickConfigManager-Windows-x64.zip">
         <span class="os"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.4 10.2 4.4v6.8H3V5.4Zm0 13.2 7.2 1v-6.6H3v5.6Zm8-14.4L21 3v8.2h-10V4.2Zm0 8.6h10V21l-10-1.4v-6.8Z"/></svg>Windows</span>
-        <span class="file">win-x64.zip</span>
+        <span class="file">QuadStickConfigManager-Windows-x64.zip</span>
         <span class="go">64-bit <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
       </a>
-      <a class="dl-card reveal" href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">
+      <a class="dl-card reveal" href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases/latest/download/QuadStickConfigManager-macOS-AppleSilicon.zip">
         <span class="os"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8Zm-2.3-7c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.7-1.3Z"/></svg>Apple Silicon</span>
-        <span class="file">osx-arm64.zip</span>
+        <span class="file">QuadStickConfigManager-macOS-AppleSilicon.zip</span>
         <span class="go">M1 and newer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
       </a>
-      <a class="dl-card reveal" href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">
+      <a class="dl-card reveal" href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases/latest/download/QuadStickConfigManager-macOS-Intel.zip">
         <span class="os"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8Zm-2.3-7c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.7-1.3Z"/></svg>Intel Mac</span>
-        <span class="file">osx-x64.zip</span>
+        <span class="file">QuadStickConfigManager-macOS-Intel.zip</span>
         <span class="go">Older Macs <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
       </a>
     </div>
     <div class="dl-note reveal">
       <span><b>Mac zip:</b> not notarized. Use the <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a> build if you want it signed, or right-click, choose Open, then Open again the first time.</span>
-      <span><b>Linux:</b> a 64-bit <code>tar.gz</code> is on the <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">releases page</a> with every other build.</span>
+      <span><b>Linux:</b> <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases/latest/download/QuadStickConfigManager-Linux-x64.tar.gz">download the 64-bit tar.gz</a> or browse <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">all releases</a>.</span>
       <span><b>Build it yourself:</b> needs .NET 8, then <code>make run</code>.</span>
     </div>
   </div>
@@ -675,6 +682,8 @@
   </div>
 </section>
 
+</main>
+
 <!-- ===== FOOTER ===== -->
 <footer>
   <div class="wrap">
@@ -687,11 +696,13 @@
         <a href="https://github.com/Bbrizly/Quadstick-Config-Manager">GitHub</a>
         <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">Releases</a>
         <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a>
-        <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare">Microsoft Store</a>
+        <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp">Microsoft Store</a>
         <a href="https://discord.gg/ceqrZmnWyT">Discord</a>
         <a href="how-to-make-a-quadstick-profile/">How to make a profile</a>
         <a href="how-it-works.html">How the code works</a>
         <a href="privacy.html">Privacy</a>
+        <a href="ios-support.html">iPhone and iPad support</a>
+        <a href="ios-privacy.html">iOS privacy</a>
         <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues/new">Report a bug</a>
         <a href="https://www.quadstick.com/">QuadStick.com</a>
         <a href="https://www.quadstick.com/online-user-manual">User manual</a>

@@ -1,4 +1,4 @@
-Download the file for your computer, unzip, and run. No installer, works offline (except Sheets import, Drive backup, and optional usage data).
+Download the file for your computer, unzip, and run. No installer. Core profile editing works offline. Sheets import and Google Drive backup need an internet connection. You can browse the saved Community profiles catalog offline; fetching it for the first time or refreshing it needs internet. Manual update checks and opt-in telemetry need internet.
 
 | File | Computer |
 |------|----------|

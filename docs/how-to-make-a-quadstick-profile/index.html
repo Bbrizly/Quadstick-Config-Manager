@@ -10,10 +10,14 @@
 <link rel="apple-touch-icon" href="../favicon.png">
 
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="QuadStick Config Manager">
 <meta property="og:title" content="How to make a QuadStick game profile">
 <meta property="og:description" content="Map sips, puffs, the lip switch and joystick to game buttons, catch mistakes, and install the profile on your QuadStick safely.">
 <meta property="og:url" content="https://bassamkamal.dev/Quadstick-Config-Manager/how-to-make-a-quadstick-profile/">
 <meta property="og:image" content="https://bassamkamal.dev/Quadstick-Config-Manager/screenshot-device-view.png">
+<meta property="og:image:alt" content="QuadStick Config Manager's device view with profile mappings shown beside the controller">
+<meta property="og:image:width" content="1440">
+<meta property="og:image:height" content="900">
 <meta name="twitter:card" content="summary_large_image">
 
 <script type="application/ld+json">
@@ -31,11 +35,15 @@
 }
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="../fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
+  @font-face{font-family:"Space Grotesk";font-weight:500 700;font-display:swap;src:url(../fonts/space-grotesk-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:"Instrument Sans";font-weight:400 600;font-display:swap;src:url(../fonts/instrument-sans-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:"JetBrains Mono";font-weight:400 500;font-display:swap;src:url(../fonts/jetbrains-mono-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
   /* the homepage's tokens, plus a dark set the homepage does not have yet */
   :root{
     color-scheme:light dark;
@@ -216,11 +224,11 @@
     <li><a href="#install">Install it on the QuadStick</a></li>
     <li><a href="#test">Load it and test it</a></li>
   </ol>
-  <p style="margin:12px 0 0;font-size:16px">Also: <a href="#mistakes">common mistakes</a> and <a href="#spreadsheet">the spreadsheet route</a>.</p>
+  <p style="margin:12px 0 0;font-size:16px">Also: <a href="#mistakes">common mistakes</a>, <a href="#spreadsheet">the spreadsheet route</a>, and <a href="#share">sharing a profile</a>.</p>
 </nav>
 
 <h2 id="get-the-app"><span class="n">1</span>Get the app</h2>
-<p>Get it from the <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a> or the <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&amp;gl=EG&amp;ocid=pdpshare">Microsoft Store</a>, or take a zip (or a Linux <code>tar.gz</code>) from the <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">GitHub releases page</a>. Every build is in the <a href="../#download">download section</a>. Everything below works offline except the Google Sheets features and the community list.</p>
+<p>Get it from the <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a> or the <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp">Microsoft Store</a>, or take a zip (or a Linux <code>tar.gz</code>) from the <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">GitHub releases page</a>. Every build is in the <a href="../#download">download section</a>. Core profile editing works offline. Sheets import and Google Drive backup need an internet connection. You can browse the saved Community profiles catalog offline; fetching it for the first time or refreshing it needs internet. Manual update checks and opt-in telemetry need internet.</p>
 
 <h2 id="start"><span class="n">2</span>Start from a profile that already works</h2>
 <p>Building from nothing is slow and easy to get wrong. Open something close and change it. The Home screen has a <b>Start a profile</b> row:</p>
@@ -244,7 +252,7 @@
 </figure>
 
 <h3 id="name">Name it</h3>
-<p>The <b>Profile</b> box at the top of the editor is the file name on the device. Leave out spaces, and let the app add <code>.csv</code>. Keep the whole name to 31 characters with <code>.csv</code>, or the QuadStick cannot open it. Do not call it <code>default</code> unless you mean to replace the device's fallback file.</p>
+<p>The <b>Profile</b> box at the top of the editor is the file name on the device. Choose a name and let the app add <code>.csv</code>. Keep the whole name to 31 characters with <code>.csv</code>, or the QuadStick cannot open it. Do not call it <code>default</code> unless you mean to replace the device's fallback file.</p>
 
 <h2 id="rows"><span class="n">3</span>Read a row: output, function, input</h2>
 <p>Every binding is one row with three parts, labelled and coloured like the official spreadsheets:</p>
@@ -339,7 +347,7 @@
 <h2 id="problems"><span class="n">9</span>Fix what the Problems list flags</h2>
 <p>The bar at the bottom of the editor counts errors and warnings. Click it to open the Problems list. Each problem names its cell, like C4, says what is wrong, and says how to fix it.</p>
 <ul>
-  <li><b>Errors block installing.</b> The QuadStick would misread the row, or could not load the file. <b>Fix first problem</b> jumps to the first one.</li>
+  <li><b>Errors block installing.</b> They mark a problem that must be resolved before the app will write the file to the QuadStick. <b>Fix first problem</b> jumps to the first one.</li>
   <li><b>Warnings still install.</b> They flag rows the device will skip, or read in a way you might not expect.</li>
 </ul>
 
@@ -369,7 +377,7 @@
 <h2 id="test"><span class="n">11</span>Load it and test it</h2>
 <p><b><code>default.csv</code> loads by itself:</b> at startup, and again whenever the device sees it or <code>prefs.csv</code> change.</p>
 <p><b>Other files, you pick on the device.</b> With <b>Select files with the side tube</b> on, a long hard sip on the side tube opens the file list. Push the joystick right or left to move one file, or up or down to move five. The lip switch, a center sip or puff, or the push switch loads it, and it starts on mode 1. <code>default.csv</code> comes first and the rest are sorted by name. <b>Manage files</b> on the Home screen shows that order and the lights for each position.</p>
-<p><b>Then check it.</b> With the editor showing <b>QuadStick connected</b>, a row lights while the device sends that row's output, so you can sip and watch. The device never says which file or mode is running, so a lit row can come from another profile. Mouse, keyboard and infrared outputs never light.</p>
+<p><b>Then check it.</b> With the editor showing <b>QuadStick connected</b>, a row lights while the device sends that row's output, so you can sip and watch. The device never says which input, file or mode is running, so a lit row shows a matching output, not its source. Mouse, keyboard and infrared outputs never light.</p>
 
 <figure>
   <div class="shot">
@@ -398,6 +406,13 @@
 <p>QuadStick's own route is a spreadsheet. You fill in the same three columns in Google Sheets or Excel, and the QuadStick Manager Program (QMP) turns it into a CSV file and puts it on the device. It works, and the <a href="https://www.quadstick.com/online-user-manual">QuadStick user manual</a> walks through it.</p>
 <p>The file is the same either way, so you can switch. <b>Import from Sheets</b> brings a sheet into this app, and <b>Share as a Google Sheet</b> sends a profile back out to your own Google Drive. Whichever you use, keep backups on your computer. At startup the QuadStick deletes every file on its drive that is not a <code>.csv</code>, apart from <code>joystick.bin</code>.</p>
 
+<h2 id="share">Share a profile with a link</h2>
+<ol>
+  <li>Open the profile and choose <b>Copy share link</b>. Save the profile first and connect Google Drive if the app asks.</li>
+  <li>If the app has not enabled link access for this sheet before, it asks before turning on read-only access for anyone with the link. Confirm only if you are comfortable with link holders viewing the profile; do not share information you want to keep private. You can change access later in Google Drive.</li>
+  <li>Send the copied link. On the other person's computer, choose <b>Import from Sheets</b>, paste the link, review the workbook tabs, and import the profile into the editor. Import does not install it on their QuadStick.</li>
+</ol>
+
 <aside class="next" aria-label="Get the app">
   <p style="margin:0">Stuck on a binding the app will not let you make? <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues/new">Report it on GitHub</a> or ask in the <a href="https://discord.gg/ceqrZmnWyT">QuadStick developers Discord</a>.</p>
   <div class="row">
@@ -416,7 +431,7 @@
       <a href="https://github.com/Bbrizly/Quadstick-Config-Manager">GitHub</a>
       <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">Releases</a>
       <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a>
-      <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&amp;gl=EG&amp;ocid=pdpshare">Microsoft Store</a>
+      <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp">Microsoft Store</a>
       <a href="https://discord.gg/ceqrZmnWyT">Discord</a>
       <a href="../privacy.html">Privacy</a>
       <a href="https://www.quadstick.com/">QuadStick.com</a>

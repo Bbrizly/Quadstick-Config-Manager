@@ -14,7 +14,7 @@ Windows, macOS, and Linux. Not affiliated with QuadStick or Fred Davison.
 [![Release](https://img.shields.io/github/v/release/Bbrizly/Quadstick-Config-Manager?label=download)](https://github.com/Bbrizly/Quadstick-Config-Manager/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-[Website](https://bbrizly.github.io/Quadstick-Config-Manager/) &middot; [Download](https://github.com/Bbrizly/Quadstick-Config-Manager/releases) &middot; [Mac App Store](https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12) &middot; [Microsoft Store](https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare) &middot; [QuadStick.com](https://www.quadstick.com/) &middot; [User manual](https://www.quadstick.com/online-user-manual)
+[Website](https://bassamkamal.dev/Quadstick-Config-Manager/) &middot; [Download](https://github.com/Bbrizly/Quadstick-Config-Manager/releases) &middot; [Mac App Store](https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12) &middot; [Microsoft Store](https://apps.microsoft.com/detail/9ppqzqnl4wkp) &middot; [QuadStick.com](https://www.quadstick.com/) &middot; [User manual](https://www.quadstick.com/online-user-manual)
 
 </div>
 
@@ -29,16 +29,16 @@ This is a plain editor that catches those mistakes before anything reaches the d
 ## What it does
 
 - **Two ways to edit.** Map inputs on a picture of the hardware, or work in a spreadsheet view. Autocomplete knows the real input, output, and function names from Fred's validation data.
-- **Plain-English validation.** When something is wrong you get which cell, what is off, and how to fix it. Bad cells turn red. An error means the device would misread the file, and only those block install. A row the device simply skips, like a leftover template row or a note typed in an input column, is a warning and installs fine.
+- **Plain-English validation.** When something is wrong you get which cell, what is off, and how to fix it. Bad cells turn red. Errors block install; warnings do not. Warnings include rows the device skips, like leftover template rows or notes typed in an input column.
 - **Safe install.** Backs up the old file, writes a temp copy, reads it back, then swaps it in. Overwriting `default.csv` always asks first.
-- **Google Drive backup.** Connect once and every save backs itself up to a Sheet in your Drive. The save never waits on the network, and a failed backup retries on the next one. New machine or a wiped USB stick: restore everything from Drive.
-- **Share and import.** Copy a share link for any profile, or paste someone else's link on the home screen to pull theirs in. Every mode tab comes in, the way most shared profiles are laid out. Open takes a downloaded `.xlsx` workbook too.
+- **Google Drive backup.** Connect once and profiles with Drive backup enabled are backed up to a Sheet in your Drive. Saving locally does not wait on the network. A failed backup is marked pending and retried when the linked profile is opened, saved again, or you reconnect. New machine or a wiped USB stick: restore everything from Drive.
+- **Share and import.** Copy a share link for any profile, or paste someone else's link on the home screen to pull theirs in. A complete workbook can include multiple mode tabs; the import review lets you inspect and skip tabs before importing. Open takes a downloaded `.xlsx` workbook too.
 - **Community profiles.** Browse the QuadStick maker's own catalog of shared game profiles from inside the app. The list is only fetched when you open or refresh that window, and the last good copy is kept on your computer so it still opens offline. Import brings a profile into the editor, same as pasting a share link.
 - **Function numbers explained.** Pick a behavior like `repeat` or `greater_than` and the box for its numbers says what each one changes, the range the device accepts, and what it does when you leave the number out. All of it read off the firmware, so `greater_than 250` is called out as a strength no input reaches.
 - **The back panel, in a picture.** A photo of the back with every socket named. One switch in the top jack arrives as `digital_in_8`, one in the bottom as `digital_in_1`, and the middle jack is the lip switch. The second number in a jack is only used with a splitter. A joystick in the rear USB-A port is `usb_1_up`, `down`, `left`, `right`.
 - **USB or Bluetooth, per mode.** Each mode says which connection its presses travel over. A mode on Bluetooth alone sends no mouse or keyboard over a cable on 2025 firmware, and the app says so.
 - **Device settings, with real controls.** The stick's own settings live in `prefs.csv`, not in a game profile, and they get their own screen. A setting with a range gets a slider and the exact number beside it, a flag gets a box, a list gets a dropdown, and every one says in a line what it does and what the device falls back to when your file leaves it out. Anything the app does not recognize keeps a plain text box and is left exactly as it was. Nothing reaches the stick until you press Save, and saving asks first, because it changes every profile at once.
-- **Watches the stick while you use it.** Plug a QuadStick in and the app says so on its own. While the stick sends an output, the row bound to it lights up, in the list and on the device diagram. Sip on the mouthpiece and the sip row lights for as long as the sip lasts. It is how you check a binding does what you meant without opening a game.
+- **Watches the stick while you use it.** Plug a QuadStick in and the app says so on its own. While the stick sends an output, the row bound to it lights up, in the list and on the device diagram. Sip on the mouthpiece and the sip row lights for as long as the sip lasts. The app compares reported outputs with the mappings in the open profile. The device does not report which input, profile, or mode produced each output, so this checks the current mapping, not its source.
 - **Manage files on a mounted QuadStick.** See every profile on the device, grouped by drive, and copy one to your library, open its linked Sheet, or delete it. Delete backs the file up first. `default.csv` and `prefs.csv` are protected and can't be deleted from the app.
 - **Thirteen languages.** English, Arabic, German, Spanish, French, Hindi, Italian, Japanese, Korean, Dutch, Polish, Portuguese and Simplified Chinese. Input, output and function names stay in English in every one, because those are the bytes the device reads.
 - **Built for access.** Big buttons, keyboard shortcuts, and screen reader labels throughout. Light and dark themes, following your system or set by hand.
@@ -47,7 +47,7 @@ This is a plain editor that catches those mistakes before anything reaches the d
 
 ## Download
 
-Also on the [Mac App Store](https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12) and [Microsoft Store](https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare).
+Also on the [Mac App Store](https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12) and [Microsoft Store](https://apps.microsoft.com/detail/9ppqzqnl4wkp).
 
 Or grab the latest build from [Releases](https://github.com/Bbrizly/Quadstick-Config-Manager/releases):
 
@@ -58,8 +58,7 @@ Or grab the latest build from [Releases](https://github.com/Bbrizly/Quadstick-Co
 | `QuadStickConfigManager-macOS-Intel.zip` | Intel Mac |
 | `QuadStickConfigManager-Linux-x64.tar.gz` | Linux, 64-bit |
 
-Unzip and run. No installer. Works offline except for Sheets import, Drive
-backup, and the optional usage data you can turn on or leave off.
+Unzip and run. No installer or Config Manager account. Core profile editing works offline. Sheets import and Drive backup need an internet connection. You can browse the saved Community profiles catalog offline; fetching it for the first time or refreshing it needs internet. Manual update checks and opt-in telemetry need internet.
 
 **Windows:** SmartScreen may warn on first launch (not code-signed). Click More info, then Run anyway.
 
@@ -77,7 +76,7 @@ The home screen lets you start a new profile, open a file, pick your library (`D
 
 The editor has a device view (a picture of the stick) and a list view (rows and columns). Fix anything red in the Problems panel before you install. Click a problem to copy it for a bug report.
 
-While the stick sends an output, the row bound to it lights up for as long as it lasts, so a binding can be checked without opening a game.
+The app compares reported outputs with the mappings in the open profile. The device does not report which input or profile produced each output, so this is a check of the current mapping, not proof of its source.
 
 ![The list view with three rows lit while the QuadStick is sending them](docs/screenshot-live.png)
 

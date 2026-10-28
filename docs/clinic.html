@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QuadStick Clinic · one record per client</title>
-<meta name="description" content="A private clinician workspace for QuadStick caseloads: capabilities, client history and profile snapshots in one place. The editor stays free, Clinic is the paid caseload layer.">
+<title>QuadStick Clinic concept · proposed clinician workspace</title>
+<meta name="description" content="A concept for a clinician workspace that could connect QuadStick profiles with client context. No Clinic service is released; privacy, security, availability and pricing remain undecided.">
 <link rel="canonical" href="https://bassamkamal.dev/Quadstick-Config-Manager/clinic.html">
 
 <link rel="icon" type="image/png" href="favicon.png">
@@ -14,8 +14,8 @@
 <link rel="prefetch" href="index.html">
 
 <meta property="og:site_name" content="QuadStick Config Manager">
-<meta property="og:title" content="QuadStick Clinic">
-<meta property="og:description" content="One record per client, across every visit: capabilities, history, profile snapshots and the next step.">
+<meta property="og:title" content="QuadStick Clinic concept">
+<meta property="og:description" content="A proposed clinician workspace for QuadStick profiles. Clinic is not released; its privacy, security, availability and pricing are not finalized.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bassamkamal.dev/Quadstick-Config-Manager/clinic.html">
 <meta property="og:image" content="https://bassamkamal.dev/Quadstick-Config-Manager/og-image.png">
@@ -26,6 +26,7 @@
 
 <!-- the latin cut of each Google font, served from here so no stylesheet blocks the first paint -->
 <link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>document.documentElement.classList.add('js')</script>
 
 <style>
   @font-face{font-family:"Space Grotesk";font-weight:500 700;font-display:swap;src:url(fonts/space-grotesk-latin.woff2) format("woff2");
@@ -93,6 +94,8 @@
 
   .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
   .display{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.025em;line-height:1.04}
+  .skip{position:absolute;left:16px;top:-60px;z-index:50;padding:10px 16px;border-radius:10px;background:var(--clinic);color:#fff;font-weight:600}
+  .skip:focus{top:12px}
   .kicker{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:var(--clinic-ink)}
 
   /* ---------- nav: floating island ---------- */
@@ -221,6 +224,8 @@
      the window somebody is pointing at. */
   .console{width:100%;max-width:1680px;margin-inline:auto;padding:0 var(--gut)}
   .console .app-frame{margin-top:clamp(36px,4.4vw,58px)}
+  .demo-disclosure{max-width:1000px;margin:24px auto 0;padding:14px 18px;border:1px solid var(--line);border-left:4px solid var(--clinic);border-radius:12px;background:var(--paper-2);color:var(--ink-soft);font-size:15px;line-height:1.5}
+  .demo-disclosure strong{color:var(--ink)}
   .app-frame{position:relative;padding:9px;border-radius:26px;
     background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.52));
     box-shadow:0 1px 1px rgba(40,33,20,.05), 0 34px 70px -30px rgba(40,33,20,.34), 0 80px 140px -70px rgba(40,33,20,.3)}
@@ -423,12 +428,12 @@
   .foot a{color:var(--ink-soft);text-decoration:none}
   .foot a:hover{color:var(--ink)}
 
-  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
-  .reveal.in{opacity:1;transform:none}
+  .js .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .js .reveal.in{opacity:1;transform:none}
 
   @media(prefers-reduced-motion: reduce){
     html{scroll-behavior:auto}
-    .reveal{opacity:1;transform:none;transition:none}
+    .js .reveal{opacity:1;transform:none;transition:none}
     .btn,.switch a,.client,.card,.shot,.mark-item,.field input,.field textarea{transition:none}
     .marquee-track{animation:none}
   }
@@ -436,6 +441,7 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
 <header class="nav" id="nav">
   <div class="nav-shell">
@@ -444,7 +450,7 @@
         <img class="glyph" src="QSLogo-64.png" alt="" width="32" height="32">
         QuadStick&nbsp;<span class="sub">Clinic</span>
       </a>
-      <nav class="nav-links">
+      <nav class="nav-links" aria-label="Main navigation">
         <a class="text" href="#workspace">Workspace</a>
         <a class="text" href="#what">What changes</a>
         <a class="text" href="#inside">Inside Clinic</a>
@@ -456,7 +462,7 @@
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.08-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14 0 1.55-.01 2.8-.01 3.18 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
         </a>
         <a class="btn primary" href="#demo">
-          Book a demo
+          Discuss the concept
           <span class="cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
         </a>
       </nav>
@@ -464,7 +470,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
   <div class="hero-shell">
     <div class="hero-inner hero">
 
@@ -477,12 +483,13 @@
 
       <div class="hero-copy">
         <h1 class="display reveal">One record per client, across every visit.</h1>
-        <p class="lede reveal">Capabilities, profile history and the next step, in one place. A session starts where the last one ended.</p>
+        <p class="lede reveal">A proposed workspace for capabilities, profile history and next steps, together in one place.</p>
+        <p class="demo-disclosure" role="note"><strong>Clinic is a product concept, not a released service.</strong> The feature set, privacy and security approach, availability, and pricing shown here are proposals and may change. No production Clinic service or client-record storage is provided by this page. Do not enter patient information.</p>
         <div class="hero-actions reveal">
-          <a class="btn primary" href="#demo">Book a demo
+          <a class="btn primary" href="#demo">Discuss the concept
             <span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
           </a>
-          <a class="btn ghost" href="#principles">How it stays private</a>
+          <a class="btn ghost" href="#principles">Proposed privacy principles</a>
         </div>
       </div>
 
@@ -514,6 +521,7 @@
         <span class="kicker">The workspace</span>
         <h2 class="display">Your caseload, open.</h2>
       </div>
+      <p class="demo-disclosure" role="note"><strong>Interactive concept demo. All client names, clinical details, profile settings, and notes are fictional.</strong> The preview runs in this page only; edits reset when you reload and are not saved or sent. Please do not enter patient information.</p>
       <figure class="app-frame reveal" id="clinic-console">
         <div class="screen">
           <div class="dash-top"><b>Clinic workspace</b><small>Pick a client</small></div>
@@ -536,13 +544,13 @@
       <div class="section-head reveal">
         <span class="kicker">The clinician layer</span>
         <h2 class="display">The profile is only half the story.</h2>
-        <p>The free app makes a good setup. Clinic remembers why it works and what changed, so the next appointment does not start from scratch.</p>
+        <p>The free app makes a good setup. The proposed Clinic workflow would keep context about why it works and what changed, so a later appointment can start with that history.</p>
       </div>
       <div class="grid-3">
         <div class="card reveal">
           <div class="glyph green"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 19.5V5.8A1.8 1.8 0 0 1 5.8 4H20v16H5.5A1.5 1.5 0 0 1 4 18.5Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
           <h3>Client history, in order.</h3>
-          <p>Visits, notes, changes and saved profiles on one timeline. No guessing which CSV was the one that finally worked.</p>
+          <p>A proposed timeline for visits, notes, changes and saved profiles. The concept is intended to make it easier to see which CSV was in use.</p>
           <ul>
             <li>Visit notes and profile snapshots by date</li>
             <li>What changed between two appointments</li>
@@ -552,12 +560,12 @@
         <div class="card reveal">
           <div class="glyph warm"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 20c.5-3.7 2.8-5.5 7-5.5s6.5 1.8 7 5.5"/></svg></div>
           <h3>The person, not just the mapping.</h3>
-          <p>Capabilities, preferences and goals sit beside the technical setup, so the reason for a binding survives the visit.</p>
+          <p>The concept places capabilities, preferences and goals beside the technical setup, so the reason for a binding can stay with the record.</p>
         </div>
         <div class="card reveal">
           <div class="glyph rose"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 18V6M4 18h16"/><path d="m7 15 3-4 3 2 4-6"/></svg></div>
           <h3>Patterns across a caseload.</h3>
-          <p>See what helped a similar client sooner, using your own work instead of a blank profile every time.</p>
+          <p>The proposed workflow would let a clinician compare profile changes with access needs, goals and recorded outcomes. Similarity is context for a clinician's judgment, not a recommendation or a prediction.</p>
         </div>
       </div>
     </div>
@@ -568,7 +576,7 @@
       <div class="section-head reveal">
         <span class="kicker">Inside the app</span>
         <h2 class="display">The editor your clients already use.</h2>
-        <p>Clinic wraps the free QuadStick Config Manager. Same device view, same plain-English checks, now with a client attached to every change.</p>
+        <p>The concept builds on the free QuadStick Config Manager's device view and plain-English checks, with a client record associated with changes in the proposed workflow.</p>
       </div>
       <div class="shots">
         <figure class="shot reveal"><img src="screenshot-device-view.png" alt="The device view, showing each input on a photo of the QuadStick with its current mapping" loading="lazy" width="1440" height="900"><figcaption><b>Set it up on the device itself</b><span>Every sip, puff, lip and switch jack on a photo of the hardware, so a mapping is a place, not a row number.</span></figcaption></figure>
@@ -628,12 +636,12 @@
       <div class="section-head reveal">
         <span class="kicker">Built for trust</span>
         <h2 class="display">Professional where it counts.</h2>
-        <p>Clear records, careful boundaries, and no mysterious cloud layer between you and your work.</p>
+        <p>Clear records and careful boundaries, with the storage and privacy details still open.</p>
       </div>
       <div class="grid-3">
-        <div class="card reveal"><div class="glyph"><span aria-hidden="true">01</span></div><h3>Private clinic folder</h3><p>Your roster lives in a private clinic folder you choose. No pooled patient database, no account, and nothing used as training data.</p></div>
+        <div class="card reveal"><div class="glyph"><span aria-hidden="true">01</span></div><h3>Local-first concept</h3><p>The proposed design is based on a clinician-chosen local folder, without a pooled patient database. Its final storage, account, security and privacy details have not been implemented or verified.</p></div>
         <div class="card reveal"><div class="glyph"><span aria-hidden="true">02</span></div><h3>One roster per clinician</h3><p>Simple ownership keeps the first version understandable, instead of pretending offline files are a live team system.</p></div>
-        <div class="card reveal"><div class="glyph"><span aria-hidden="true">03</span></div><h3>Free app, paid workflow</h3><p>The editor stays free for everyone who uses a QuadStick. Clinic is the paid caseload layer for the teams who need it.</p></div>
+        <div class="card reveal"><div class="glyph"><span aria-hidden="true">03</span></div><h3>Possible paid workflow</h3><p>The current concept pairs the free editor with a potential paid caseload layer. Availability and pricing have not been set.</p></div>
       </div>
     </div>
   </section>
@@ -691,8 +699,8 @@
             <div class="field full"><label for="message">What would you like to see?</label><textarea id="message" name="message" placeholder="A few clients, a small team, or a specific workflow" required></textarea></div>
           </div>
           <div class="form-foot">
-            <small>Opens your email app with a prepared message. Please do not include patient-identifying information.</small>
-            <button class="btn primary" type="submit">Request a consult
+            <small>Opens your email app with a prepared message. If it does not open, email <a href="mailto:bassam@bbrizly.com">bassam@bbrizly.com</a>. Please do not include patient-identifying information.</small>
+            <button class="btn primary" type="submit">Request a conversation
               <span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
             </button>
           </div>
@@ -705,7 +713,7 @@
 
 <footer>
   <div class="wrap foot">
-    <span>QuadStick Config Manager, the free editor, plus QuadStick Clinic for caseloads</span>
+    <span>QuadStick Config Manager, the free editor, and the QuadStick Clinic concept</span>
     <div><a href="index.html">Free app</a> · <a href="privacy.html">Privacy</a> · <a href="https://github.com/Bbrizly/Quadstick-Config-Manager">Source</a></div>
   </div>
 </footer>
@@ -715,13 +723,16 @@
   const nav = document.querySelector('header.nav');
   addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 12), { passive: true });
 
-  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-    if (entry.isIntersecting) { entry.target.classList.add('in'); observer.unobserve(entry.target); }
-  }), { threshold: .12, rootMargin: '0px 0px -8% 0px' });
-  document.querySelectorAll('.reveal').forEach((el, i) => {
-    el.style.transitionDelay = `${Math.min(i % 4, 3) * 60}ms`;
-    observer.observe(el);
-  });
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); observer.unobserve(entry.target); }
+    }), { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach((el, i) => {
+      el.style.transitionDelay = `${Math.min(i % 4, 3) * 60}ms`;
+      observer.observe(el);
+    });
+  } else reveals.forEach(el => el.classList.add('in'));
 
 
   const logoMarquee = document.querySelector('.marquee-interaction');

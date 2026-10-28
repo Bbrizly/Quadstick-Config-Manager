@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 const SITE = 'https://bassamkamal.dev/Quadstick-Config-Manager/';
@@ -14,6 +16,8 @@ const ADDRESS = {
   'how-it-works.html': `${SITE}how-it-works.html`,
   'privacy.html': `${SITE}privacy.html`,
   'ios-privacy.html': `${SITE}ios-privacy.html`,
+  'ios-support.html': `${SITE}ios-support.html`,
+  'how-to-make-a-quadstick-profile/index.html': GUIDE,
 };
 
 // comments hold parked sections, and a parked image is not on the page
@@ -36,7 +40,7 @@ test('every page names its own canonical address', () => {
   }
 });
 
-test('every page has a link preview a scraper can fetch', () => {
+test('every page has a link preview a scraper can fetch', async () => {
   for (const [name, text] of pages) {
     for (const key of ['og:site_name', 'og:title', 'og:description', 'og:image:alt']) {
       assert.ok(meta(text, key), `${name} has no ${key}`);
@@ -48,6 +52,10 @@ test('every page has a link preview a scraper can fetch', () => {
     assert.ok(existsSync(docs(fileFor(image))), `${name}: og:image ${image} is not in docs/`);
     assert.match(meta(text, 'og:image:width') ?? '', /^\d+$/, `${name} has no og:image:width`);
     assert.match(meta(text, 'og:image:height') ?? '', /^\d+$/, `${name} has no og:image:height`);
+    const imageBytes = await readFile(docs(fileFor(image)));
+    assert.equal(imageBytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', `${name}: social image is not a PNG`);
+    assert.equal(Number(meta(text, 'og:image:width')), imageBytes.readUInt32BE(16), `${name}: og:image:width does not match the PNG`);
+    assert.equal(Number(meta(text, 'og:image:height')), imageBytes.readUInt32BE(20), `${name}: og:image:height does not match the PNG`);
     assert.equal(meta(text, 'twitter:card'), 'summary_large_image', `${name} has no large twitter card`);
   }
 });
@@ -66,7 +74,7 @@ test('every image says its size, and every file it names is there', () => {
       const src = img.match(/\ssrc="([^"]*)"/)?.[1] ?? '';
       const set = (img.match(/\ssrcset="([^"]*)"/)?.[1] ?? '').split(',').map(s => s.trim().split(/\s+/)[0]);
       for (const file of [src, ...set].filter(f => f && !/^(https?:|data:)/.test(f))) {
-        assert.ok(existsSync(docs(file)), `${name}: ${file} is missing`);
+        assert.ok(existsSync(new URL(file, docs(name))), `${name}: ${file} is missing`);
       }
     }
   }
@@ -112,11 +120,57 @@ test('the sitemap lists every public page and the profile guide', async () => {
   assert.match(xml, /<\/urlset>\s*$/);
   assert.equal((xml.match(/<url>/g) ?? []).length, (xml.match(/<\/url>/g) ?? []).length, 'unbalanced <url>');
   const listed = [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(m => m[1]);
-  assert.deepEqual([...listed].sort(), [...Object.values(ADDRESS), GUIDE].sort());
+  assert.deepEqual([...listed].sort(), [...Object.values(ADDRESS)].sort());
   for (const url of listed) {
-    // the guide is built in its own branch, so it may not be on disk yet
-    if (url === GUIDE && !existsSync(docs(fileFor(url)))) continue;
     assert.ok(existsSync(docs(fileFor(url))), `sitemap lists a page that is not there: ${url}`);
+  }
+});
+
+test('public pages have no broken local links, resources, or fragments', async () => {
+  const docsRoot = path.resolve(fileURLToPath(docs('')));
+  const siteRoot = new URL(SITE);
+  const publicPages = Object.entries(ADDRESS).map(([file, address]) =>
+    [file, address, pages.find(([name]) => name === file)[1]]);
+  const pageByFile = new Map(publicPages.map(([file, , html]) => [file, html]));
+  const references = html => {
+    const refs = [];
+    for (const tag of html.matchAll(/<(?:a|link|img|script|source|iframe|video|audio|object|form)\b[^>]*>/gi)) {
+      for (const match of tag[0].matchAll(/\b(?:href|src|poster|action)\s*=\s*(["'])(.*?)\1/gi)) refs.push(match[2]);
+      const srcset = tag[0].match(/\bsrcset\s*=\s*(["'])(.*?)\1/i)?.[2];
+      if (srcset) refs.push(...srcset.split(',').map(item => item.trim().split(/\s+/)[0]));
+    }
+    for (const match of html.matchAll(/url\(\s*(?:"([^"]+)"|'([^']+)'|([^)'"\s]+))\s*\)/gi)) {
+      refs.push(match[1] ?? match[2] ?? match[3]);
+    }
+    return refs;
+  };
+  const ids = html => new Set([...html.matchAll(/\b(?:id|name)\s*=\s*(["'])(.*?)\1/gi)].map(match => match[2]));
+
+  for (const [file, address, html] of publicPages) {
+    const pageURL = new URL(file, new URL('.', `file://${docsRoot}/`));
+    for (const ref of references(html)) {
+      if (!ref || ref.startsWith('#')) {
+        if (ref) assert.ok(ids(html).has(decodeURIComponent(ref.slice(1))), `${file}: missing fragment ${ref}`);
+        continue;
+      }
+      let targetURL;
+      try { targetURL = new URL(ref, pageURL); }
+      catch { assert.fail(`${file}: invalid link ${ref}`); }
+      let targetPath;
+      if (targetURL.protocol === 'file:') targetPath = fileURLToPath(targetURL);
+      else if (targetURL.origin === siteRoot.origin && targetURL.pathname.startsWith(siteRoot.pathname)) {
+        const relative = decodeURIComponent(targetURL.pathname.slice(siteRoot.pathname.length));
+        targetPath = fileURLToPath(docs(relative.endsWith('/') || !relative ? `${relative}index.html` : relative));
+      } else continue;
+      const normalized = path.resolve(targetPath);
+      assert.ok(normalized.startsWith(`${docsRoot}${path.sep}`) || normalized === docsRoot, `${file}: link escapes docs/: ${ref}`);
+      assert.ok(existsSync(normalized), `${file}: missing local resource ${ref}`);
+      if (targetURL.hash && /\.html?$/i.test(normalized)) {
+        const targetFile = path.relative(docsRoot, normalized).split(path.sep).join('/');
+        const targetHTML = pageByFile.get(targetFile) ?? (await readFile(normalized, 'utf8')).replace(/<!--[\s\S]*?-->/g, '');
+        assert.ok(ids(targetHTML).has(decodeURIComponent(targetURL.hash.slice(1))), `${file}: missing fragment ${ref}`);
+      }
+    }
   }
 });
 
@@ -124,6 +178,22 @@ test('the home page footer links the code tour and the profile guide', () => {
   const footer = homepage.slice(homepage.lastIndexOf('<footer'));
   assert.match(footer, /<a href="how-it-works\.html">/);
   assert.match(footer, /<a href="how-to-make-a-quadstick-profile\/">How to make a profile<\/a>/);
+  assert.match(footer, /<a href="ios-support\.html">iPhone and iPad support<\/a>/);
+  assert.match(footer, /<a href="ios-privacy\.html">iOS privacy<\/a>/);
+  assert.match(homepage, /New to profile editing\? <a href="how-to-make-a-quadstick-profile\/">Read the step-by-step profile guide<\/a>/);
+});
+
+test('iOS support and privacy pages link back to each other and the homepage', async () => {
+  const support = await readFile(docs('ios-support.html'), 'utf8');
+  const privacy = await readFile(docs('ios-privacy.html'), 'utf8');
+  assert.match(support, /href="index\.html">Back to QuadStick Config Manager/);
+  assert.match(support, /href="ios-privacy\.html">iOS privacy policy/);
+  assert.match(privacy, /href="ios-support\.html">iOS support/);
+  assert.match(privacy, /href="index\.html">QuadStick Config Manager website/);
+});
+
+test('the Linux release asset has a direct link', () => {
+  assert.match(homepage, /releases\/latest\/download\/QuadStickConfigManager-Linux-x64\.tar\.gz/);
 });
 
 test('faint text is readable on both papers', () => {
@@ -148,8 +218,8 @@ test('faint text is readable on both papers', () => {
 test('the fonts come from this site, not a render-blocking request to Google', () => {
   for (const [name, text] of pages) {
     assert.doesNotMatch(text, /fonts\.(googleapis|gstatic)\.com/, `${name} still loads Google Fonts`);
-    for (const [, file] of head(text).matchAll(/(?:url\(|href=")(fonts\/[^)"]+)/g)) {
-      assert.ok(existsSync(docs(file)), `${name}: ${file} is missing`);
+    for (const [, file] of head(text).matchAll(/(?:url\(|href=")(\.\.\/fonts\/[^)"]+|fonts\/[^)"]+)/g)) {
+      assert.ok(existsSync(new URL(file, docs(name))), `${name}: ${file} is missing`);
     }
   }
 });
