@@ -44,11 +44,11 @@ struct DriveView: View {
                              set: { if $0 == nil { shareURL = nil } })) { item in
             ActivityView(url: item.url)
         }
-        .alert("Sheet edited somewhere else", isPresented: conflictShowing) {
-            Button("Use this phone's copy") { model.drive.conflict?.decide(.replaceWithMine); model.drive.conflict = nil }
-            Button("Use the online copy", role: .destructive) { model.drive.conflict?.decide(.keepOnline); model.drive.conflict = nil }
+        .alert("Check this Google Sheet", isPresented: conflictShowing) {
+            Button("Use this phone's copy") { model.drive.resolveConflict(.replaceWithMine) }
+            Button("Use the online copy", role: .destructive) { model.drive.resolveConflict(.keepOnline) }
         } message: {
-            Text("\(model.drive.conflict?.profileName ?? "This profile")'s sheet changed since this phone last wrote it. Using this phone's copy replaces the online one; Google keeps the old version in the sheet history. Using the online copy replaces the phone's copy.")
+            Text("This phone cannot confirm whether \(model.drive.conflict?.profileName ?? "this profile")'s sheet has changes you need. Using this phone's copy replaces the online one; Google keeps older versions in the sheet history. Using the online copy replaces the phone's copy.")
         }
         .alert("That sheet is gone", isPresented: $recreateOffer) {
             Button("Make a new sheet") { Task { await run { await drive.recreate(model.profile) } } }
@@ -60,7 +60,7 @@ struct DriveView: View {
 
     private var conflictShowing: Binding<Bool> {
         Binding(get: { model.drive.conflict != nil },
-                set: { if !$0 { model.drive.conflict = nil } })
+                set: { if !$0 { model.drive.resolveConflict(.keepOnline) } })
     }
 
     // MARK: - What is going on
@@ -89,7 +89,15 @@ struct DriveView: View {
                 icon: model.profile.sheetID == nil ? "checkmark.circle" : "checkmark.icloud",
                 tint: .green)
         case .problem(let message):
-            row(message, icon: "exclamationmark.triangle.fill", tint: .orange)
+            VStack(alignment: .leading, spacing: 12) {
+                row(message, icon: "exclamationmark.triangle.fill", tint: .orange)
+                if drive.needsSignIn {
+                    Button("Sign in with Google") { Task { await drive.signIn() } }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .frame(maxWidth: .infinity)
+                }
+            }
         }
     }
 
@@ -261,29 +269,80 @@ private struct DriveSheetListView: View {
 
     @State private var sheets: [DriveSheetInfo] = []
     @State private var loading = true
+    @State private var loadError: String?
+    @State private var openingSheetID: String?
+    @State private var failedSheetID: String?
+    @State private var openError: String?
 
     var body: some View {
         NavigationStack {
             Group {
                 if loading {
                     ProgressView("Looking for your sheets...")
+                } else if let loadError {
+                    ContentUnavailableView {
+                        Label("Could not load sheets", systemImage: "exclamationmark.icloud")
+                    } description: {
+                        Text(loadError)
+                    } actions: {
+                        Button("Try again", systemImage: "arrow.clockwise") {
+                            Task { await loadSheets() }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        if model.drive.needsSignIn {
+                            Button("Sign in with Google") {
+                                Task {
+                                    await model.drive.signIn()
+                                    await loadSheets()
+                                }
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
                 } else if sheets.isEmpty {
                     ContentUnavailableView("No sheets yet",
                                            systemImage: "tray",
                                            description: Text("Back up a profile and it will show up here, on this phone and on the desktop app."))
                 } else {
                     List(sheets) { sheet in
-                        Button {
-                            Task { await open(sheet) }
-                        } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(sheet.name).font(.headline).foregroundStyle(.white)
-                                Text(Self.when(sheet.modifiedTime))
-                                    .font(.caption)
-                                    .foregroundStyle(Color(white: 0.65))
+                        VStack(alignment: .leading, spacing: 8) {
+                            Button {
+                                Task { await open(sheet) }
+                            } label: {
+                                HStack(spacing: 12) {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(sheet.name).font(.headline).foregroundStyle(.white)
+                                        Text(Self.when(sheet.modifiedTime))
+                                            .font(.caption)
+                                            .foregroundStyle(Color(white: 0.65))
+                                    }
+                                    Spacer()
+                                    if openingSheetID == sheet.id { ProgressView() }
+                                }
+                            }
+                            .disabled(openingSheetID != nil)
+                            .accessibilityHint("Adds this profile to this phone")
+
+                            if failedSheetID == sheet.id, let openError {
+                                Label(openError, systemImage: "exclamationmark.triangle")
+                                    .font(.footnote)
+                                    .foregroundStyle(.orange)
+                                Button("Try downloading again", systemImage: "arrow.clockwise") {
+                                    Task { await open(sheet) }
+                                }
+                                .buttonStyle(.bordered)
+                                .disabled(openingSheetID != nil)
+                                if model.drive.needsSignIn {
+                                    Button("Sign in with Google") {
+                                        Task {
+                                            await model.drive.signIn()
+                                            await open(sheet)
+                                        }
+                                    }
+                                    .buttonStyle(.bordered)
+                                }
                             }
                         }
-                        .accessibilityHint("Adds this profile to this phone")
                     }
                 }
             }
@@ -291,16 +350,45 @@ private struct DriveSheetListView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { Button("Done") { dismiss() } }
             .task {
-                sheets = await model.drive.mySheets() ?? []
-                loading = false
+                await loadSheets()
             }
         }
     }
 
+    @MainActor
+    private func loadSheets() async {
+        loading = true
+        loadError = nil
+        failedSheetID = nil
+        openError = nil
+        if let found = await model.drive.mySheets() {
+            sheets = found
+        } else if case .problem(let message) = model.drive.status {
+            loadError = message
+        } else {
+            loadError = "Your sheets could not be loaded. Check your connection and try again."
+        }
+        loading = false
+    }
+
     private func open(_ sheet: DriveSheetInfo) async {
-        guard let csv = await model.drive.download(sheet.id) else { return }
+        guard openingSheetID == nil else { return }
+        openingSheetID = sheet.id
+        failedSheetID = nil
+        openError = nil
+        guard let csv = await model.drive.download(sheet.id) else {
+            failedSheetID = sheet.id
+            if case .problem(let message) = model.drive.status {
+                openError = message
+            } else {
+                openError = "This sheet could not be downloaded. Check your connection and try again."
+            }
+            openingSheetID = nil
+            return
+        }
         guard let imported = DeviceFile.importProfile(csv: csv, fallbackName: sheet.name) else {
             notes = ["\(sheet.name) did not contain a profile this app could read."]
+            openingSheetID = nil
             dismiss()
             return
         }
@@ -309,6 +397,7 @@ private struct DriveSheetListView: View {
         profile.sheetSyncedTime = sheet.modifiedTime
         model.addProfile(profile)
         notes = imported.notes
+        openingSheetID = nil
         dismiss()
     }
 

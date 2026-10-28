@@ -43,7 +43,10 @@ public actor DriveSync {
         }
 
         let live = try await client.modifiedTime(sheetID)
-        if let seen = profile.sheetSyncedTime, seen != live {
+        // Without a recorded baseline there is no evidence that the online
+        // sheet is unchanged. Ask before the first update of any imported
+        // link, as well as after a known remote edit.
+        if profile.sheetSyncedTime.map({ $0 != live }) ?? true {
             if await resolve() == .keepOnline {
                 return .keptOnline(sheetID: sheetID, csv: try await client.downloadProfileCSV(sheetID))
             }

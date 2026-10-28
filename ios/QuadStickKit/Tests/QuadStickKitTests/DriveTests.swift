@@ -354,6 +354,32 @@ final class DriveSyncTests: XCTestCase {
         XCTAssertTrue(asked)
     }
 
+    func testLinkedSheetWithoutASyncBaselineAsksBeforeOverwriting() async throws {
+        let http = responder(modified: { "t2" })
+        nonisolated(unsafe) var asked = false
+        let profile = Profile(name: "Game", modes: [Mode(name: "Driving")], sheetID: "s1")
+        _ = try await sync(http).push(profile: profile, csv: csv,
+                                     resolve: { asked = true; return .replaceWithMine })
+        XCTAssertTrue(asked, "an imported sheet with no saved baseline must not be overwritten silently")
+    }
+
+    func testKeepingLinkedSheetWithoutBaselineDoesNotWriteToIt() async throws {
+        let http = FakeHTTP { r in
+            let url = r.url!.absoluteString
+            if url.contains("fields=modifiedTime") { return (200, json(["modifiedTime": "t2"])) }
+            if url.contains("?fields=") { return (200, json(["sheets": [["properties": ["sheetId": 0, "title": "Driving"]]]])) }
+            if url.contains("values:batchGet") {
+                return (200, json(["valueRanges": [["values": [["Profile Name", "", "Online"]]]]]))
+            }
+            return (200, Data())
+        }
+        let profile = Profile(name: "Game", modes: [Mode(name: "Driving")], sheetID: "s1")
+        let result = try await sync(http).push(profile: profile, csv: csv, resolve: { .keepOnline })
+        guard case .keptOnline(_, let text) = result else { return XCTFail("expected online version") }
+        XCTAssertTrue(text.contains("Online"))
+        XCTAssertFalse(http.urls.contains { $0.contains("values:batchUpdate") })
+    }
+
     func testKeepingTheOnlineVersionDownloadsItAndWritesNothing() async throws {
         let http = FakeHTTP { r in
             let url = r.url!.absoluteString

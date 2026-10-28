@@ -12,6 +12,14 @@ import QuadStickKit
 @Observable
 @MainActor
 final class DriveAccount: NSObject, ASWebAuthenticationPresentationContextProviding {
+    private enum SignInError: LocalizedError {
+        case sessionCouldNotStart
+
+        var errorDescription: String? {
+            "Google sign-in could not be opened. Try again."
+        }
+    }
+
     enum Status: Equatable {
         case notConfigured
         case signedOut
@@ -29,10 +37,23 @@ final class DriveAccount: NSObject, ASWebAuthenticationPresentationContextProvid
     /// to the user; nothing is written until it answers.
     var conflict: Conflict?
 
+    /// Resolves a pending prompt exactly once. If a system dismissal happens
+    /// without a button action, the caller chooses `.keepOnline` to avoid a
+    /// write the user did not explicitly approve.
+    func resolveConflict(_ choice: ConflictChoice) {
+        guard let pending = conflict else { return }
+        conflict = nil
+        pending.decide(choice)
+    }
+
     /// True when the last failure was a sheet that is not in Drive any more.
     /// A flag, not a search of the message, so rewording the sentence people
     /// read cannot quietly disable the offer to make a new one.
     private(set) var lastFailureWasMissingSheet = false
+    /// True when the last sign-in or Drive error can be fixed by authenticating
+    /// again. Kept separate from `status.problem`, which also covers transient
+    /// network and missing-sheet errors that do not need a new sign-in.
+    private(set) var needsSignIn = false
 
     struct Conflict: Identifiable {
         let id = UUID()
@@ -71,16 +92,20 @@ final class DriveAccount: NSObject, ASWebAuthenticationPresentationContextProvid
         status = .working("Opening Google...")
         do {
             let callback = try await presentSignIn(url: url, scheme: scheme)
-            let code = try await auth.code(from: callback, expectedState: state)
+            let code = try auth.code(from: callback, expectedState: state)
             status = .working("Finishing sign-in...")
             try await auth.exchange(code: code, verifier: verifier)
             status = .signedIn
+            needsSignIn = false
         } catch is CancellationError {
             status = .signedOut
+            needsSignIn = false
         } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
             status = .signedOut
+            needsSignIn = false
         } catch {
             status = .problem(Self.explain(error))
+            needsSignIn = true
         }
     }
 
@@ -94,7 +119,10 @@ final class DriveAccount: NSObject, ASWebAuthenticationPresentationContextProvid
             // The whole point is reaching a Google session the person is
             // already signed into, so this stays false.
             session.prefersEphemeralWebBrowserSession = false
-            session.start()
+            guard session.start() else {
+                continuation.resume(throwing: SignInError.sessionCouldNotStart)
+                return
+            }
         }
     }
 
@@ -108,6 +136,7 @@ final class DriveAccount: NSObject, ASWebAuthenticationPresentationContextProvid
     func signOut() async {
         await auth.signOut()
         status = .signedOut
+        needsSignIn = false
     }
 
     // MARK: - Using it
@@ -116,25 +145,38 @@ final class DriveAccount: NSObject, ASWebAuthenticationPresentationContextProvid
     /// the profile. Returns nil when it did not happen, having already put the
     /// reason in `status`.
     func push(_ profile: Profile) async -> PushResult? {
-        await run("Saving to Google Drive...") {
+        guard let csv = csvForDrive(profile) else { return nil }
+        return await run("Saving to Google Drive...") {
             try await self.sync.push(profile: profile,
-                                     csv: DeviceFile.export(profile),
+                                     csv: csv,
                                      resolve: self.askAboutConflict(profile.name))
         }
     }
 
     func shareLink(for profile: Profile) async -> (url: URL, result: PushResult)? {
-        await run("Putting this profile in Google Sheets...") {
+        guard let csv = csvForDrive(profile) else { return nil }
+        return await run("Putting this profile in Google Sheets...") {
             try await self.sync.shareLink(profile: profile,
-                                          csv: DeviceFile.export(profile),
+                                          csv: csv,
                                           resolve: self.askAboutConflict(profile.name))
         }
     }
 
     func recreate(_ profile: Profile) async -> PushResult? {
-        await run("Making a new sheet...") {
-            try await self.sync.recreate(profile: profile, csv: DeviceFile.export(profile))
+        guard let csv = csvForDrive(profile) else { return nil }
+        return await run("Making a new sheet...") {
+            try await self.sync.recreate(profile: profile, csv: csv)
         }
+    }
+
+    private func csvForDrive(_ profile: Profile) -> String? {
+        if let issue = ConfigValidator.validate(profile, capabilities: QuadStickCatalog.capabilities)
+            .first(where: { $0.severity == .error }) {
+            status = .problem("This profile cannot be backed up yet. \(issue.message)")
+            needsSignIn = false
+            return nil
+        }
+        return DeviceFile.export(profile)
     }
 
     func mySheets() async -> [DriveSheetInfo]? {
@@ -155,9 +197,17 @@ final class DriveAccount: NSObject, ASWebAuthenticationPresentationContextProvid
         do {
             let value = try await work()
             status = .signedIn
+            needsSignIn = false
             return value
         } catch {
             lastFailureWasMissingSheet = (error as? DriveError) == .notFound
+            if let authError = error as? GoogleAuthError,
+               authError == .revoked || authError == .notConnected {
+                if authError == .revoked { await auth.signOut() }
+                needsSignIn = true
+            } else {
+                needsSignIn = (error as? DriveError) == .notAuthorized
+            }
             status = .problem(Self.explain(error))
             return nil
         }
