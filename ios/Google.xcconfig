@@ -1,4 +1,4 @@
-// Google OAuth client for SipStudio.
+// Google OAuth client for QuadStick Config Manager.
 //
 // An iOS OAuth client is public: there is no secret, and the client id is the
 // whole credential. It still stays out of the repo, the same way the desktop

@@ -19,6 +19,7 @@ public final class MockConfigurationRepository: ConfigurationRepository, @unchec
     public init(directory: URL? = nil) {
         self.directory = directory
             ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+                // Keep the original on-disk folder so renamed-app upgrades retain profiles.
                 .appendingPathComponent("SipStudio", isDirectory: true)
         try? FileManager.default.createDirectory(at: self.directory, withIntermediateDirectories: true)
     }

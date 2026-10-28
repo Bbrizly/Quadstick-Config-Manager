@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Privacy Policy · SipStudio for iPhone</title>
-<meta name="description" content="Privacy policy for SipStudio for iPhone. No accounts, ads or analytics. Your profiles stay on your iPhone, and only Sheets imports and tips use the network.">
+<title>Privacy Policy · QuadStick Config Manager for iOS</title>
+<meta name="description" content="Privacy policy for QuadStick Config Manager on iPhone and iPad. Explains local profile storage, Google Drive in configured builds, and tip purchases through Apple and RevenueCat.">
 <link rel="canonical" href="https://bassamkamal.dev/Quadstick-Config-Manager/ios-privacy.html">
 
 <meta property="og:site_name" content="QuadStick Config Manager">
-<meta property="og:title" content="Privacy Policy · SipStudio for iPhone">
-<meta property="og:description" content="No accounts, no advertising, no analytics and no crash reporting. Your profiles stay on your iPhone.">
+<meta property="og:title" content="Privacy Policy · QuadStick Config Manager for iOS">
+<meta property="og:description" content="How QuadStick Config Manager stores profiles, supports Google Drive in configured builds, and processes tip purchases.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://bassamkamal.dev/Quadstick-Config-Manager/ios-privacy.html">
 <meta property="og:image" content="https://bassamkamal.dev/Quadstick-Config-Manager/og-image.png">
@@ -28,19 +28,25 @@
 </head>
 <body>
 <main>
-  <h1>SipStudio for iPhone: Privacy Policy</h1>
-  <p>Last updated 11 September 2026</p>
-  <p>SipStudio has no accounts, no advertising, no analytics and no crash reporting. Your profiles stay on your iPhone and in the places you save them with the Files app.</p>
+  <h1>QuadStick Config Manager for iOS: Privacy Policy</h1>
+  <p>Last updated 13 October 2026</p>
+  <p>QuadStick Config Manager stores your profiles on your device. Builds configured for Google Drive let you choose to back up, share, and restore profiles; builds without Google sign-in configuration do not offer those features. The app has no advertising or cross-app tracking. It does not collect health measurements or send profile data for analytics.</p>
 
-  <h2>What uses the network</h2>
-  <p><b>Importing from Google Sheets.</b> When you paste a Sheets link and import it, the app downloads that one sheet from Google. Nothing is sent with it.</p>
-  <p><b>The tip jar.</b> Tip prices and purchases go through Apple, and RevenueCat records them for the developer. RevenueCat receives a random ID made by the app and the tip you bought. It never receives your name, your Apple ID or your profiles. Tips unlock nothing.</p>
+  <h2>Profiles and Google Drive</h2>
+  <p>Profiles and app settings are saved in the app's private storage on your device. The operating system may include app data in device backups according to your backup settings. Opening a public Google Sheets link downloads the sheet you chose. In builds with Google Drive configured, if you choose a Drive feature, the app uses Google's sign-in and Drive services to create, read, or update the spreadsheets you select or that the app created for you. Profile names, controller mappings, and other profile contents in those spreadsheets are processed by Google under your Google account and Google's privacy terms. The app does not request access to unrelated Drive files. Builds without Drive sign-in configuration do not send profile data to Google Drive.</p>
+  <p>In Drive-enabled builds, the Google refresh token is kept in the iOS Keychain. You can sign out in the app to remove that token, and revoke this app's access from your Google Account security settings. Backed-up spreadsheets remain in your Google Drive until you delete them. When you make a share link, anyone who has that link can view the shared spreadsheet; you can remove that access in Google Drive.</p>
 
-  <h2>What is never sent</h2>
-  <p>Your profiles and their contents, file names, anything you type, and anything about who you are.</p>
+  <h2>Tips and purchase data</h2>
+  <p>Tips are optional and unlock no features. When the Home screen's tip panel loads, the app asks RevenueCat for the available tip products. If you choose a tip, Apple processes the payment and RevenueCat processes purchase history and transaction information for purchase validation, reporting, and analytics. The app does not provide a custom customer ID, so the RevenueCat SDK generates an anonymous app customer identifier. The app does not send your profile contents or Google account details to RevenueCat, and it does not ask you to enter your Apple ID or payment card details. Apple handles payment credentials. No advertising or cross-app tracking is performed. See <a href="https://www.revenuecat.com/privacy/">RevenueCat's privacy policy</a> for its handling of SDK data.</p>
+
+  <h2>Retention and deletion</h2>
+  <p>You can delete individual profiles in the app, but at least one profile must remain. Deleting the app and its stored data removes its local profiles and settings. In Drive-enabled builds, Google Sheets backups remain in your Drive until you delete them. Signing out or revoking Google access stops future access but does not delete existing sheets. For purchase records held by RevenueCat, contact the developer using the address below; Apple's transaction records are managed by Apple.</p>
+
+  <h2>Service providers</h2>
+  <p>Google provides public Sheets import and, in configured builds, sign-in and Drive features when you choose them. Apple processes App Store purchases. RevenueCat provides tip product information and processes purchase history for validation, reporting, and analytics. These services process data as described in their own privacy policies and under their applicable terms.</p>
 
   <h2>Contact</h2>
-  <p>Questions or deletion requests: <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues/new">open an issue</a>.</p>
+  <p>Questions or deletion requests: <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues/new">open an issue</a>. For app help, see <a href="ios-support.html">iOS support</a>, or return to the <a href="index.html">QuadStick Config Manager website</a>.</p>
 </main>
 </body>
 </html>

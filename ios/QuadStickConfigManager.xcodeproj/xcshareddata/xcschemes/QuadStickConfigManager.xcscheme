@@ -6,9 +6,9 @@
             <BuildableReference
                BuildableIdentifier="primary"
                BlueprintIdentifier="AA0000000000000000000050"
-               BuildableName="SipStudio.app"
-               BlueprintName="SipStudio"
-               ReferencedContainer="container:SipStudio.xcodeproj">
+               BuildableName="QuadStickConfigManager.app"
+               BlueprintName="QuadStickConfigManager"
+               ReferencedContainer="container:QuadStickConfigManager.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -22,9 +22,9 @@
          <BuildableReference
             BuildableIdentifier="primary"
             BlueprintIdentifier="AA0000000000000000000050"
-            BuildableName="SipStudio.app"
-            BlueprintName="SipStudio"
-            ReferencedContainer="container:SipStudio.xcodeproj">
+               BuildableName="QuadStickConfigManager.app"
+               BlueprintName="QuadStickConfigManager"
+               ReferencedContainer="container:QuadStickConfigManager.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier="primary"
             BlueprintIdentifier="AA0000000000000000000050"
-            BuildableName="SipStudio.app"
-            BlueprintName="SipStudio"
-            ReferencedContainer="container:SipStudio.xcodeproj">
+               BuildableName="QuadStickConfigManager.app"
+               BlueprintName="QuadStickConfigManager"
+               ReferencedContainer="container:QuadStickConfigManager.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

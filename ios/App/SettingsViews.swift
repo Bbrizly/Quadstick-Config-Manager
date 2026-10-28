@@ -32,7 +32,7 @@ struct QuadStickSettingsView: View {
                 // first row, so a Section header here would say the same
                 // words twice.
             } footer: {
-                Text("This changes what SipStudio shows and does. It does not change any setting on the QuadStick itself.")
+                Text("This changes what QuadStick Config Manager shows and does. It does not change any setting on the QuadStick itself.")
             }
 
             Section {

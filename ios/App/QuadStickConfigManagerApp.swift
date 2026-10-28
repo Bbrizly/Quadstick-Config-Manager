@@ -2,7 +2,7 @@ import SwiftUI
 import QuadStickKit
 
 @main
-struct SipStudioApp: App {
+struct QuadStickConfigManagerApp: App {
     @State private var model = AppModel()
 
     var body: some Scene {
@@ -33,20 +33,51 @@ final class AppModel {
     let drive = DriveAccount()
     private let repo: ConfigurationRepository
     private var undoStack: [Profile] = []
+    private var profileStorageWritable = false
+    private var settingsStorageWritable = false
 
     init(repo: ConfigurationRepository = MockConfigurationRepository()) {
         self.repo = repo
         do {
             profiles = try repo.loadProfiles()
-            settings = try repo.loadSettings()
+            profileStorageWritable = true
+            if profiles.isEmpty {
+                // A valid empty file has no selected profile to edit. Seed a
+                // real sample so the UI never presents unsaved fallback data.
+                profiles = [SampleData.fortnite]
+                do {
+                    try repo.saveProfiles(profiles)
+                } catch {
+                    profileSaveError = "A starter profile could not be saved (\(error.localizedDescription)). Your changes remain open in this session; try again before closing the app."
+                }
+            }
         } catch {
             // Corrupt local data falls back to samples but says so, never silently.
             loadError = "Saved profiles could not be read (\(error.localizedDescription)). Showing sample data instead."
             profiles = [SampleData.fortnite]
         }
+        do {
+            settings = try repo.loadSettings()
+            settingsStorageWritable = true
+        } catch {
+            // Settings are independent of profiles. Keep any profiles that loaded.
+            let settingsError = "Saved settings could not be read (\(error.localizedDescription)). Using default settings."
+            loadError = [loadError, settingsError].compactMap { $0 }.joined(separator: "\n")
+        }
     }
 
     var loadError: String?
+    private var profileSaveError: String?
+    private var settingsSaveError: String?
+
+    var saveError: String? {
+        [profileSaveError, settingsSaveError].compactMap { $0 }.joined(separator: "\n")
+            .nilIfEmpty
+    }
+    var canRetrySave: Bool {
+        (profileSaveError != nil && profileStorageWritable)
+            || (settingsSaveError != nil && settingsStorageWritable)
+    }
 
     var profile: Profile {
         get { profiles.indices.contains(profileIndex) ? profiles[profileIndex] : SampleData.fortnite }
@@ -98,7 +129,21 @@ final class AppModel {
     }
 
     func saveSettings() {
-        try? repo.saveSettings(settings)
+        guard settingsStorageWritable else {
+            settingsSaveError = "Saved settings could not be read, so this app is leaving that file untouched. Your changes remain open in this session."
+            return
+        }
+        do {
+            try repo.saveSettings(settings)
+            settingsSaveError = nil
+        } catch {
+            settingsSaveError = "Settings could not be saved (\(error.localizedDescription)). Your changes remain open in this session; try again before closing the app."
+        }
+    }
+
+    func retryFailedSaves() {
+        if profileSaveError != nil { autosave() }
+        if settingsSaveError != nil { saveSettings() }
     }
 
     func selectProfile(_ index: Int) {
@@ -130,8 +175,8 @@ final class AppModel {
 
     func setAssignment(_ assignment: Assignment, for actionID: String) {
         let index = modeIndex
+        guard profile.modes.indices.contains(index) else { return }
         mutate { p in
-            guard p.modes.indices.contains(index) else { return }
             if assignment.output == nil && assignment.function == nil {
                 p.modes[index].assignments.removeValue(forKey: actionID)
             } else {
@@ -141,7 +186,16 @@ final class AppModel {
     }
 
     private func autosave() {
-        try? repo.saveProfiles(profiles)
+        guard profileStorageWritable else {
+            profileSaveError = "Saved profiles could not be read, so this app is leaving that file untouched. Sample profile changes remain open in this session."
+            return
+        }
+        do {
+            try repo.saveProfiles(profiles)
+            profileSaveError = nil
+        } catch {
+            profileSaveError = "Profiles could not be saved (\(error.localizedDescription)). Your changes remain open in this session; try again before closing the app."
+        }
     }
 
     // MARK: - Google Drive
@@ -199,4 +253,8 @@ final class AppModel {
         let parts = assigned.map { "\($0.action.name) assigned to \($0.assignment.display)" }
         return "\(input.name). \(parts.joined(separator: ". "))."
     }
+}
+
+private extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
 }

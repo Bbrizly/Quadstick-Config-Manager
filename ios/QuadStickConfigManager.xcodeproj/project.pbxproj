@@ -12,7 +12,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AA0000000000000000000040 /* SipStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SipStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000040 /* QuadStickConfigManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuadStickConfigManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000000000000000000090 /* Google.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Google.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -44,7 +44,7 @@
 		AA0000000000000000000031 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000040 /* SipStudio.app */,
+				AA0000000000000000000040 /* QuadStickConfigManager.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -52,9 +52,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA0000000000000000000050 /* SipStudio */ = {
+		AA0000000000000000000050 /* QuadStickConfigManager */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA0000000000000000000060 /* Build configuration list for PBXNativeTarget "SipStudio" */;
+			buildConfigurationList = AA0000000000000000000060 /* Build configuration list for PBXNativeTarget "QuadStickConfigManager" */;
 			buildPhases = (
 				AA0000000000000000000002 /* Sources */,
 				AA0000000000000000000003 /* Frameworks */,
@@ -67,13 +67,13 @@
 			fileSystemSynchronizedGroups = (
 				AA0000000000000000000020 /* App */,
 			);
-			name = SipStudio;
+			name = QuadStickConfigManager;
 			packageProductDependencies = (
 				AA0000000000000000000011 /* QuadStickKit */,
 				AA0000000000000000000013 /* RevenueCat */,
 			);
-			productName = SipStudio;
-			productReference = AA0000000000000000000040 /* SipStudio.app */;
+			productName = QuadStickConfigManager;
+			productReference = AA0000000000000000000040 /* QuadStickConfigManager.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -90,7 +90,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AA0000000000000000000061 /* Build configuration list for PBXProject "SipStudio" */;
+			buildConfigurationList = AA0000000000000000000061 /* Build configuration list for PBXProject "QuadStickConfigManager" */;
 			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -108,7 +108,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA0000000000000000000050 /* SipStudio */,
+				AA0000000000000000000050 /* QuadStickConfigManager */,
 			);
 		};
 /* End PBXProject section */
@@ -172,14 +172,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 69NPZWZB47;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = SipStudio;
+					INFOPLIST_KEY_CFBundleDisplayName = "QuadStick Config Manager";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -188,10 +188,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				// Keep the established bundle identifier so existing installs update in place.
 				PRODUCT_BUNDLE_IDENTIFIER = dev.bassamkamal.sipstudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -202,14 +203,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 69NPZWZB47;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = SipStudio;
+					INFOPLIST_KEY_CFBundleDisplayName = "QuadStick Config Manager";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -218,17 +219,18 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				// Keep the established bundle identifier so existing installs update in place.
 				PRODUCT_BUNDLE_IDENTIFIER = dev.bassamkamal.sipstudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA0000000000000000000060 /* Build configuration list for PBXNativeTarget "SipStudio" */ = {
+		AA0000000000000000000060 /* Build configuration list for PBXNativeTarget "QuadStickConfigManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA0000000000000000000072 /* Debug */,
@@ -237,7 +239,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA0000000000000000000061 /* Build configuration list for PBXProject "SipStudio" */ = {
+		AA0000000000000000000061 /* Build configuration list for PBXProject "QuadStickConfigManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA0000000000000000000070 /* Debug */,

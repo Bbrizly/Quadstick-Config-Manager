@@ -18,6 +18,7 @@ public struct KeychainTokenStore: TokenStoring {
     private let service: String
     private let account: String
 
+    // Keep this legacy service name so existing Drive tokens survive the display-name change.
     public init(service: String = "SipStudio", account: String = "google-drive") {
         self.service = service
         self.account = account

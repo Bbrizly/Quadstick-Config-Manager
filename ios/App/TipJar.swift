@@ -47,7 +47,7 @@ struct TipJar: View {
                     .font(.title2)
                     .foregroundStyle(Theme.accent)
                 VStack(spacing: 2) {
-                    Text("SipStudio is free.")
+                    Text("QuadStick Config Manager is free.")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white)
                     Text("Leave a tip if it helped. It unlocks nothing.")

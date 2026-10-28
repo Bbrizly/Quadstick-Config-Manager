@@ -1,0 +1,4 @@
+// Optional public OAuth client settings for Google Drive.
+// Copy this file to Google.xcconfig and set values from Google Cloud Console.
+GOOGLE_CLIENT_ID =
+GOOGLE_CLIENT_ID_REVERSED =
