@@ -15,7 +15,8 @@ is open and says what it is doing. Install the rule once (below, first three
 lines), then replug the stick.
 
 A host runs `qs-bridge --json`, reads one `{"status":"..."}` line per change
-(`waiting`, `bridging`, `no_access`, `no_virtual_pad`, `unsupported`) and
+(`waiting`, `bridging`, `no_access`, `no_virtual_pad`, `pad_write_failed`,
+`unsupported`) and
 stops it by closing its stdin, which releases every button first. The Tauri
 app can use `qs_bridge::Status` directly.
 
@@ -41,6 +42,19 @@ virtual pad is released first.
 
 prints each report and what it decodes to. It works on macOS and Windows too,
 and makes no pad.
+
+## Replay a controller stream
+
+`qs-bridge --replay` reads one hex-encoded mode-2 report per line and prints
+the decoded pad state when it changes. Spaces, commas, and colons may separate
+bytes. A short report releases the controls, and end-of-file simulates an
+unplug and reports a final neutral state. It never opens HID or creates a
+virtual controller, so it can check saved reports without QuadStick hardware:
+
+    printf '00 00 00 80 00 80 00 80 00 80 00 00 00 78\n' | qs-bridge --replay
+
+This checks report decoding and release behavior. Linux virtual-device
+creation and game-level mappings still need Linux/uinput and hardware testing.
 
 ## Known gap
 

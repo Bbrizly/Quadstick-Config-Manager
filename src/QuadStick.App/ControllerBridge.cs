@@ -13,7 +13,7 @@ namespace QuadStick.App;
 // when this app dies without a chance to say anything.
 public sealed class ControllerBridge : IDisposable
 {
-    public enum State { Waiting, Bridging, NoAccess, NoVirtualPad, Unsupported, Stopped }
+    public enum State { Waiting, Bridging, NoAccess, NoVirtualPad, PadWriteFailed, Unsupported, Stopped }
 
     // Tests point this at a stand-in script. Null means look beside the app.
     internal static string? PathOverride;
@@ -48,6 +48,7 @@ public sealed class ControllerBridge : IDisposable
                 "bridging" => State.Bridging,
                 "no_access" => State.NoAccess,
                 "no_virtual_pad" => State.NoVirtualPad,
+                "pad_write_failed" => State.PadWriteFailed,
                 "unsupported" => State.Unsupported,
                 _ => null,
             };

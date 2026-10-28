@@ -255,13 +255,15 @@ public partial class MainWindow
             ControllerBridge.State.Bridging => Strings.DevicePage_BridgeOn,
             ControllerBridge.State.NoAccess => Strings.DevicePage_BridgeNoAccess,
             ControllerBridge.State.NoVirtualPad => Strings.DevicePage_BridgeNoPad,
+            ControllerBridge.State.PadWriteFailed => Strings.DevicePage_BridgePadWriteFailed,
             ControllerBridge.State.Unsupported => Strings.DevicePage_BridgeUnsupported,
             ControllerBridge.State.Stopped => Strings.DevicePage_BridgeStopped,
             _ => "",
         };
         _bridgeStatus.IsVisible = _bridgeStatus.Text.Length > 0;
         _bridgeStatus.Classes.Set("warn", _bridgeState is ControllerBridge.State.NoAccess
-            or ControllerBridge.State.NoVirtualPad or ControllerBridge.State.Stopped);
+            or ControllerBridge.State.NoVirtualPad or ControllerBridge.State.PadWriteFailed
+            or ControllerBridge.State.Stopped);
     }
 
     /// <summary>The switch, its one line, and what it is doing. Null where the

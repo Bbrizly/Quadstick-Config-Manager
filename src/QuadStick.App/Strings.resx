@@ -3636,6 +3636,9 @@ sudo udevadm trigger</value>
   <data name="DevicePage_BridgeStopped" xml:space="preserve">
     <value>The bridge stopped. Turn the switch off and on again.</value>
   </data>
+  <data name="DevicePage_BridgePadWriteFailed" xml:space="preserve">
+    <value>Writing to the virtual controller failed. Its held controls were released; the bridge will retry.</value>
+  </data>
   <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
     <value>This computer cannot make a virtual controller yet.</value>
   </data>

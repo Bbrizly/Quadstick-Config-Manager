@@ -54,6 +54,8 @@ pub enum Status {
     NoAccess,
     /// The virtual pad cannot be made (Linux: /dev/uinput, the same rule).
     NoVirtualPad,
+    /// A report could not be written to the virtual pad; it was released.
+    PadWriteFailed,
     /// This OS cannot make a virtual pad yet. The process exits after it.
     Unsupported,
 }
@@ -65,6 +67,7 @@ impl Status {
             Status::Bridging => "bridging",
             Status::NoAccess => "no_access",
             Status::NoVirtualPad => "no_virtual_pad",
+            Status::PadWriteFailed => "pad_write_failed",
             Status::Unsupported => "unsupported",
         }
     }
@@ -154,6 +157,10 @@ mod tests {
         assert_eq!(
             Status::NoVirtualPad.json(),
             r#"{"status":"no_virtual_pad"}"#
+        );
+        assert_eq!(
+            Status::PadWriteFailed.json(),
+            r#"{"status":"pad_write_failed"}"#
         );
         assert_eq!(Status::Unsupported.json(), r#"{"status":"unsupported"}"#);
     }

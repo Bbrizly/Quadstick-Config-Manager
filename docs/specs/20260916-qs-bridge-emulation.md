@@ -1,6 +1,13 @@
 # qs-bridge: controller emulation without QMP
 
-Date: 2026-09-16. Status: plan, not started.
+Date: 2026-09-16. Status: Linux mode-2 bridge implemented; hardware E2E remains.
+
+Current implementation: `crates/qs-bridge` decodes mode-2 HID reports and
+creates a virtual Xbox 360 pad through Linux uinput. The CLI also supports
+cross-platform `--print` and `--replay` inspection. Windows and macOS virtual
+pad backends below remain planned work. The original completion criterion
+requires a physical QuadStick and Linux XInput game test; that test has not
+been recorded. The Start/Back bit mapping conflict below remains unresolved.
 
 ## Why
 

@@ -25,6 +25,7 @@ public class ControllerBridgeTests
     [InlineData("{\"status\":\"bridging\"}", ControllerBridge.State.Bridging)]
     [InlineData("{\"status\":\"no_access\"}", ControllerBridge.State.NoAccess)]
     [InlineData("{\"status\":\"no_virtual_pad\"}", ControllerBridge.State.NoVirtualPad)]
+    [InlineData("{\"status\":\"pad_write_failed\"}", ControllerBridge.State.PadWriteFailed)]
     [InlineData("{\"status\":\"unsupported\"}", ControllerBridge.State.Unsupported)]
     public void Each_status_line_is_read(string line, ControllerBridge.State want) =>
         Assert.Equal(want, ControllerBridge.Parse(line));

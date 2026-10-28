@@ -3636,6 +3636,9 @@ Thíš ápp kéépš á çópý óf thé lášt véršíóñ thé dévíçé wó
   <data name="DevicePage_BridgeStopped" xml:space="preserve">
     <value>[Thé brídgé štóppéd. Túrñ thé šwítçh óff áñd óñ ágáíñ. xxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="DevicePage_BridgePadWriteFailed" xml:space="preserve">
+    <value>[Wrítíñg tó thé vírtúál çóñtróllér fáíléd. Ítš héld çóñtrólš wéré réléášéd; thé brídgé wíll rétrý. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
     <value>[Thíš çómpútér çáññót máké á vírtúál çóñtróllér ýét. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
