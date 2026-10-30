@@ -412,6 +412,13 @@ public sealed class ProfileFile
     public int AddModeSheet(string modeName, int afterSheetIndex = -1)
     {
         Snapshot();
+        return InsertEmptyMode(modeName, afterSheetIndex);
+    }
+
+    // Callers take the Snapshot, so one add stays one undo however much else
+    // it does.
+    int InsertEmptyMode(string modeName, int afterSheetIndex)
+    {
         var first = Document.Sheets.FirstOrDefault(s => s.Type == SheetType.ProfileName);
         var label = first is { HeaderLabel.Length: > 0 } ? first.HeaderLabel : "PlayStation Outputs";
         var rows = new[]
@@ -437,6 +444,79 @@ public sealed class ProfileFile
         Grid.AddRange(rows);
         Reparse();
         return Document.Sheets.Count - 1;
+    }
+
+    /// <summary>What adding a mode with a working side tube did, for the
+    /// sentence that tells the user. ModesStillStuck holds mode numbers, counted
+    /// the way the device counts them, because two modes may share a name.</summary>
+    public sealed record SideTubeAdd(int SheetIndex, int OtherModesGiven, IReadOnlyList<int> ModesStillStuck);
+
+    // The device gives a mode 128 binding slots and throws away the rest.
+    const int DeviceBindingSlots = 128;
+
+    /// <summary>Add a mode that can be left. Drew Redepenning: "a lot of people
+    /// will forget to map that and get stuck in their new mode once they upload
+    /// it". The new mode gets the two side tube rows the factory profile opens
+    /// with, and so does any other mode that has no way out and a side tube
+    /// nothing else is using, because arriving in that mode strands the user
+    /// just the same. One Snapshot, so the whole add is one undo.</summary>
+    public SideTubeAdd AddModeWithSideTube(string modeName, int afterSheetIndex = -1)
+    {
+        Snapshot();
+        var given = Document.Sheets.Where(NeedsSideTubeRows).ToList();
+        // Bottom up, so inserting cannot move the rows still to come.
+        foreach (var sheet in Enumerable.Reverse(given)) InsertSideTubeRows(sheet);
+        Reparse();
+
+        int idx = InsertEmptyMode(modeName, afterSheetIndex);
+        InsertSideTubeRows(Document.Sheets[idx]);
+        Reparse();
+
+        var stuck = new List<int>();
+        int number = 0;
+        for (int i = 0; i < Document.Sheets.Count; i++)
+        {
+            var sheet = Document.Sheets[i];
+            if (sheet.Type != SheetType.ProfileName) continue;
+            number++;
+            if (i != idx && !sheet.Bindings.Any(SwitchesModes)) stuck.Add(number);
+        }
+        return new SideTubeAdd(idx, given.Count, stuck);
+    }
+
+    // Everything here reads Bindings, which is what the device reads: a row
+    // below a mode's blank line is neither a way out nor a use of the tube.
+    bool NeedsSideTubeRows(ModeSheet sheet) =>
+        sheet.Type == SheetType.ProfileName
+        // Shorter than this and the device calls the file too short and never
+        // loads the segment, so there is no mode here to strand anybody.
+        && sheet.StartRow + 2 <= Grid.Count
+        && !sheet.Bindings.Any(SwitchesModes)
+        // Any input column, not only the first: a mode switch on a tube that
+        // is part of a longer sequence would fire in the middle of it.
+        && !sheet.Bindings.Any(b => b.Inputs.Any(i => i is "right_sip" or "right_puff"))
+        // Past the last slot the device drops the rows without a sound, and
+        // the user would be told about a way out that is not there.
+        && sheet.Bindings.Count(b => Vocab.IsKnownOutput(b.Output) || Vocab.PreferenceOverrides.Contains(b.Output))
+            + 2 <= DeviceBindingSlots;
+
+    // The device drops an input cell it does not recognize, so a row whose only
+    // input is a typo or "none" switches nothing.
+    static bool SwitchesModes(Binding b) =>
+        b.Output is "increment_mode" or "decrement_mode"
+        && b.Inputs.Any(i => i != "none" && Vocab.AllInputs.Contains(i));
+
+    // The same two rows the factory profile opens with (corpus/default.csv).
+    static readonly string[] SipRowCells = { "increment_mode", "normal", "right_sip" };
+    static readonly string[] PuffRowCells = { "decrement_mode", "normal", "right_puff" };
+
+    // Under the mode's last row and above its blank line, the only place the
+    // device still reads them. Clones: SetCell mutates grid rows in place.
+    void InsertSideTubeRows(ModeSheet sheet)
+    {
+        int at = sheet.Bindings.Count > 0 ? sheet.Bindings[^1].Row : sheet.StartRow + 2;
+        Grid.Insert(at, (string[])PuffRowCells.Clone());
+        Grid.Insert(at, (string[])SipRowCells.Clone());
     }
 
     /// <summary>Append a whole sheet's rows as one undoable step, for a mode
