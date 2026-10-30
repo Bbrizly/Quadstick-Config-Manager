@@ -671,7 +671,7 @@ public partial class MainWindow : Window
         return i < 0 ? JoystickOrder.Length : i;
     }
 
-    static readonly List<string> InputSuggestions =
+    internal static readonly List<string> InputSuggestions =
         Vocab.AllInputs.OrderBy(GroupRank).ThenBy(JoystickRank).ThenBy(x => x, StringComparer.Ordinal).ToList();
     static readonly List<string> NoSuggestions = new();
 
@@ -853,6 +853,7 @@ public partial class MainWindow : Window
         SaveButton.Click += async (_, _) => await SaveAsync();
         UndoButton.Click += (_, _) => UndoEdit();
         SaveTemplateButton.Click += async (_, _) => await SaveAsTemplateAsync();
+        PrintSheetButton.Click += async (_, _) => await PrintReferenceSheetAsync();
         InstallButton.Click += async (_, _) => await RunInstallFlowAsync();
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
@@ -2790,11 +2791,15 @@ public partial class MainWindow : Window
     {
         // Avalonia templates a null item during measure before any value binds.
         var t = token ?? "";
-        if (_labelStyle == 0) return t;
+        return _labelStyle == 0 ? t : FriendlyToken(t, _labelStyle == 2);
+    }
+
+    internal static string FriendlyToken(string t, bool xboxStyle)
+    {
         // "Ps3" and "Xac" are what Humanize makes of two names that are printed
         // on hardware. Neither is a word, so neither gets sentence case.
-        if (t == "ps3") return _labelStyle == 2 ? Strings.Main_XboxButton : "PS";
-        if ((_labelStyle == 2 || SharedWithXbox.Contains(t))
+        if (t == "ps3") return xboxStyle ? Strings.Main_XboxButton : "PS";
+        if ((xboxStyle || SharedWithXbox.Contains(t))
             && XboxStyle.TryGetValue(t, out var xbox)) return xbox;
         var plain = Humanize(t);
         return plain.StartsWith("Xac ", StringComparison.Ordinal) ? "XAC" + plain[3..] : plain;
@@ -2828,6 +2833,11 @@ public partial class MainWindow : Window
     {
         // Avalonia templates a null item during measure before any value binds.
         if (string.IsNullOrEmpty(token) || !_friendlyLabels) return token ?? "";
+        return FriendlyInput(token, cardZone);
+    }
+
+    internal static string FriendlyInput(string token, string cardZone)
+    {
         // "Digital in 8" is the token with the underscores taken out; it says
         // nothing about where to plug the switch. The socket does.
         if (SwitchJacks.For(token) is { } jack) return jack.Label;

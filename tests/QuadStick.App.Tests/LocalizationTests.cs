@@ -31,6 +31,8 @@ public class LocalizationTests
         // A language names itself in its own words, so someone who opened the
         // app in a language they cannot read can still find their own.
         ["Localization.cs"] = new[] { "\"English\"", "\"Pseudo (finds missed text)\"" },
+        // A page's security policy, read by the browser and never shown.
+        ["ReferenceSheet.cs"] = new[] { "\"default-src 'none'; style-src 'unsafe-inline'\"" },
         // A company's name, not a word.
         ["SettingsView.cs"] = new[] { "\"LinkedIn\"" },
         // A font stack, read by the text engine and not by anybody.
