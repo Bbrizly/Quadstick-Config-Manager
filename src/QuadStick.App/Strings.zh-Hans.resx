@@ -2237,7 +2237,7 @@
     <value>模式 {0} 仍然无法切换，已保持原样，因为它们的侧管已被占用或没有多余的行。进入其中任一模式的人会一直停留在那里，直到你添加退出方式。</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>原来的 16 号模式现在是 17 号，因此设备不会加载它。</value>
+    <value>原来的 16 号模式现在是 17 号,超出设备的 16 个模式,因此其控制不会被读取。</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>模式已复制。</value>
@@ -3680,8 +3680,8 @@
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>为此配置文件的所有模式制作一份可打印的操作表。它会在浏览器中打开。</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0}（设备从不加载此模式）</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0}(超出设备的 16 个模式,其控制不会被读取)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>保存参考表</value>

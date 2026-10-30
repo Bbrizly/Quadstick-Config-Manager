@@ -2237,7 +2237,7 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
     <value>Los modos {0} siguen sin forma de cambiar y se dejaron como estaban, porque su tubo lateral está en uso o no les quedan filas libres. Quien llegue a uno de ellos se quedará allí hasta que añada una salida.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>El modo que era el número 16 ahora es el número 17, así que el dispositivo no lo cargará.</value>
+    <value>El modo que era el número 16 ahora es el 17, supera los 16 modos del dispositivo, así que sus controles no se leen.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modo copiado.</value>
@@ -3680,8 +3680,8 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Crea una hoja imprimible con los controles de este perfil en cada modo. Se abre en su navegador.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (el dispositivo nunca carga este modo)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (supera los 16 modos del dispositivo; sus controles no se leen)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Guardar hoja de referencia</value>

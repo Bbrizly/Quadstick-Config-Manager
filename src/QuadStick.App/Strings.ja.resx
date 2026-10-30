@@ -2235,7 +2235,7 @@
     <value>モード {0} にはまだ切り替え手段がなく、サイドチューブが使用中か空き行がないため、そのままにしました。これらのモードに入ると、抜け出す手段を追加するまでそこから出られません。</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>16 番だったモードは 17 番になったため、デバイスは読み込みません。</value>
+    <value>16 番だったモードは 17 番になり、デバイスの 16 モードを超えたため、操作は読み込まれません。</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>モードをコピーしました。</value>
@@ -3678,8 +3678,8 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>このプロファイルの全モードの操作をまとめた印刷用シートを作成します。ブラウザで開きます。</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (デバイスはこのモードを読み込みません)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (デバイスの 16 モードを超えており、操作は読み込まれません)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>リファレンスシートを保存</value>

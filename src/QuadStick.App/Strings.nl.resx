@@ -2237,7 +2237,7 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
     <value>Modi {0} hebben nog steeds geen manier om te wisselen en zijn gelaten zoals ze waren, omdat de zijbuis in gebruik is of er geen rijen vrij zijn. Wie in een daarvan terechtkomt, blijft daar tot u een uitweg toevoegt.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>De modus die nummer 16 was, is nu nummer 17, dus het apparaat laadt hem niet.</value>
+    <value>De modus met nummer 16 heeft nu nummer 17, voorbij de 16 modi van het apparaat, dus de bediening wordt niet gelezen.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modus gekopieerd.</value>
@@ -3680,8 +3680,8 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Maak een afdrukbaar blad met de bediening van dit profiel in elke modus. Het opent in uw browser.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (het apparaat laadt deze modus nooit)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (voorbij de 16 modi van het apparaat, de bediening wordt niet gelezen)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Naslagblad opslaan</value>

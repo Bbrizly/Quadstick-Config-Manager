@@ -2237,7 +2237,7 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
     <value>Die Modi {0} haben weiterhin keine Möglichkeit zum Wechseln und wurden unverändert gelassen, weil ihr Seitenröhrchen belegt ist oder keine Zeilen mehr frei sind. Wer einen davon erreicht, bleibt dort, bis Sie einen Ausweg hinzufügen.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>Der Modus mit der Nummer 16 hat jetzt die Nummer 17, daher lädt das Gerät ihn nicht.</value>
+    <value>Der Modus mit der Nummer 16 hat jetzt die Nummer 17 und liegt damit über den 16 Modi des Geräts, seine Steuerungen werden nicht gelesen.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modus kopiert.</value>
@@ -3680,8 +3680,8 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Ein druckbares Blatt mit den Bedienelementen dieses Profils in jedem Modus erstellen. Es öffnet sich in Ihrem Browser.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (das Gerät lädt diesen Modus nie)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (über den 16 Modi des Geräts, seine Steuerungen werden nicht gelesen)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Referenzblatt speichern</value>

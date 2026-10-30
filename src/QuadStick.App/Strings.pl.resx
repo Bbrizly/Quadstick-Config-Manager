@@ -2237,7 +2237,7 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
     <value>Tryby {0} nadal nie mają sposobu na przełączenie i pozostawiono je bez zmian, ponieważ ich rurka boczna jest zajęta lub nie mają wolnych wierszy. Kto trafi do jednego z nich, pozostanie w nim, dopóki nie dodasz wyjścia.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>Tryb, który miał numer 16, ma teraz numer 17, więc urządzenie go nie wczyta.</value>
+    <value>Tryb, który miał numer 16, ma teraz numer 17, poza 16 trybami urządzenia, więc jego sterowanie nie jest odczytywane.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Skopiowano tryb.</value>
@@ -3680,8 +3680,8 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Utwórz arkusz do druku ze sterowaniem tego profilu w każdym trybie. Otworzy się w przeglądarce.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (urządzenie nigdy nie wczytuje tego trybu)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (poza 16 trybami urządzenia, jego sterowanie nie jest odczytywane)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Zapisz arkusz referencyjny</value>

@@ -2237,7 +2237,7 @@
     <value>모드 {0}에는 여전히 전환 방법이 없으며, 사이드 튜브가 사용 중이거나 남은 행이 없어 그대로 두었습니다. 이 중 하나에 들어가면 나가는 방법을 추가할 때까지 그 안에 머물게 됩니다.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>16번이었던 모드가 이제 17번이므로 장치가 불러오지 않습니다.</value>
+    <value>16번이던 모드가 이제 17번이 되어 장치의 16개 모드를 넘었으므로 컨트롤을 읽지 않습니다.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>모드가 복사되었습니다.</value>
@@ -3680,8 +3680,8 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>모든 모드에서 이 프로필의 조작을 정리한 인쇄용 시트를 만듭니다. 브라우저에서 열립니다.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (장치가 이 모드를 절대 불러오지 않습니다)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (장치의 16개 모드를 넘어 컨트롤을 읽지 않음)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>참조 시트 저장</value>
