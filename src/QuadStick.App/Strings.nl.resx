@@ -2221,6 +2221,24 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Modus toegevoegd.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>Modus toegevoegd. De zijbuis wisselt van modus: zuigen gaat naar de volgende modus, blazen naar de vorige.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>De zijbuis wisselt nu ook van modus in {0} andere modus, die geen manier had om te wisselen.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>De zijbuis wisselt nu ook van modus in {0} andere modi, die geen manier hadden om te wisselen.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>Modus {0} heeft nog steeds geen manier om te wisselen en is gelaten zoals hij was, omdat de zijbuis in gebruik is of er geen rijen vrij zijn. Wie daar terechtkomt, blijft daar tot u een uitweg toevoegt.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>Modi {0} hebben nog steeds geen manier om te wisselen en zijn gelaten zoals ze waren, omdat de zijbuis in gebruik is of er geen rijen vrij zijn. Wie in een daarvan terechtkomt, blijft daar tot u een uitweg toevoegt.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>De modus die nummer 16 was, is nu nummer 17, dus het apparaat laadt hem niet.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modus gekopieerd.</value>
   </data>
@@ -3516,5 +3534,65 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>U gebruikt {0}, de nieuwste versie.</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>Een naslagblad afdrukken</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>Maak een afdrukbaar blad met de bediening van dit profiel in elke modus. Het opent in uw browser.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (het apparaat laadt deze modus nooit)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>Naslagblad opslaan</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>Webpagina</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>Naslagblad</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>Gebruik de afdrukopdracht van uw browser om deze pagina af te drukken.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>Bediening</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>Modi {0} tot en met {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, daarna </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (het apparaat kent deze naam niet en slaat hem over)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>Dit profiel heeft geen modi, dus er is geen bediening om te tonen.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>Er is nog in geen enkele modus bediening ingesteld.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>Een streepje betekent dat de bediening in die modus niets doet.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>Een rij met "daarna" gebeurt in die volgorde, het ene na het andere. Alleen een deel ervan doen activeert hem niet.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>Dit profiel heeft ook Preferences- of Infrared-bladen. Die horen niet bij een modus en staan hier dus niet.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>Wat de woorden betekenen</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>Het naslagblad is opgeslagen in {0} en geopend. Gebruik de afdrukopdracht van uw browser om het af te drukken.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>Het naslagblad is opgeslagen in {0}, maar kon niet worden geopend. Open dat bestand in een browser om het af te drukken.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>Kon het naslagblad niet opslaan in {0}: {1}</value>
   </data>
 </root>

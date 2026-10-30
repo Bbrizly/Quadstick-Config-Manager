@@ -2221,6 +2221,24 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Modo adicionado.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>Modo adicionado. O tubo lateral dele muda de modo: a sucção vai para o modo seguinte e o sopro para o anterior.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>Agora o tubo lateral também muda de modo em {0} outro modo, que não tinha como mudar.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>Agora o tubo lateral também muda de modo em {0} outros modos, que não tinham como mudar.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>O modo {0} continua sem como mudar e foi deixado como estava, porque o tubo lateral dele está em uso ou não há linhas livres. Quem chegar a ele fica lá até você adicionar uma saída.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>Os modos {0} continuam sem como mudar e foram deixados como estavam, porque o tubo lateral deles está em uso ou não há linhas livres. Quem chegar a um deles fica lá até você adicionar uma saída.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>O modo que era o número 16 agora é o número 17, por isso o dispositivo não o carregará.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modo copiado.</value>
   </data>
@@ -3516,5 +3534,65 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Você está na versão {0}, que é a mais recente.</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>Imprimir uma folha de referência</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>Cria uma folha para impressão com os controlos deste perfil em cada modo. Ela abre no seu navegador.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (o dispositivo nunca carrega este modo)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>Salvar folha de referência</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>Página da web</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>Folha de referência</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>Para imprimir esta página, use o comando Imprimir do seu navegador.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>Controlo</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>Modos {0} a {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, depois </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (o dispositivo não conhece este nome e o ignora)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>Este perfil não tem modos, por isso não há controlos para listar.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>Ainda não há nenhum controlo definido em nenhum modo.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>Um traço significa que o controlo não faz nada nesse modo.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>Uma linha com "depois" é feita nessa ordem, uma parte após a outra. Fazer só uma parte não a aciona.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>Este perfil também tem folhas Preferences ou Infrared. Elas não pertencem a um modo, por isso não estão listadas aqui.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>O que as palavras significam</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>A folha de referência foi salva em {0} e aberta. Use o comando Imprimir do seu navegador para imprimi-la.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>A folha de referência foi salva em {0}, mas não foi possível abri-la. Abra esse arquivo em um navegador para imprimi-la.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>Não foi possível salvar a folha de referência em {0}: {1}</value>
   </data>
 </root>

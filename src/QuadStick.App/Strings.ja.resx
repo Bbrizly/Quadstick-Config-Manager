@@ -2219,6 +2219,24 @@
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>モードを追加しました。</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>モードを追加しました。このモードのサイドチューブでモードを切り替えます: 吸うと次のモードへ、吹くと前のモードへ移ります。</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>サイドチューブで、切り替え手段のなかった他の {0} 個のモードでもモードを切り替えられるようになりました。</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>サイドチューブで、切り替え手段のなかった他の {0} 個のモードでもモードを切り替えられるようになりました。</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>モード {0} にはまだ切り替え手段がなく、サイドチューブが使用中か空き行がないため、そのままにしました。このモードに入ると、抜け出す手段を追加するまでそこから出られません。</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>モード {0} にはまだ切り替え手段がなく、サイドチューブが使用中か空き行がないため、そのままにしました。これらのモードに入ると、抜け出す手段を追加するまでそこから出られません。</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>16 番だったモードは 17 番になったため、デバイスは読み込みません。</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>モードをコピーしました。</value>
   </data>
@@ -3514,5 +3532,65 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>現在のバージョンは{0}で、これが最新です。</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>リファレンスシートを印刷</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>このプロファイルの全モードの操作をまとめた印刷用シートを作成します。ブラウザで開きます。</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (デバイスはこのモードを読み込みません)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>リファレンスシートを保存</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>ウェブページ</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>リファレンスシート</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>このページを印刷するには、ブラウザの印刷コマンドを使用してください。</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>モード {0} から {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>、次に </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (デバイスはこの名前を認識せず、スキップします)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>このプロファイルにはモードがないため、表示する操作はありません。</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>どのモードにもまだ操作が設定されていません。</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>ダッシュは、そのモードではその操作が何もしないことを示します。</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>「次に」のある行は、その順番で 1 つずつ行います。一部だけでは発動しません。</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>このプロファイルには Preferences または Infrared シートもあります。これらはモードに属さないため、ここには表示されません。</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>用語の意味</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>リファレンスシートを {0} に保存して開きました。印刷するには、ブラウザの印刷コマンドを使用してください。</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>リファレンスシートを {0} に保存しましたが、開けませんでした。印刷するには、そのファイルをブラウザで開いてください。</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>リファレンスシートを {0} に保存できませんでした: {1}</value>
   </data>
 </root>

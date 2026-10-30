@@ -40,7 +40,7 @@ internal static class ReferenceSheet
         var title = doc.HeaderName.Length > 0 ? doc.HeaderName
             : doc.CsvFileName is { Length: > 0 } file ? Path.GetFileNameWithoutExtension(file)
             : doc.Title.Length > 0 ? doc.Title
-            : Strings.Main_SheetUntitled;
+            : Strings.Sheet_Untitled;
         var ui = CultureInfo.CurrentUICulture;
         var lang = ui.Name.Length > 0 ? ui.Name : "en";
         var dir = ui.TextInfo.IsRightToLeft ? "rtl" : "ltr";
@@ -78,20 +78,20 @@ internal static class ReferenceSheet
             <body>
             <h1>{{Enc(title)}}</h1>
             <p>{{Enc(when)}}</p>
-            <p class=hint>{{Enc(Strings.Main_SheetPrintHint)}}</p>
+            <p class=hint>{{Enc(Strings.Sheet_PrintHint)}}</p>
 
             """);
 
-        if (modes.Count == 0) Paragraph(page, Strings.Main_SheetNoModes);
-        else if (rows.Count == 0) Paragraph(page, Strings.Main_SheetNoControls);
+        if (modes.Count == 0) Paragraph(page, Strings.Sheet_NoModes);
+        else if (rows.Count == 0) Paragraph(page, Strings.Sheet_NoControls);
         else
         {
             for (int first = 0; first < modes.Count; first += ModesPerTable)
                 Table(page, modes, rows, first, Math.Min(ModesPerTable, modes.Count - first));
-            Paragraph(page, Strings.Main_SheetDashMeans);
-            if (rows.Any(r => r.Sequence)) Paragraph(page, Strings.Main_SheetSequenceNote);
+            Paragraph(page, Strings.Sheet_DashMeans);
+            if (rows.Any(r => r.Sequence)) Paragraph(page, Strings.Sheet_SequenceNote);
         }
-        if (doc.Sheets.Count > modes.Count) Paragraph(page, Strings.Main_SheetOtherSheetsNotListed);
+        if (doc.Sheets.Count > modes.Count) Paragraph(page, Strings.Sheet_OtherSheetsNotListed);
         Legend(page, modes);
         page.Append("</body>\n</html>\n");
         return page.ToString();
@@ -105,9 +105,9 @@ internal static class ReferenceSheet
         page.Append("<table>\n");
         if (modes.Count > ModesPerTable)
             page.Append("<caption>").Append(Enc(string.Format(CultureInfo.CurrentCulture,
-                Strings.Main_SheetModesRange, first + 1, first + count))).Append("</caption>\n");
+                Strings.Sheet_ModesRange, first + 1, first + count))).Append("</caption>\n");
         page.Append($$"""
-            <thead><tr><th scope=col>{{Enc(Strings.Main_SheetControl)}}</th>
+            <thead><tr><th scope=col>{{Enc(Strings.Sheet_Control)}}</th>
             """);
         for (int m = first; m < first + count; m++)
             page.Append($$"""
@@ -151,7 +151,7 @@ internal static class ReferenceSheet
         var heading = name.Length > 0 ? number + " " + name : number;
         // Still a column, because nothing in the file is hidden from this page.
         return index < ProfileFile.MaxDeviceModes ? heading
-            : string.Format(CultureInfo.CurrentCulture, Strings.Main_SheetModeNeverLoaded, heading);
+            : string.Format(CultureInfo.CurrentCulture, Strings.Sheet_ModeNeverLoaded, heading);
     }
 
     // One row per control, or per ordered run of controls, across all modes.
@@ -200,10 +200,10 @@ internal static class ReferenceSheet
         {
             zone = MainWindow.ZoneOf(known[0]);
             var z = zone;
-            parts.Add(string.Join(Strings.Main_SheetThenJoiner, known.Select(i => MainWindow.FriendlyInput(i, z))));
+            parts.Add(string.Join(Strings.Sheet_ThenJoiner, known.Select(i => MainWindow.FriendlyInput(i, z))));
         }
         parts.AddRange(unknown.Select(i =>
-            string.Format(CultureInfo.CurrentCulture, Strings.Main_SheetUnknownInput, i)));
+            string.Format(CultureInfo.CurrentCulture, Strings.Sheet_UnknownInput, i)));
 
         int rank = known.Count > 0 ? MainWindow.InputSuggestions.IndexOf(known[0]) : int.MaxValue;
         return ("input\n" + string.Join("\n", known) + "\n\n" + string.Join("\n", unknown),
@@ -256,7 +256,7 @@ internal static class ReferenceSheet
             .Where(n => n.Length > 0 && n != "normal" && MainWindow.FunctionExplain(n).Length > 0)
             .Distinct(StringComparer.Ordinal).ToList();
         if (used.Count == 0) return;
-        page.Append("<h2>").Append(Enc(Strings.Main_SheetWhatTheWordsMean)).Append("</h2>\n<dl>\n");
+        page.Append("<h2>").Append(Enc(Strings.Sheet_WhatTheWordsMean)).Append("</h2>\n<dl>\n");
         foreach (var name in used)
             page.Append("<dt>").Append(Enc(name.Replace('_', ' '))).Append("</dt><dd>")
                 .Append(Enc(MainWindow.FunctionExplain(name))).Append("</dd>\n");

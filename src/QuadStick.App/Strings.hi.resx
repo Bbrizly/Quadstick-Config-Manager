@@ -2221,6 +2221,24 @@
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>मोड जोड़ा गया।</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>मोड जोड़ा गया। इसकी साइड ट्यूब मोड बदलती है: खींचना अगले मोड पर जाता है, फूँकना पिछले मोड पर।</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>साइड ट्यूब अब {0} अन्य मोड में भी मोड बदलती है, जिसमें बदलने का कोई तरीका नहीं था।</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>साइड ट्यूब अब {0} अन्य मोड में भी मोड बदलती है, जिनमें बदलने का कोई तरीका नहीं था।</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>मोड {0} में अब भी बदलने का कोई तरीका नहीं है और उसे जैसा था वैसा ही छोड़ दिया गया, क्योंकि उसकी साइड ट्यूब उपयोग में है या उसमें कोई खाली पंक्ति नहीं है। जो वहां पहुंचेगा वह तब तक वहीं रहेगा जब तक आप बाहर निकलने का तरीका नहीं जोड़ते।</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>मोड {0} में अब भी बदलने का कोई तरीका नहीं है और उन्हें जैसा था वैसा ही छोड़ दिया गया, क्योंकि उनकी साइड ट्यूब उपयोग में है या उनमें कोई खाली पंक्ति नहीं है। जो उनमें से किसी पर पहुंचेगा वह तब तक वहीं रहेगा जब तक आप बाहर निकलने का तरीका नहीं जोड़ते।</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>जो मोड नंबर 16 था वह अब नंबर 17 है, इसलिए डिवाइस उसे लोड नहीं करेगा।</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>मोड की प्रति बनाई गई।</value>
   </data>
@@ -3516,5 +3534,65 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>आप {0} पर हैं, जो सबसे नया है।</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>रेफ़रेंस शीट प्रिंट करें</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>हर मोड में इस प्रोफ़ाइल के नियंत्रणों की प्रिंट करने योग्य शीट बनाएं। यह आपके ब्राउज़र में खुलती है।</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (डिवाइस इस मोड को कभी लोड नहीं करता)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>रेफ़रेंस शीट सेव करें</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>वेब पेज</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>रेफ़रेंस शीट</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>इस पेज को प्रिंट करने के लिए अपने ब्राउज़र का प्रिंट कमांड इस्तेमाल करें।</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>नियंत्रण</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>मोड {0} से {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, फिर </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (डिवाइस इस नाम को नहीं जानता और इसे छोड़ देता है)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>इस प्रोफ़ाइल में कोई मोड नहीं है, इसलिए दिखाने के लिए कोई नियंत्रण नहीं है।</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>अभी तक किसी भी मोड में कोई नियंत्रण सेट नहीं है।</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>डैश का मतलब है कि वह नियंत्रण उस मोड में कुछ नहीं करता।</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>"फिर" वाली पंक्ति उसी क्रम में एक के बाद एक की जाती है। केवल एक हिस्सा करने से वह सक्रिय नहीं होती।</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>इस प्रोफ़ाइल में Preferences या Infrared शीट भी हैं। वे किसी मोड से जुड़ी नहीं हैं, इसलिए यहां सूचीबद्ध नहीं हैं।</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>शब्दों का मतलब</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>रेफ़रेंस शीट {0} में सेव की गई और खोली गई। इसे प्रिंट करने के लिए अपने ब्राउज़र का प्रिंट कमांड इस्तेमाल करें।</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>रेफ़रेंस शीट {0} में सेव की गई, लेकिन खोली नहीं जा सकी। इसे प्रिंट करने के लिए उस फ़ाइल को ब्राउज़र में खोलें।</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>रेफ़रेंस शीट {0} में सेव नहीं हो सकी: {1}</value>
   </data>
 </root>

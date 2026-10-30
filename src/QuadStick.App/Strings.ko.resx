@@ -2221,6 +2221,24 @@
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>모드가 추가되었습니다.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>모드가 추가되었습니다. 이 모드의 사이드 튜브는 모드를 전환합니다. 빨기는 다음 모드로, 불기는 이전 모드로 이동합니다.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>이제 전환 방법이 없던 다른 모드 {0}개에서도 사이드 튜브로 모드를 전환합니다.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>이제 전환 방법이 없던 다른 모드 {0}개에서도 사이드 튜브로 모드를 전환합니다.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>모드 {0}에는 여전히 전환 방법이 없으며, 사이드 튜브가 사용 중이거나 남은 행이 없어 그대로 두었습니다. 이 모드에 들어가면 나가는 방법을 추가할 때까지 그 안에 머물게 됩니다.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>모드 {0}에는 여전히 전환 방법이 없으며, 사이드 튜브가 사용 중이거나 남은 행이 없어 그대로 두었습니다. 이 중 하나에 들어가면 나가는 방법을 추가할 때까지 그 안에 머물게 됩니다.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>16번이었던 모드가 이제 17번이므로 장치가 불러오지 않습니다.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>모드가 복사되었습니다.</value>
   </data>
@@ -3516,5 +3534,65 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>현재 {0} 버전을 사용 중이며, 이는 최신 버전입니다.</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>참조 시트 인쇄</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>모든 모드에서 이 프로필의 조작을 정리한 인쇄용 시트를 만듭니다. 브라우저에서 열립니다.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (장치가 이 모드를 절대 불러오지 않습니다)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>참조 시트 저장</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>웹 페이지</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>참조 시트</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>이 페이지를 인쇄하려면 브라우저의 인쇄 명령을 사용하세요.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>조작</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>모드 {0}~{1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, 그다음 </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (장치가 이 이름을 알지 못해 건너뜁니다)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>이 프로필에는 모드가 없어 표시할 조작이 없습니다.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>아직 어떤 모드에도 설정된 조작이 없습니다.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>대시는 해당 모드에서 그 조작이 아무 일도 하지 않는다는 뜻입니다.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>"그다음"이 있는 행은 그 순서대로 하나씩 수행합니다. 일부만 수행하면 작동하지 않습니다.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>이 프로필에는 Preferences 또는 Infrared 시트도 있습니다. 이 시트는 모드에 속하지 않으므로 여기에 표시되지 않습니다.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>용어의 의미</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>참조 시트를 {0}에 저장하고 열었습니다. 인쇄하려면 브라우저의 인쇄 명령을 사용하세요.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>참조 시트를 {0}에 저장했지만 열지 못했습니다. 인쇄하려면 해당 파일을 브라우저에서 여세요.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>참조 시트를 {0}에 저장하지 못했습니다: {1}</value>
   </data>
 </root>

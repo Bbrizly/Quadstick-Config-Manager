@@ -2221,6 +2221,24 @@
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>模式已添加。</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>模式已添加。它的侧管用于切换模式：吸转到下一个模式，吹转到上一个模式。</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>侧管现在也能在另外 {0} 个原本无法切换的模式中切换模式。</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>侧管现在也能在另外 {0} 个原本无法切换的模式中切换模式。</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>模式 {0} 仍然无法切换，已保持原样，因为它的侧管已被占用或没有多余的行。进入该模式的人会一直停留在那里，直到你添加退出方式。</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>模式 {0} 仍然无法切换，已保持原样，因为它们的侧管已被占用或没有多余的行。进入其中任一模式的人会一直停留在那里，直到你添加退出方式。</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>原来的 16 号模式现在是 17 号，因此设备不会加载它。</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>模式已复制。</value>
   </data>
@@ -3516,5 +3534,65 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>您当前使用的是 {0}，这是最新版本。</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>打印参考表</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>为此配置文件的所有模式制作一份可打印的操作表。它会在浏览器中打开。</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0}（设备从不加载此模式）</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>保存参考表</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>网页</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>参考表</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>要打印此页，请使用浏览器的打印命令。</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>模式 {0} 至 {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>，然后 </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0}（设备不认识此名称，会跳过它）</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>此配置文件没有模式，因此没有可列出的操作。</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>尚未在任何模式中设置操作。</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>短横线表示该操作在此模式中不起作用。</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>带有“然后”的行要按该顺序依次完成。只完成其中一部分不会触发。</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>此配置文件还包含 Preferences 或 Infrared 表。它们不属于任何模式，因此未在此列出。</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>词语含义</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>已将参考表保存到 {0} 并打开。要打印，请使用浏览器的打印命令。</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>已将参考表保存到 {0}，但无法打开。请在浏览器中打开该文件进行打印。</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>无法将参考表保存到 {0}：{1}</value>
   </data>
 </root>

@@ -2221,6 +2221,24 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Modalità aggiunta.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>Modalità aggiunta. Il suo tubo laterale cambia modalità: l'aspirazione passa alla modalità successiva, il soffio a quella precedente.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>Ora il tubo laterale cambia modalità anche in {0} altra modalità, che non aveva modo di cambiare.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>Ora il tubo laterale cambia modalità anche in {0} altre modalità, che non avevano modo di cambiare.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>La modalità {0} non ha ancora modo di cambiare ed è stata lasciata com'era, perché il suo tubo laterale è in uso o non ha righe libere. Chi la raggiunge resta lì finché non aggiunge una via d'uscita.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>Le modalità {0} non hanno ancora modo di cambiare e sono state lasciate com'erano, perché il loro tubo laterale è in uso o non hanno righe libere. Chi ne raggiunge una resta lì finché non aggiunge una via d'uscita.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>La modalità che era la numero 16 ora è la numero 17, quindi il dispositivo non la caricherà.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modalità copiata.</value>
   </data>
@@ -3516,5 +3534,65 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Si trova sulla versione {0}, l'ultima disponibile.</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>Stampa una scheda di riferimento</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>Crea una scheda stampabile con i comandi di questo profilo in ogni modalità. Si apre nel Suo browser.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (il dispositivo non carica mai questa modalità)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>Salva la scheda di riferimento</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>Pagina web</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>Scheda di riferimento</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>Per stampare questa pagina, usi il comando Stampa del Suo browser.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>Comando</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>Modalità da {0} a {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, poi </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (il dispositivo non conosce questo nome e lo salta)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>Questo profilo non ha modalità, quindi non ci sono comandi da elencare.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>Non è ancora impostato alcun comando in nessuna modalità.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>Un trattino significa che il comando non fa nulla in quella modalità.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>Una riga con "poi" va eseguita in quell'ordine, una parte dopo l'altra. Eseguirne solo una parte non la attiva.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>Questo profilo contiene anche fogli Preferences o Infrared. Non appartengono a una modalità, quindi non sono elencati qui.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>Che cosa significano le parole</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>Scheda di riferimento salvata in {0} e aperta. Usi il comando Stampa del Suo browser per stamparla.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>Scheda di riferimento salvata in {0}, ma non è stato possibile aprirla. Apra quel file in un browser per stamparla.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>Impossibile salvare la scheda di riferimento in {0}: {1}</value>
   </data>
 </root>
