@@ -2543,9 +2543,29 @@ public partial class MainWindow : Window
         // back up the list is one press per place.
         int after = _sheetIndex >= 0 && _sheetIndex < sheets.Count
             && sheets[_sheetIndex].Type == SheetType.ProfileName ? _sheetIndex : -1;
-        int idx = _file.AddModeSheet($"Mode {n}", after);
-        ModesChanged(idx, Strings.Modes_ModeAdded);
-        return idx;
+        // The Singleton has no side tube to give it (DeviceDiagram.SingletonZones).
+        if (_model == QsModel.Singleton)
+        {
+            int idx = _file.AddModeSheet($"Mode {n}", after);
+            ModesChanged(idx, Strings.Modes_ModeAdded);
+            return idx;
+        }
+        var added = _file.AddModeWithSideTube($"Mode {n}", after);
+        ModesChanged(added.SheetIndex, "");
+        Status(ModeAddedStatus(added), added.ModesStillStuck.Count > 0 ? StatusKind.Warning : StatusKind.Ready);
+        return added.SheetIndex;
+    }
+
+    static string ModeAddedStatus(ProfileFile.SideTubeAdd added)
+    {
+        var parts = new List<string> { Strings.Modes_ModeAddedSideTube };
+        if (added.OtherModesGiven > 0)
+            parts.Add(Plural.Of(added.OtherModesGiven, "Modes_SideTubeGiven"));
+        if (added.ModesStillStuck.Count > 0)
+            parts.Add(string.Format(CultureInfo.CurrentCulture,
+                Plural.Wording(added.ModesStillStuck.Count, "Modes_StillStuck"),
+                string.Join(", ", added.ModesStillStuck)));
+        return string.Join(" ", parts);
     }
 
     // One dialog serves every "name a mode" prompt (add, rename, duplicate);

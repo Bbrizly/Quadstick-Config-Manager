@@ -2257,6 +2257,21 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Mode added.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>Mode added. Its side tube switches modes: sip goes to the next mode, puff to the one before.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>The side tube now does the same in {0} other mode, which had no way to switch.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>The side tube now does the same in {0} other modes, which had no way to switch.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>Mode {0} still has no way to switch and was left as it was, because its side tube is in use or it has no rows to spare. Anyone who reaches it stays there until you add a way out.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>Modes {0} still have no way to switch and were left as they were, because their side tube is in use or they have no rows to spare. Anyone who reaches one stays there until you add a way out.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Mode copied.</value>
   </data>
