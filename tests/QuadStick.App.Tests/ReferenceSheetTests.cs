@@ -194,7 +194,7 @@ public class ReferenceSheetTests
         Assert.All(tables, t => Assert.Equal("Control", Headers(t)[0]));
         Assert.Equal(new[] { 7, 7, 7, 3 }, tables.Select(t => Headers(t).Count));
         Assert.Equal("7 M7", Headers(tables[1])[1]);
-        Assert.Equal("20 M20", Headers(tables[3])[2]);
+        Assert.Equal(string.Format(Strings.Main_SheetModeNeverLoaded, "20 M20"), Headers(tables[3])[2]);
     }
 
     [Fact]
@@ -396,5 +396,18 @@ public class ReferenceSheetTests
         Assert.Contains(path, StatusLine(w));
         file.Dirty = false;
         w.Close();
+    }
+
+    [AvaloniaFact]
+    public void A_mode_past_the_limit_stays_a_column_and_says_the_device_never_loads_it()
+    {
+        var modes = Enumerable.Range(1, 17)
+            .Select(i => Mode("M" + i, Bind("x", "normal", "lip"))).ToArray();
+
+        var headers = Headers(Build(modes)).Where(h => h != Strings.Main_SheetControl).ToList();
+
+        Assert.Equal(17, headers.Count);
+        Assert.Equal("16 M16", headers[15]);
+        Assert.Equal(string.Format(Strings.Main_SheetModeNeverLoaded, "17 M17"), headers[16]);
     }
 }

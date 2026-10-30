@@ -68,7 +68,7 @@ public static class Validator
 
             // Device limits (Configuration.c): 16 profiles, 128 binding rows
             // per profile. Extras are read and thrown away without a sound.
-            if (++profileSheets == 17)
+            if (++profileSheets == ProfileFile.MaxDeviceModes + 1)
                 issues.Add(new Issue(Severity.Warning, $"A{sheet.StartRow}",
                     Strings.Issue_TheDeviceSupports16Modes,
                     Strings.Issue_RemoveModesUntilThereAre));

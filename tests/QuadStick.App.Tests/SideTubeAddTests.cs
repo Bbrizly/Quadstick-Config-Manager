@@ -119,4 +119,49 @@ public class SideTubeAddTests
             w.Close();
         }
     }
+
+    static string Modes(int count) =>
+        "QuadStick Configuration,Version 1.5,,game\n" + string.Concat(Enumerable.Range(1, count)
+            .Select(i => $"Profile Name,,M{i}\n\nOutput or Function,Function,usb\nincrement_mode,normal,lip\n\n"));
+
+    [AvaloniaFact]
+    public void A_mode_past_the_limit_does_not_claim_the_side_tube_reaches_it()
+    {
+        var w = Open(Modes(16), "FPS");
+        try
+        {
+            // Add after the last mode, so the new one lands at number 17.
+            w.SelectSheetForPreview(15);
+            Press(w);
+
+            var status = StatusText(w);
+            Assert.DoesNotContain(Strings.Modes_ModeAddedSideTube, status);
+            Assert.Contains(QuadStick.Format.Strings.Issue_TheDeviceSupports16Modes, status);
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
+        }
+    }
+
+    [AvaloniaFact]
+    public void A_mode_in_the_middle_says_the_last_one_fell_past_the_limit()
+    {
+        var w = Open(Modes(16), "FPS");
+        try
+        {
+            w.SelectSheetForPreview(0);
+            Press(w);
+
+            var status = StatusText(w);
+            Assert.Contains(Strings.Modes_ModeAddedSideTube, status);
+            Assert.Contains(Strings.Modes_PushedPastLimit, status);
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
+        }
+    }
 }

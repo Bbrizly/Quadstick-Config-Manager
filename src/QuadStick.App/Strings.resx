@@ -2261,16 +2261,19 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
     <value>Mode added. Its side tube switches modes: sip goes to the next mode, puff to the one before.</value>
   </data>
   <data name="Modes_SideTubeGiven_one" xml:space="preserve">
-    <value>The side tube now does the same in {0} other mode, which had no way to switch.</value>
+    <value>The side tube now switches modes in {0} other mode, which had no way to switch.</value>
   </data>
   <data name="Modes_SideTubeGiven_other" xml:space="preserve">
-    <value>The side tube now does the same in {0} other modes, which had no way to switch.</value>
+    <value>The side tube now switches modes in {0} other modes, which had no way to switch.</value>
   </data>
   <data name="Modes_StillStuck_one" xml:space="preserve">
     <value>Mode {0} still has no way to switch and was left as it was, because its side tube is in use or it has no rows to spare. Anyone who reaches it stays there until you add a way out.</value>
   </data>
   <data name="Modes_StillStuck_other" xml:space="preserve">
     <value>Modes {0} still have no way to switch and were left as they were, because their side tube is in use or they have no rows to spare. Anyone who reaches one stays there until you add a way out.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>The mode that was number 16 is now number 17, so the device will not load it.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Mode copied.</value>
@@ -3672,6 +3675,9 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   </data>
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Make a printable sheet of this profile's controls in every mode. It opens in your browser.</value>
+  </data>
+  <data name="Main_SheetModeNeverLoaded" xml:space="preserve">
+    <value>{0} (the device never loads this mode)</value>
   </data>
   <data name="Main_SheetSaveTitle" xml:space="preserve">
     <value>Save reference sheet</value>
