@@ -2237,7 +2237,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Os modos {0} continuam sem como mudar e foram deixados como estavam, porque o tubo lateral deles está em uso ou não há linhas livres. Quem chegar a um deles fica lá até você adicionar uma saída.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>O modo que era o número 16 agora é o número 17, por isso o dispositivo não o carregará.</value>
+    <value>O modo que era o número 16 agora é o número 17, além dos 16 modos do dispositivo, então seus controles não são lidos.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modo copiado.</value>
@@ -3541,8 +3541,8 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Cria uma folha para impressão com os controlos deste perfil em cada modo. Ela abre no seu navegador.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (o dispositivo nunca carrega este modo)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (além dos 16 modos do dispositivo, seus controles não são lidos)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Salvar folha de referência</value>

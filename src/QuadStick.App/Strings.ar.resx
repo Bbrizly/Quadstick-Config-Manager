@@ -2237,7 +2237,7 @@
     <value>لا تزال الأوضاع {0} بلا طريقة للتبديل وقد تُركت كما هي، لأن أنبوبها الجانبي مستخدم أو لا توجد لديها صفوف متاحة. من يصل إلى أحدها يبقى فيه حتى تضيف طريقة للخروج.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>الوضع الذي كان رقم 16 أصبح الآن رقم 17، لذلك لن يحمّله الجهاز.</value>
+    <value>الوضع الذي كان رقمه 16 أصبح الآن رقم 17، بعد الأوضاع الستة عشر للجهاز، لذلك لا تُقرأ عناصر التحكم فيه.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>تم نسخ الوضع.</value>
@@ -3541,8 +3541,8 @@
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>أنشئ ورقة قابلة للطباعة لعناصر التحكم في هذا الملف الشخصي في كل وضع. تُفتح في متصفحك.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (لا يحمّل الجهاز هذا الوضع أبدًا)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (بعد الأوضاع الستة عشر للجهاز، لا تُقرأ عناصر التحكم فيه)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>حفظ الورقة المرجعية</value>

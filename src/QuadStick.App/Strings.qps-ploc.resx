@@ -2270,7 +2270,7 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
     <value>[Módéš {0} štíll hávé ñó wáý tó šwítçh áñd wéré léft áš théý wéré, béçáúšé théír šídé túbé íš íñ úšé ór théý hávé ñó rówš tó špáré. Áñýóñé whó réáçhéš óñé štáýš théré úñtíl ýóú ádd á wáý óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>[Thé módé thát wáš ñúmbér 16 íš ñów ñúmbér 17, šó thé dévíçé wíll ñót lóád ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé módé thát wáš ñúmbér 16 íš ñów ñúmbér 17, pášt thé dévíçé'š 16 módéš, šó ítš çóñtrólš áré ñót réád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>[Módé çópíéd. xxxx]</value>
@@ -3660,8 +3660,8 @@ Thíš ápp kéépš á çópý óf thé lášt véršíóñ thé dévíçé wó
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>[Máké á príñtáblé šhéét óf thíš prófílé'š çóñtrólš íñ évérý módé. Ít ópéñš íñ ýóúr brówšér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>[{0} (thé dévíçé ñévér lóádš thíš módé) xxxxxxxxxxxxxxx]</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>[{0} (pášt thé dévíçé'š 16 módéš, ítš çóñtrólš áré ñót réád) xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>[Šávé référéñçé šhéét xxxxxxxx]</value>

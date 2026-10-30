@@ -2237,7 +2237,7 @@
     <value>मोड {0} में अब भी बदलने का कोई तरीका नहीं है और उन्हें जैसा था वैसा ही छोड़ दिया गया, क्योंकि उनकी साइड ट्यूब उपयोग में है या उनमें कोई खाली पंक्ति नहीं है। जो उनमें से किसी पर पहुंचेगा वह तब तक वहीं रहेगा जब तक आप बाहर निकलने का तरीका नहीं जोड़ते।</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>जो मोड नंबर 16 था वह अब नंबर 17 है, इसलिए डिवाइस उसे लोड नहीं करेगा।</value>
+    <value>जो मोड नंबर 16 था वह अब नंबर 17 है, डिवाइस के 16 मोड से आगे, इसलिए उसके नियंत्रण नहीं पढ़े जाते।</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>मोड की प्रति बनाई गई।</value>
@@ -3541,8 +3541,8 @@
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>हर मोड में इस प्रोफ़ाइल के नियंत्रणों की प्रिंट करने योग्य शीट बनाएं। यह आपके ब्राउज़र में खुलती है।</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (डिवाइस इस मोड को कभी लोड नहीं करता)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (डिवाइस के 16 मोड से आगे, इसके नियंत्रण नहीं पढ़े जाते)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>रेफ़रेंस शीट सेव करें</value>

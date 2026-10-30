@@ -450,7 +450,7 @@ public sealed class ProfileFile
     /// sentence that tells the user. ModesStillStuck holds mode numbers, counted
     /// the way the device counts them, because two modes may share a name.
     /// ModeNumber is where the new mode landed and ModeCount how many there are
-    /// now, so the sentence can say when the device will not load one.</summary>
+    /// now, so the sentence can say when the device will not read one.</summary>
     public sealed record SideTubeAdd(int SheetIndex, int OtherModesGiven, IReadOnlyList<int> ModesStillStuck,
         int ModeNumber, int ModeCount)
     {

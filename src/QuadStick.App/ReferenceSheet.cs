@@ -151,7 +151,7 @@ internal static class ReferenceSheet
         var heading = name.Length > 0 ? number + " " + name : number;
         // Still a column, because nothing in the file is hidden from this page.
         return index < ProfileFile.MaxDeviceModes ? heading
-            : string.Format(CultureInfo.CurrentCulture, Strings.Sheet_ModeNeverLoaded, heading);
+            : string.Format(CultureInfo.CurrentCulture, Strings.Sheet_ModePastLimit, heading);
     }
 
     // One row per control, or per ordered run of controls, across all modes.

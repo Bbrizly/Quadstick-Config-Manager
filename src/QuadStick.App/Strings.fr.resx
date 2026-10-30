@@ -2237,7 +2237,7 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
     <value>Les modes {0} n'ont toujours aucun moyen de changer et ont été laissés tels quels, car leur tube latéral est utilisé ou ils n'ont plus de lignes libres. Quiconque arrive dans l'un d'eux y reste jusqu'à ce que vous ajoutiez une sortie.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>Le mode qui portait le numéro 16 porte maintenant le numéro 17, donc l'appareil ne le chargera pas.</value>
+    <value>Le mode qui était le numéro 16 est maintenant le numéro 17, au-delà des 16 modes de l'appareil, donc ses commandes ne sont pas lues.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Mode copié.</value>
@@ -3541,8 +3541,8 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Créer une fiche imprimable des commandes de ce profil dans chaque mode. Elle s'ouvre dans votre navigateur.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (l'appareil ne charge jamais ce mode)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (au-delà des 16 modes de l'appareil, ses commandes ne sont pas lues)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Enregistrer la fiche de référence</value>

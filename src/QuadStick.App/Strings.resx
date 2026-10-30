@@ -2273,7 +2273,7 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
     <value>Modes {0} still have no way to switch and were left as they were, because their side tube is in use or they have no rows to spare. Anyone who reaches one stays there until you add a way out.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>The mode that was number 16 is now number 17, so the device will not load it.</value>
+    <value>The mode that was number 16 is now number 17, past the device's 16 modes, so its controls are not read.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Mode copied.</value>
@@ -3676,8 +3676,8 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Make a printable sheet of this profile's controls in every mode. It opens in your browser.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (the device never loads this mode)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (past the device's 16 modes, its controls are not read)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Save reference sheet</value>

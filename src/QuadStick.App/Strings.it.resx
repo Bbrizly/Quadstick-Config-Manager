@@ -2237,7 +2237,7 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
     <value>Le modalità {0} non hanno ancora modo di cambiare e sono state lasciate com'erano, perché il loro tubo laterale è in uso o non hanno righe libere. Chi ne raggiunge una resta lì finché non aggiunge una via d'uscita.</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>La modalità che era la numero 16 ora è la numero 17, quindi il dispositivo non la caricherà.</value>
+    <value>La modalità che era la numero 16 ora è la numero 17, oltre le 16 del dispositivo, quindi i suoi comandi non vengono letti.</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modalità copiata.</value>
@@ -3541,8 +3541,8 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Crea una scheda stampabile con i comandi di questo profilo in ogni modalità. Si apre nel Suo browser.</value>
   </data>
-  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
-    <value>{0} (il dispositivo non carica mai questa modalità)</value>
+  <data name="Sheet_ModePastLimit" xml:space="preserve">
+    <value>{0} (oltre le 16 modalità del dispositivo, i suoi comandi non vengono letti)</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Salva la scheda di riferimento</value>

@@ -40,7 +40,7 @@ public class ReferenceSheetTests
         Regex.Matches(html, "<table>.*?</table>", RegexOptions.Singleline).Select(m => m.Value).ToList();
 
     static List<string> Headers(string html) =>
-        Regex.Matches(html, "<th scope=col>(.*?)</th>").Select(m => m.Groups[1].Value).ToList();
+        Regex.Matches(html, "<th scope=col>(.*?)</th>").Select(m => System.Net.WebUtility.HtmlDecode(m.Groups[1].Value)).ToList();
 
     // The cells of the row with this label, in column order, with the label left out.
     static List<string> Cells(string html, string label)
@@ -194,7 +194,7 @@ public class ReferenceSheetTests
         Assert.All(tables, t => Assert.Equal("Control", Headers(t)[0]));
         Assert.Equal(new[] { 7, 7, 7, 3 }, tables.Select(t => Headers(t).Count));
         Assert.Equal("7 M7", Headers(tables[1])[1]);
-        Assert.Equal(string.Format(Strings.Sheet_ModeNeverLoaded, "20 M20"), Headers(tables[3])[2]);
+        Assert.Equal(string.Format(Strings.Sheet_ModePastLimit, "20 M20"), Headers(tables[3])[2]);
     }
 
     [Fact]
@@ -399,7 +399,7 @@ public class ReferenceSheetTests
     }
 
     [AvaloniaFact]
-    public void A_mode_past_the_limit_stays_a_column_and_says_the_device_never_loads_it()
+    public void A_mode_past_the_limit_stays_a_column_and_says_its_controls_are_not_read()
     {
         var modes = Enumerable.Range(1, 17)
             .Select(i => Mode("M" + i, Bind("x", "normal", "lip"))).ToArray();
@@ -408,6 +408,6 @@ public class ReferenceSheetTests
 
         Assert.Equal(17, headers.Count);
         Assert.Equal("16 M16", headers[15]);
-        Assert.Equal(string.Format(Strings.Sheet_ModeNeverLoaded, "17 M17"), headers[16]);
+        Assert.Equal(string.Format(Strings.Sheet_ModePastLimit, "17 M17"), headers[16]);
     }
 }
