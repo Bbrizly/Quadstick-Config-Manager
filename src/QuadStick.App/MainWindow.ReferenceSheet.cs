@@ -16,12 +16,12 @@ public partial class MainWindow
 
         var pick = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = Strings.Main_SheetSaveTitle,
+            Title = Strings.Sheet_SaveTitle,
             SuggestedFileName = BareName(SafeFileName.ForCsv(_file.Document.CsvFileName)) + "-reference-sheet",
             DefaultExtension = "html",
             FileTypeChoices = new[]
             {
-                new FilePickerFileType(Strings.Main_SheetHtmlFileType)
+                new FilePickerFileType(Strings.Sheet_HtmlFileType)
                 {
                     Patterns = new[] { "*.html" },
                     AppleUniformTypeIdentifiers = new[] { "public.html" },
@@ -54,7 +54,7 @@ public partial class MainWindow
         try { await File.WriteAllTextAsync(path, html); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
         {
-            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_SheetCouldNotSave, path, ex.Message), StatusKind.Error);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Sheet_CouldNotSave, path, ex.Message), StatusKind.Error);
             return;
         }
 
@@ -62,7 +62,7 @@ public partial class MainWindow
         try { opened = await Launcher.LaunchFileInfoAsync(new FileInfo(path)); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException or System.ComponentModel.Win32Exception)
         { opened = false; }
-        Status(string.Format(CultureInfo.CurrentCulture, opened ? Strings.Main_SheetSavedAndOpened : Strings.Main_SheetSavedNotOpened, path),
+        Status(string.Format(CultureInfo.CurrentCulture, opened ? Strings.Sheet_SavedAndOpened : Strings.Sheet_SavedNotOpened, path),
             opened ? StatusKind.Ready : StatusKind.Warning);
     }
 }

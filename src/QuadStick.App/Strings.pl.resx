@@ -2221,6 +2221,24 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Dodano tryb.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>Dodano tryb. Jego rurka boczna przełącza tryby: wdech przechodzi do następnego trybu, wydech do poprzedniego.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>Rurka boczna przełącza teraz tryby także w {0} innym trybie, który nie miał sposobu na przełączenie.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>Rurka boczna przełącza teraz tryby także w {0} innych trybach, które nie miały sposobu na przełączenie.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>Tryb {0} nadal nie ma sposobu na przełączenie i pozostawiono go bez zmian, ponieważ jego rurka boczna jest zajęta lub nie ma wolnych wierszy. Kto do niego trafi, pozostanie w nim, dopóki nie dodasz wyjścia.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>Tryby {0} nadal nie mają sposobu na przełączenie i pozostawiono je bez zmian, ponieważ ich rurka boczna jest zajęta lub nie mają wolnych wierszy. Kto trafi do jednego z nich, pozostanie w nim, dopóki nie dodasz wyjścia.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>Tryb, który miał numer 16, ma teraz numer 17, więc urządzenie go nie wczyta.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Skopiowano tryb.</value>
   </data>
@@ -3655,5 +3673,65 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   </data>
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Połącz się z QuadStickiem przez Bluetooth lub kabel szeregowy</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>Wydrukuj arkusz referencyjny</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>Utwórz arkusz do druku ze sterowaniem tego profilu w każdym trybie. Otworzy się w przeglądarce.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (urządzenie nigdy nie wczytuje tego trybu)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>Zapisz arkusz referencyjny</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>Strona internetowa</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>Arkusz referencyjny</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>Aby wydrukować tę stronę, użyj polecenia Drukuj w przeglądarce.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>Element sterowania</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>Tryby od {0} do {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, potem </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (urządzenie nie zna tej nazwy i ją pomija)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>Ten profil nie ma trybów, więc nie ma sterowania do wyświetlenia.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>Żaden element sterowania nie jest jeszcze ustawiony w żadnym trybie.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>Myślnik oznacza, że element sterowania nic nie robi w tym trybie.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>Wiersz ze słowem „potem” wykonuje się w tej kolejności, jedno po drugim. Wykonanie tylko jednej części go nie uruchamia.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>Ten profil ma też arkusze Preferences lub Infrared. Nie należą one do żadnego trybu, więc nie ma ich tutaj.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>Co oznaczają te słowa</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>Zapisano arkusz referencyjny w {0} i otwarto go. Aby go wydrukować, użyj polecenia Drukuj w przeglądarce.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>Zapisano arkusz referencyjny w {0}, ale nie udało się go otworzyć. Otwórz ten plik w przeglądarce, aby go wydrukować.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>Nie udało się zapisać arkusza referencyjnego w {0}: {1}</value>
   </data>
 </root>

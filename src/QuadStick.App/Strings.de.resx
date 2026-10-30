@@ -2221,6 +2221,24 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Modus hinzugefügt.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>Modus hinzugefügt. Sein Seitenröhrchen wechselt die Modi: Saugen führt zum nächsten Modus, Pusten zum vorherigen.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>Das Seitenröhrchen wechselt jetzt auch in {0} anderem Modus die Modi, der keine Möglichkeit zum Wechseln hatte.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>Das Seitenröhrchen wechselt jetzt auch in {0} anderen Modi die Modi, die keine Möglichkeit zum Wechseln hatten.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>Modus {0} hat weiterhin keine Möglichkeit zum Wechseln und wurde unverändert gelassen, weil sein Seitenröhrchen belegt ist oder keine Zeilen mehr frei sind. Wer ihn erreicht, bleibt dort, bis Sie einen Ausweg hinzufügen.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>Die Modi {0} haben weiterhin keine Möglichkeit zum Wechseln und wurden unverändert gelassen, weil ihr Seitenröhrchen belegt ist oder keine Zeilen mehr frei sind. Wer einen davon erreicht, bleibt dort, bis Sie einen Ausweg hinzufügen.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>Der Modus mit der Nummer 16 hat jetzt die Nummer 17, daher lädt das Gerät ihn nicht.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Modus kopiert.</value>
   </data>
@@ -3655,5 +3673,65 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   </data>
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Über Bluetooth oder ein serielles Kabel mit dem QuadStick verbinden</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>Referenzblatt drucken</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>Ein druckbares Blatt mit den Bedienelementen dieses Profils in jedem Modus erstellen. Es öffnet sich in Ihrem Browser.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (das Gerät lädt diesen Modus nie)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>Referenzblatt speichern</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>Webseite</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>Referenzblatt</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>Um diese Seite zu drucken, verwenden Sie den Druckbefehl Ihres Browsers.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>Bedienelement</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>Modi {0} bis {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, dann </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (das Gerät kennt diesen Namen nicht und überspringt ihn)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>Dieses Profil hat keine Modi, daher gibt es keine Bedienelemente aufzulisten.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>In keinem Modus ist bisher ein Bedienelement belegt.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>Ein Strich bedeutet, dass das Bedienelement in diesem Modus nichts tut.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>Eine Zeile mit "dann" wird in dieser Reihenfolge ausgeführt, eins nach dem anderen. Nur einen Teil auszuführen löst sie nicht aus.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>Dieses Profil enthält auch Preferences- oder Infrared-Blätter. Sie gehören zu keinem Modus und sind daher hier nicht aufgeführt.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>Was die Wörter bedeuten</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>Das Referenzblatt wurde unter {0} gespeichert und geöffnet. Verwenden Sie zum Drucken den Druckbefehl Ihres Browsers.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>Das Referenzblatt wurde unter {0} gespeichert, konnte aber nicht geöffnet werden. Öffnen Sie diese Datei in einem Browser, um sie zu drucken.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>Das Referenzblatt konnte nicht unter {0} gespeichert werden: {1}</value>
   </data>
 </root>

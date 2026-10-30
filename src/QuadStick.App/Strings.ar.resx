@@ -2221,6 +2221,24 @@
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>تمت إضافة الوضع.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>تمت إضافة الوضع. يبدّل الأنبوب الجانبي فيه الأوضاع: الشفط ينتقل إلى الوضع التالي، والنفخ إلى الوضع السابق.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>أصبح الأنبوب الجانبي الآن يبدّل الأوضاع أيضًا في {0} وضع آخر لم تكن لديه طريقة للتبديل.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>أصبح الأنبوب الجانبي الآن يبدّل الأوضاع أيضًا في {0} أوضاع أخرى لم تكن لديها طريقة للتبديل.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>لا يزال الوضع {0} بلا طريقة للتبديل وقد تُرك كما هو، لأن أنبوبه الجانبي مستخدم أو لا توجد لديه صفوف متاحة. من يصل إليه يبقى فيه حتى تضيف طريقة للخروج.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>لا تزال الأوضاع {0} بلا طريقة للتبديل وقد تُركت كما هي، لأن أنبوبها الجانبي مستخدم أو لا توجد لديها صفوف متاحة. من يصل إلى أحدها يبقى فيه حتى تضيف طريقة للخروج.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>الوضع الذي كان رقم 16 أصبح الآن رقم 17، لذلك لن يحمّله الجهاز.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>تم نسخ الوضع.</value>
   </data>
@@ -3655,5 +3673,65 @@
   </data>
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>الاتصال بجهاز QuadStick عبر Bluetooth أو كابل تسلسلي</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>طباعة ورقة مرجعية</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>أنشئ ورقة قابلة للطباعة لعناصر التحكم في هذا الملف الشخصي في كل وضع. تُفتح في متصفحك.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (لا يحمّل الجهاز هذا الوضع أبدًا)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>حفظ الورقة المرجعية</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>صفحة ويب</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>ورقة مرجعية</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>لطباعة هذه الصفحة، استخدم أمر الطباعة في متصفحك.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>عنصر التحكم</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>الأوضاع من {0} إلى {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>، ثم </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (لا يعرف الجهاز هذا الاسم ويتخطاه)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>لا يحتوي هذا الملف الشخصي على أوضاع، لذا لا توجد عناصر تحكم لعرضها.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>لم يتم تعيين أي عنصر تحكم في أي وضع بعد.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>تعني الشرطة أن عنصر التحكم لا يفعل شيئًا في ذلك الوضع.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>الصف الذي يحتوي على "ثم" يُنفَّذ بذلك الترتيب، واحدًا تلو الآخر. تنفيذ جزء واحد فقط لا يشغّله.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>يحتوي هذا الملف الشخصي أيضًا على أوراق Preferences أو Infrared. وهي لا تنتمي إلى وضع، لذا لا تظهر هنا.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>ما تعنيه الكلمات</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>تم حفظ الورقة المرجعية في {0} وفتحها. استخدم أمر الطباعة في متصفحك لطباعتها.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>تم حفظ الورقة المرجعية في {0}، لكن تعذّر فتحها. افتح ذلك الملف في متصفح لطباعتها.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>تعذّر حفظ الورقة المرجعية في {0}: {1}</value>
   </data>
 </root>

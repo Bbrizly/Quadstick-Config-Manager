@@ -2257,6 +2257,24 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>[Módé áddéd. xxxx]</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>[Módé áddéd. Ítš šídé túbé šwítçhéš módéš: šíp góéš tó thé ñéxt módé, púff tó thé óñé béfóré. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>[Thé šídé túbé ñów šwítçhéš módéš íñ {0} óthér módé, whíçh hád ñó wáý tó šwítçh. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>[Thé šídé túbé ñów šwítçhéš módéš íñ {0} óthér módéš, whíçh hád ñó wáý tó šwítçh. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>[Módé {0} štíll háš ñó wáý tó šwítçh áñd wáš léft áš ít wáš, béçáúšé ítš šídé túbé íš íñ úšé ór ít háš ñó rówš tó špáré. Áñýóñé whó réáçhéš ít štáýš théré úñtíl ýóú ádd á wáý óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>[Módéš {0} štíll hávé ñó wáý tó šwítçh áñd wéré léft áš théý wéré, béçáúšé théír šídé túbé íš íñ úšé ór théý hávé ñó rówš tó špáré. Áñýóñé whó réáçhéš óñé štáýš théré úñtíl ýóú ádd á wáý óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>[Thé módé thát wáš ñúmbér 16 íš ñów ñúmbér 17, šó thé dévíçé wíll ñót lóád ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>[Módé çópíéd. xxxx]</value>
   </data>
@@ -3793,5 +3811,65 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   </data>
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>[Çóññéçt tó thé QúádŠtíçk óvér Blúétóóth ór á šéríál çáblé xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>[Príñt á référéñçé šhéét xxxxxxxxx]</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>[Máké á príñtáblé šhéét óf thíš prófílé'š çóñtrólš íñ évérý módé. Ít ópéñš íñ ýóúr brówšér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>[{0} (thé dévíçé ñévér lóádš thíš módé) xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>[Šávé référéñçé šhéét xxxxxxxx]</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>[Wéb págé xxx]</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>[Référéñçé šhéét xxxxxx]</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>[Tó príñt thíš págé, úšé ýóúr brówšér'š Príñt çómmáñd. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>[Çóñtról xx]</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>[Módéš {0} tó {1} xxxxxx]</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>[, théñ  xx]</value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>[{0} (thé dévíçé dóéš ñót kñów thíš ñámé áñd škípš ít) xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>[Thíš prófílé háš ñó módéš, šó théré áré ñó çóñtrólš tó líšt. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>[Ñó çóñtról íš šét íñ áñý módé ýét. xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>[Á dášh méáñš thé çóñtról dóéš ñóthíñg íñ thát módé. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>[Á rów wíth "théñ" íš dóñé íñ thát órdér, óñé áftér thé óthér. Dóíñg óñlý óñé párt dóéš ñót fíré ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>[Thíš prófílé álšó háš Préféréñçéš ór Íñfráréd šhéétš. Théý dó ñót bélóñg tó á módé, šó théý áré ñót líštéd héré. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>[Whát thé wórdš méáñ xxxxxxx]</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>[Šávéd thé référéñçé šhéét tó {0} áñd ópéñéd ít. Úšé ýóúr brówšér'š Príñt çómmáñd tó príñt ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>[Šávéd thé référéñçé šhéét tó {0}, bút çóúld ñót ópéñ ít. Ópéñ thát fílé íñ á brówšér tó príñt ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>[Çóúld ñót šávé thé référéñçé šhéét tó {0}: {1} xxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>

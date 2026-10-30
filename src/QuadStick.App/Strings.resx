@@ -3818,58 +3818,58 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
     <value>Make a printable sheet of this profile's controls in every mode. It opens in your browser.</value>
   </data>
-  <data name="Main_SheetModeNeverLoaded" xml:space="preserve">
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
     <value>{0} (the device never loads this mode)</value>
   </data>
-  <data name="Main_SheetSaveTitle" xml:space="preserve">
+  <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>Save reference sheet</value>
   </data>
-  <data name="Main_SheetHtmlFileType" xml:space="preserve">
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
     <value>Web page</value>
   </data>
-  <data name="Main_SheetUntitled" xml:space="preserve">
+  <data name="Sheet_Untitled" xml:space="preserve">
     <value>Reference sheet</value>
   </data>
-  <data name="Main_SheetPrintHint" xml:space="preserve">
+  <data name="Sheet_PrintHint" xml:space="preserve">
     <value>To print this page, use your browser's Print command.</value>
   </data>
-  <data name="Main_SheetControl" xml:space="preserve">
+  <data name="Sheet_Control" xml:space="preserve">
     <value>Control</value>
   </data>
-  <data name="Main_SheetModesRange" xml:space="preserve">
+  <data name="Sheet_ModesRange" xml:space="preserve">
     <value>Modes {0} to {1}</value>
   </data>
-  <data name="Main_SheetThenJoiner" xml:space="preserve">
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
     <value>, then </value>
   </data>
-  <data name="Main_SheetUnknownInput" xml:space="preserve">
+  <data name="Sheet_UnknownInput" xml:space="preserve">
     <value>{0} (the device does not know this name and skips it)</value>
   </data>
-  <data name="Main_SheetNoModes" xml:space="preserve">
+  <data name="Sheet_NoModes" xml:space="preserve">
     <value>This profile has no modes, so there are no controls to list.</value>
   </data>
-  <data name="Main_SheetNoControls" xml:space="preserve">
+  <data name="Sheet_NoControls" xml:space="preserve">
     <value>No control is set in any mode yet.</value>
   </data>
-  <data name="Main_SheetDashMeans" xml:space="preserve">
+  <data name="Sheet_DashMeans" xml:space="preserve">
     <value>A dash means the control does nothing in that mode.</value>
   </data>
-  <data name="Main_SheetSequenceNote" xml:space="preserve">
+  <data name="Sheet_SequenceNote" xml:space="preserve">
     <value>A row with "then" is done in that order, one after the other. Doing only one part does not fire it.</value>
   </data>
-  <data name="Main_SheetOtherSheetsNotListed" xml:space="preserve">
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
     <value>This profile also has Preferences or Infrared sheets. They do not belong to a mode, so they are not listed here.</value>
   </data>
-  <data name="Main_SheetWhatTheWordsMean" xml:space="preserve">
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
     <value>What the words mean</value>
   </data>
-  <data name="Main_SheetSavedAndOpened" xml:space="preserve">
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
     <value>Saved the reference sheet to {0} and opened it. Use your browser's Print command to print it.</value>
   </data>
-  <data name="Main_SheetSavedNotOpened" xml:space="preserve">
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
     <value>Saved the reference sheet to {0}, but could not open it. Open that file in a browser to print it.</value>
   </data>
-  <data name="Main_SheetCouldNotSave" xml:space="preserve">
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>Could not save the reference sheet to {0}: {1}</value>
   </data>
 </root>

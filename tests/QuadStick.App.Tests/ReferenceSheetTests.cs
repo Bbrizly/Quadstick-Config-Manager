@@ -194,7 +194,7 @@ public class ReferenceSheetTests
         Assert.All(tables, t => Assert.Equal("Control", Headers(t)[0]));
         Assert.Equal(new[] { 7, 7, 7, 3 }, tables.Select(t => Headers(t).Count));
         Assert.Equal("7 M7", Headers(tables[1])[1]);
-        Assert.Equal(string.Format(Strings.Main_SheetModeNeverLoaded, "20 M20"), Headers(tables[3])[2]);
+        Assert.Equal(string.Format(Strings.Sheet_ModeNeverLoaded, "20 M20"), Headers(tables[3])[2]);
     }
 
     [Fact]
@@ -299,7 +299,7 @@ public class ReferenceSheetTests
     public void A_profile_with_no_modes_says_so()
     {
         var prefs = new ModeSheet { Type = SheetType.Preferences, ModeName = "P" };
-        Assert.Contains(Strings.Main_SheetNoModes, System.Net.WebUtility.HtmlDecode(Build(prefs)));
+        Assert.Contains(Strings.Sheet_NoModes, System.Net.WebUtility.HtmlDecode(Build(prefs)));
         Assert.Empty(Tables(Build(prefs)));
     }
 
@@ -404,10 +404,10 @@ public class ReferenceSheetTests
         var modes = Enumerable.Range(1, 17)
             .Select(i => Mode("M" + i, Bind("x", "normal", "lip"))).ToArray();
 
-        var headers = Headers(Build(modes)).Where(h => h != Strings.Main_SheetControl).ToList();
+        var headers = Headers(Build(modes)).Where(h => h != Strings.Sheet_Control).ToList();
 
         Assert.Equal(17, headers.Count);
         Assert.Equal("16 M16", headers[15]);
-        Assert.Equal(string.Format(Strings.Main_SheetModeNeverLoaded, "17 M17"), headers[16]);
+        Assert.Equal(string.Format(Strings.Sheet_ModeNeverLoaded, "17 M17"), headers[16]);
     }
 }

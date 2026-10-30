@@ -2221,6 +2221,24 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Mode ajouté.</value>
   </data>
+  <data name="Modes_ModeAddedSideTube" xml:space="preserve">
+    <value>Mode ajouté. Son tube latéral change de mode : l'aspiration passe au mode suivant, le souffle au précédent.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_one" xml:space="preserve">
+    <value>Le tube latéral change maintenant aussi de mode dans {0} autre mode, qui n'avait aucun moyen d'en changer.</value>
+  </data>
+  <data name="Modes_SideTubeGiven_other" xml:space="preserve">
+    <value>Le tube latéral change maintenant aussi de mode dans {0} autres modes, qui n'avaient aucun moyen d'en changer.</value>
+  </data>
+  <data name="Modes_StillStuck_one" xml:space="preserve">
+    <value>Le mode {0} n'a toujours aucun moyen de changer et a été laissé tel quel, car son tube latéral est utilisé ou il n'a plus de lignes libres. Quiconque y arrive y reste jusqu'à ce que vous ajoutiez une sortie.</value>
+  </data>
+  <data name="Modes_StillStuck_other" xml:space="preserve">
+    <value>Les modes {0} n'ont toujours aucun moyen de changer et ont été laissés tels quels, car leur tube latéral est utilisé ou ils n'ont plus de lignes libres. Quiconque arrive dans l'un d'eux y reste jusqu'à ce que vous ajoutiez une sortie.</value>
+  </data>
+  <data name="Modes_PushedPastLimit" xml:space="preserve">
+    <value>Le mode qui portait le numéro 16 porte maintenant le numéro 17, donc l'appareil ne le chargera pas.</value>
+  </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>Mode copié.</value>
   </data>
@@ -3655,5 +3673,65 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   </data>
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Se connecter au QuadStick par Bluetooth ou avec un câble série</value>
+  </data>
+  <data name="Shell_PrintAReferenceSheet" xml:space="preserve">
+    <value>Imprimer une fiche de référence</value>
+  </data>
+  <data name="Shell_MakeAPrintableSheet" xml:space="preserve">
+    <value>Créer une fiche imprimable des commandes de ce profil dans chaque mode. Elle s'ouvre dans votre navigateur.</value>
+  </data>
+  <data name="Sheet_ModeNeverLoaded" xml:space="preserve">
+    <value>{0} (l'appareil ne charge jamais ce mode)</value>
+  </data>
+  <data name="Sheet_SaveTitle" xml:space="preserve">
+    <value>Enregistrer la fiche de référence</value>
+  </data>
+  <data name="Sheet_HtmlFileType" xml:space="preserve">
+    <value>Page web</value>
+  </data>
+  <data name="Sheet_Untitled" xml:space="preserve">
+    <value>Fiche de référence</value>
+  </data>
+  <data name="Sheet_PrintHint" xml:space="preserve">
+    <value>Pour imprimer cette page, utilisez la commande Imprimer de votre navigateur.</value>
+  </data>
+  <data name="Sheet_Control" xml:space="preserve">
+    <value>Commande</value>
+  </data>
+  <data name="Sheet_ModesRange" xml:space="preserve">
+    <value>Modes {0} à {1}</value>
+  </data>
+  <data name="Sheet_ThenJoiner" xml:space="preserve">
+    <value>, puis </value>
+  </data>
+  <data name="Sheet_UnknownInput" xml:space="preserve">
+    <value>{0} (l'appareil ne connaît pas ce nom et l'ignore)</value>
+  </data>
+  <data name="Sheet_NoModes" xml:space="preserve">
+    <value>Ce profil n'a aucun mode, il n'y a donc aucune commande à afficher.</value>
+  </data>
+  <data name="Sheet_NoControls" xml:space="preserve">
+    <value>Aucune commande n'est encore définie dans aucun mode.</value>
+  </data>
+  <data name="Sheet_DashMeans" xml:space="preserve">
+    <value>Un tiret signifie que la commande ne fait rien dans ce mode.</value>
+  </data>
+  <data name="Sheet_SequenceNote" xml:space="preserve">
+    <value>Une ligne avec "puis" se fait dans cet ordre, une partie après l'autre. N'en faire qu'une partie ne la déclenche pas.</value>
+  </data>
+  <data name="Sheet_OtherSheetsNotListed" xml:space="preserve">
+    <value>Ce profil contient aussi des feuilles Preferences ou Infrared. Elles n'appartiennent à aucun mode et ne sont donc pas listées ici.</value>
+  </data>
+  <data name="Sheet_WhatTheWordsMean" xml:space="preserve">
+    <value>Ce que signifient les mots</value>
+  </data>
+  <data name="Sheet_SavedAndOpened" xml:space="preserve">
+    <value>La fiche de référence a été enregistrée dans {0} et ouverte. Utilisez la commande Imprimer de votre navigateur pour l'imprimer.</value>
+  </data>
+  <data name="Sheet_SavedNotOpened" xml:space="preserve">
+    <value>La fiche de référence a été enregistrée dans {0}, mais n'a pas pu être ouverte. Ouvrez ce fichier dans un navigateur pour l'imprimer.</value>
+  </data>
+  <data name="Sheet_CouldNotSave" xml:space="preserve">
+    <value>Impossible d'enregistrer la fiche de référence dans {0} : {1}</value>
   </data>
 </root>
