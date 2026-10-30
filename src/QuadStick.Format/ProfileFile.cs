@@ -448,8 +448,20 @@ public sealed class ProfileFile
 
     /// <summary>What adding a mode with a working side tube did, for the
     /// sentence that tells the user. ModesStillStuck holds mode numbers, counted
-    /// the way the device counts them, because two modes may share a name.</summary>
-    public sealed record SideTubeAdd(int SheetIndex, int OtherModesGiven, IReadOnlyList<int> ModesStillStuck);
+    /// the way the device counts them, because two modes may share a name.
+    /// ModeNumber is where the new mode landed and ModeCount how many there are
+    /// now, so the sentence can say when the device will not load one.</summary>
+    public sealed record SideTubeAdd(int SheetIndex, int OtherModesGiven, IReadOnlyList<int> ModesStillStuck,
+        int ModeNumber, int ModeCount)
+    {
+        public bool PastDeviceLimit => ModeNumber > MaxDeviceModes;
+        /// <summary>The new mode fits, but whatever was the last mode the device
+        /// loads has moved down one and now does not.</summary>
+        public bool PushedOnePastLimit => !PastDeviceLimit && ModeCount > MaxDeviceModes;
+    }
+
+    // Configuration.c drops the rows of any segment past this one.
+    public const int MaxDeviceModes = 16;
 
     // The device gives a mode 128 binding slots and throws away the rest.
     const int DeviceBindingSlots = 128;
@@ -463,25 +475,31 @@ public sealed class ProfileFile
     public SideTubeAdd AddModeWithSideTube(string modeName, int afterSheetIndex = -1)
     {
         Snapshot();
-        var given = Document.Sheets.Where(NeedsSideTubeRows).ToList();
-        // Bottom up, so inserting cannot move the rows still to come.
-        foreach (var sheet in Enumerable.Reverse(given)) InsertSideTubeRows(sheet);
-        Reparse();
-
+        // First, because where it lands decides which modes the device still
+        // loads: dropped in the middle, it pushes the last one past the limit.
         int idx = InsertEmptyMode(modeName, afterSheetIndex);
-        InsertSideTubeRows(Document.Sheets[idx]);
+        var added = Document.Sheets[idx];
+        var modes = Document.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
+        var loaded = modes.Take(MaxDeviceModes).Where(s => s != added).ToList();
+        var given = loaded.Where(NeedsSideTubeRows).ToList();
+
+        // Bottom up, so inserting cannot move the rows still to come. The new
+        // mode gets its rows even past the limit: it is the only mode here that
+        // is this add's own, and removing an earlier mode brings it back in reach.
+        foreach (var sheet in given.Append(added).OrderByDescending(s => s.StartRow))
+            InsertSideTubeRows(sheet);
         Reparse();
 
         var stuck = new List<int>();
         int number = 0;
-        for (int i = 0; i < Document.Sheets.Count; i++)
+        for (int i = 0; i < Document.Sheets.Count && number < MaxDeviceModes; i++)
         {
             var sheet = Document.Sheets[i];
             if (sheet.Type != SheetType.ProfileName) continue;
             number++;
             if (i != idx && !sheet.Bindings.Any(SwitchesModes)) stuck.Add(number);
         }
-        return new SideTubeAdd(idx, given.Count, stuck);
+        return new SideTubeAdd(idx, given.Count, stuck, modes.IndexOf(added) + 1, modes.Count);
     }
 
     // Everything here reads Bindings, which is what the device reads: a row

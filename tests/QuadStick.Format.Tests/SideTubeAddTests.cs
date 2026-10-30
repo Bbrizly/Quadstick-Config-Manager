@@ -296,4 +296,71 @@ public class SideTubeAddTests
         Assert.Equal(new[] { "x" }, f.Document.Sheets[idx].Bindings.Select(b => b.Output));
         Assert.Equal(new[] { "x" }, f.Document.Sheets[0].Bindings.Select(b => b.Output));
     }
+
+    static string[] Stranded(int count) =>
+        Enumerable.Range(1, count).Select(i => Mode("M" + i, "x,normal,lip")).ToArray();
+
+    [Fact]
+    public void A_mode_past_the_limit_says_so_and_leaves_the_others_past_it_alone()
+    {
+        // Sixteen with a way out and two the device never reads.
+        var f = File(Enumerable.Range(1, 16).Select(i => Mode("M" + i, "increment_mode,normal,lip"))
+            .Concat(Stranded(2)).ToArray());
+        var dead = new[] { Text(f, 16), Text(f, 17) };
+
+        var added = f.AddModeWithSideTube("Driving");
+
+        Assert.Equal(19, added.ModeNumber);
+        Assert.True(added.PastDeviceLimit);
+        Assert.False(added.PushedOnePastLimit);
+        Assert.Equal(0, added.OtherModesGiven);
+        Assert.Empty(added.ModesStillStuck);
+        Assert.Equal(dead, new[] { Text(f, 16), Text(f, 17) });
+        // The firmware still counts the segment and reads none of its rows.
+        Assert.All(FirmwareOracle.Read(f.ToCsvText()).Skip(16), m => Assert.Empty(m.Bindings));
+    }
+
+    [Fact]
+    public void A_stranded_mode_the_device_still_loads_is_given_a_way_out_by_a_mode_it_does_not()
+    {
+        var f = File(Stranded(16));
+
+        var added = f.AddModeWithSideTube("Driving");
+
+        Assert.True(added.PastDeviceLimit);
+        Assert.Equal(16, added.OtherModesGiven);
+        Assert.Empty(added.ModesStillStuck);
+    }
+
+    [Fact]
+    public void A_mode_in_the_middle_counts_only_what_the_device_still_loads_after_it()
+    {
+        // Mode 16 is stranded with its side tube free. The add moves it to 17,
+        // so it is neither given rows nor reported.
+        var f = File(Enumerable.Range(1, 15).Select(i => Mode("M" + i, "increment_mode,normal,lip"))
+            .Concat(new[] { Mode("Last", "x,normal,lip") }).ToArray());
+        var last = Text(f, 15);
+
+        var added = f.AddModeWithSideTube("Driving", afterSheetIndex: 0);
+
+        Assert.Equal(2, added.ModeNumber);
+        Assert.False(added.PastDeviceLimit);
+        Assert.True(added.PushedOnePastLimit);
+        Assert.Equal(0, added.OtherModesGiven);
+        Assert.Empty(added.ModesStillStuck);
+        Assert.Equal(last, Text(f, 16));
+        // The firmware still counts the segment and reads none of its rows.
+        Assert.All(FirmwareOracle.Read(f.ToCsvText()).Skip(16), m => Assert.Empty(m.Bindings));
+    }
+
+    [Fact]
+    public void A_stuck_mode_past_the_limit_is_not_reported_as_stuck()
+    {
+        var f = File(Enumerable.Range(1, 16).Select(i => Mode("M" + i, "increment_mode,normal,lip"))
+            .Concat(new[] { Mode("Taken", "x,normal,right_sip") }).ToArray());
+
+        var added = f.AddModeWithSideTube("Driving");
+
+        Assert.Empty(added.ModesStillStuck);
+    }
 }

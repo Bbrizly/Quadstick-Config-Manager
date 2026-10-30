@@ -148,7 +148,10 @@ internal static class ReferenceSheet
     static string ModeHeading(int index, string name)
     {
         var number = (index + 1).ToString(CultureInfo.InvariantCulture);
-        return name.Length > 0 ? number + " " + name : number;
+        var heading = name.Length > 0 ? number + " " + name : number;
+        // Still a column, because nothing in the file is hidden from this page.
+        return index < ProfileFile.MaxDeviceModes ? heading
+            : string.Format(CultureInfo.CurrentCulture, Strings.Main_SheetModeNeverLoaded, heading);
     }
 
     // One row per control, or per ordered run of controls, across all modes.

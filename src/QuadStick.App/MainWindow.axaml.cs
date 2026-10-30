@@ -2553,13 +2553,20 @@ public partial class MainWindow : Window
         }
         var added = _file.AddModeWithSideTube($"Mode {n}", after);
         ModesChanged(added.SheetIndex, "");
-        Status(ModeAddedStatus(added), added.ModesStillStuck.Count > 0 ? StatusKind.Warning : StatusKind.Ready);
+        Status(ModeAddedStatus(added),
+            added.PastDeviceLimit || added.PushedOnePastLimit || added.ModesStillStuck.Count > 0
+                ? StatusKind.Warning : StatusKind.Ready);
         return added.SheetIndex;
     }
 
     static string ModeAddedStatus(ProfileFile.SideTubeAdd added)
     {
-        var parts = new List<string> { Strings.Modes_ModeAddedSideTube };
+        // Past the limit, saying the side tube switches to it would be a way in
+        // the device does not have, so the words are the validator's own warning.
+        var parts = added.PastDeviceLimit
+            ? new List<string> { Strings.Modes_ModeAdded, QuadStick.Format.Strings.Issue_TheDeviceSupports16Modes }
+            : new List<string> { Strings.Modes_ModeAddedSideTube };
+        if (added.PushedOnePastLimit) parts.Add(Strings.Modes_PushedPastLimit);
         if (added.OtherModesGiven > 0)
             parts.Add(Plural.Of(added.OtherModesGiven, "Modes_SideTubeGiven"));
         if (added.ModesStillStuck.Count > 0)
