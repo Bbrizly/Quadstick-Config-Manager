@@ -41,6 +41,8 @@ public class LocalizationTests
         // File bytes the firmware reads, like every profile: a translated
         // "Profile Name" row is a profile the QuadStick does not load.
         ["DeviceConsole.cs"] = new[] { "\"Profile Name,,Strength test,,,,,,,,\\n\"" },
+        // A page's security policy, read by the browser and never shown.
+        ["ReferenceSheet.cs"] = new[] { "\"default-src 'none'; style-src 'unsafe-inline'\"" },
         // A company's name, not a word.
         ["SettingsView.cs"] = new[] { "\"LinkedIn\"" },
         // A font stack, read by the text engine and not by anybody.

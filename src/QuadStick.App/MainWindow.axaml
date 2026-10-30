@@ -280,6 +280,12 @@
                 AutomationProperties.Name="{x:Static app:Strings.Shell_SaveThisProfileAsA}">
           <PathIcon Data="{DynamicResource IconTemplate}"/>
         </Button>
+        <Button x:Name="PrintSheetButton" DockPanel.Dock="Right" Classes="command quiet" Margin="10,0,0,6"
+                VerticalAlignment="Top"
+                ToolTip.Tip="{x:Static app:Strings.Shell_PrintAReferenceSheet}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_MakeAPrintableSheet}">
+          <PathIcon Data="{DynamicResource IconPrint}"/>
+        </Button>
         <WrapPanel Classes="toolbar">
           <TextBlock Text="{x:Static app:Strings.Shell_Profile}" VerticalAlignment="Center" Classes="secondary"/>
           <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
