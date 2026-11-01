@@ -2526,6 +2526,9 @@ public partial class MainWindow : Window
         return row;
     }
 
+    // The Singleton has none (DeviceDiagram.SingletonZones).
+    internal bool HasSideTube => _model != QsModel.Singleton;
+
     /// <summary>Add a mode and open it, the way the modes window adds one:
     /// named past any "Mode N" already taken, so the plus never stops to ask.
     /// Renaming it is one button below the list.</summary>

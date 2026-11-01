@@ -898,8 +898,9 @@ public sealed class ProfileFile
     }
 
     // Copy a whole mode to the end of the grid under a new name. Returns the new
-    // sheet's index, or -1 if the target is not a nameable mode.
-    public int DuplicateMode(int sheetIndex, string newName)
+    // sheet's index, or -1 if the target is not a nameable mode. giveSideTube
+    // holds the copy to the same rule as an added mode, in the same undo.
+    public int DuplicateMode(int sheetIndex, string newName, bool giveSideTube = false)
     {
         if (sheetIndex < 0 || sheetIndex >= Document.Sheets.Count) return -1;
         var sheet = Document.Sheets[sheetIndex];
@@ -933,6 +934,11 @@ public sealed class ProfileFile
 
         Grid.AddRange(clones);
         Reparse();
+        if (giveSideTube && NeedsSideTubeRows(Document.Sheets[^1]))
+        {
+            InsertSideTubeRows(Document.Sheets[^1]);
+            Reparse();
+        }
         return Document.Sheets.Count - 1;
     }
 
