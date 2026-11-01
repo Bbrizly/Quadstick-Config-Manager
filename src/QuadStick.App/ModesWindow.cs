@@ -443,7 +443,7 @@ public class ModesWindow : Window
     void Duplicate(int sheetIndex, string name)
     {
         if (_owner.OpenFile is null) return;
-        int idx = _owner.OpenFile.DuplicateMode(sheetIndex, name + " copy");
+        int idx = _owner.OpenFile.DuplicateMode(sheetIndex, name + " copy", _owner.HasSideTube);
         if (idx < 0) return;
         Build();
         _owner.ModesChanged(idx, Strings.Modes_ModeCopied);

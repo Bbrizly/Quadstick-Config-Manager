@@ -58,6 +58,39 @@ public class SideTubeAddTests
     }
 
     [Fact]
+    public void A_copy_of_a_mode_with_no_way_out_gets_the_rows()
+    {
+        var f = File(Mode("Walking", "x,normal,mp_center_sip"));
+
+        int idx = f.DuplicateMode(0, "Walking copy", giveSideTube: true);
+
+        var seen = FirmwareOracle.Read(f.ToCsvText());
+        Assert.Equal(1, idx);
+        AssertHasSideTube(seen[1]);
+        AssertNoSwitching(seen[0]);
+    }
+
+    [Fact]
+    public void A_copy_that_can_already_switch_stays_an_exact_copy()
+    {
+        var f = File(Mode("Walking", "increment_mode,normal,lip"));
+
+        f.DuplicateMode(0, "Walking copy", giveSideTube: true);
+
+        Assert.Equal(new[] { "lip" }, Assert.Single(FirmwareOracle.Read(f.ToCsvText())[1].Bindings).Inputs);
+    }
+
+    [Fact]
+    public void Without_a_side_tube_the_copy_gets_no_rows()
+    {
+        var f = File(Mode("Walking", "x,normal,mp_center_sip"));
+
+        f.DuplicateMode(0, "Walking copy");
+
+        AssertNoSwitching(FirmwareOracle.Read(f.ToCsvText())[1]);
+    }
+
+    [Fact]
     public void It_survives_a_save_and_a_reload()
     {
         // No trailing blank line and a Preferences sheet last: the shape where
