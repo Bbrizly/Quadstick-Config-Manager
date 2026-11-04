@@ -432,7 +432,7 @@
     <value>. يخزّنها الجهاز في 14 بت، لذا تصل كـ {0}.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>يدعم الجهاز 16 نمطًا؛ ويتجاهل هذا النمط وأي نمط بعده.</value>
+    <value>يتسع الجهاز لـ 16 نمطًا. هذا النمط بعدها، لذا لا تُقرأ عناصر التحكم فيه، لكن تبديل الأنماط ما زال يصل إليه.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>تتداخل حدود {0} مع بعضها البعض: "{1}" هي {2} و"{3}" هي {4}.</value>

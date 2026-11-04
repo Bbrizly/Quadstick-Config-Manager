@@ -432,7 +432,7 @@
     <value>. Urządzenie przechowuje ją na 14 bitach, więc pojawia się jako {0}.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>Urządzenie obsługuje 16 trybów; ten tryb i wszystkie po nim są ignorowane.</value>
+    <value>Urządzenie mieści 16 trybów. Ten jest poza nimi, więc jego sterowanie nie jest odczytywane, ale przełączanie trybów nadal na niego trafia.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>Progi {0} zachodzą na siebie: "{1}" wynosi {2}, a "{3}" wynosi {4}.</value>

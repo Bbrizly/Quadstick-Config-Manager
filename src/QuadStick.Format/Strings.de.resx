@@ -432,7 +432,7 @@
     <value>. Das Gerät speichert ihn in 14 Bit, daher kommt er als {0} an.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>Das Gerät unterstützt 16 Modi; es ignoriert diesen Modus und alle danach.</value>
+    <value>Das Gerät hat Platz für 16 Modi. Dieser Modus liegt darüber, seine Steuerungen werden nicht gelesen, aber der Moduswechsel landet trotzdem auf ihm.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>Die {0}-Schwellenwerte überschneiden sich: "{1}" ist {2} und "{3}" ist {4}.</value>

@@ -432,7 +432,7 @@
     <value>. 장치는 이 값을 14비트로 저장하므로, {0}(으)로 전달됩니다.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>장치는 모드를 16개까지 지원합니다. 이 모드와 그 뒤의 모드는 무시됩니다.</value>
+    <value>장치에는 모드 16개가 들어갑니다. 이 모드는 그 범위를 넘어서 컨트롤을 읽지 않지만, 모드를 전환하면 여전히 이 모드로 넘어갑니다.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>{0} 임계값이 서로 겹칩니다: "{1}"은(는) {2}이고 "{3}"은(는) {4}입니다.</value>

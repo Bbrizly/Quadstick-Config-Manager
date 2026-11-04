@@ -432,7 +432,7 @@
     <value>. O dispositivo o armazena em 14 bits, então ele chega como {0}.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>O dispositivo suporta 16 modos; ele ignora este modo e qualquer um depois dele.</value>
+    <value>O dispositivo tem espaço para 16 modos. Este passa disso, então seus controles não são lidos, mas a troca de modo ainda chega até ele.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>Os limites de {0} se sobrepõem: "{1}" é {2} e "{3}" é {4}.</value>

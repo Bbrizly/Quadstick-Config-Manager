@@ -101,6 +101,21 @@ public class ValidatorGoldenTests
         return parseIssues.Concat(Validator.Validate(doc)).ToList();
     }
 
+    // Configuration.c (FW 2373) counts every Profile segment into
+    // Number_of_Profiles but stores rows only for the first 16, and
+    // Console.c / DataFlow.c wrap mode switching at that count. So mode 17
+    // is still reached, it just has nothing in it. The warning says so.
+    [Fact]
+    public void Mode_17_warning_says_switching_still_reaches_it()
+    {
+        var csv = string.Concat(Enumerable.Range(1, 17)
+            .Select(i => $"Profile Name,,M{i}\n\nOutput or Function,Function,usb\nincrement_mode,normal,lip\n\n"));
+        var warning = Assert.Single(All(csv), i => i.Message == Strings.Issue_TheDeviceSupports16Modes);
+        Assert.Equal(Severity.Warning, warning.Severity);
+        Assert.DoesNotContain("ignores", Strings.Issue_TheDeviceSupports16Modes);
+        Assert.Contains("switching modes still lands on it", Strings.Issue_TheDeviceSupports16Modes);
+    }
+
     [Fact]
     public void A1_must_START_with_the_sheet_keyword_because_the_firmware_dispatches_on_the_line_start()
     {

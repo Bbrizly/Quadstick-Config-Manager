@@ -432,7 +432,7 @@
     <value>. Het apparaat slaat het op in 14 bits, dus het komt aan als {0}.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>Het apparaat ondersteunt 16 modi; het negeert deze modus en alle modi erna.</value>
+    <value>Het apparaat heeft ruimte voor 16 modi. Deze modus valt daarbuiten, dus de bediening ervan wordt niet gelezen, maar bij het wisselen van modus kom je er toch op uit.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>De {0}-drempels lopen in elkaar over: "{1}" is {2} en "{3}" is {4}.</value>

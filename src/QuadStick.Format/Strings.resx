@@ -435,7 +435,7 @@
     <value>. The device stores it in 14 bits, so it arrives as {0}.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>The device supports 16 modes; it ignores this mode and any after it.</value>
+    <value>The device has room for 16 modes. This one is past that, so its controls are not read, but switching modes still lands on it.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>The {0} thresholds run into each other: "{1}" is {2} and "{3}" is {4}. </value>

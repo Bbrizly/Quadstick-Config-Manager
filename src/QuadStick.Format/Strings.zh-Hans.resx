@@ -432,7 +432,7 @@
     <value>。设备用 14 位存储它，因此实际会变成 {0}。</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>设备最多支持 16 个模式；它会忽略这个模式以及之后的所有模式。</value>
+    <value>设备最多容纳 16 个模式。这个模式超出了范围，所以它的控件不会被读取，但切换模式时仍会切到它。</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>{0} 的阈值相互冲突："{1}" 是 {2}，"{3}" 是 {4}。</value>

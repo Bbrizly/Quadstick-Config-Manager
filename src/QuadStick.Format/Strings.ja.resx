@@ -432,7 +432,7 @@
     <value>。デバイスはこれを14ビットで保存するため、{0}として届きます。</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>デバイスが対応するモードは16個までです。このモード以降は無視されます。</value>
+    <value>デバイスに入るモードは16個までです。このモードはそれを超えているため操作は読み込まれませんが、モードを切り替えるとこのモードにも移ります。</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>{0}のしきい値が重なっています: "{1}"は{2}、"{3}"は{4}です。</value>

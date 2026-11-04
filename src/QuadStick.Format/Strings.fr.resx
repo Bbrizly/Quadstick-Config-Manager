@@ -432,7 +432,7 @@
     <value>. L'appareil la stocke sur 14 bits, donc elle arrive comme {0}.</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>L'appareil prend en charge 16 modes ; il ignore ce mode et tous ceux qui suivent.</value>
+    <value>L'appareil a de la place pour 16 modes. Celui-ci est au-delà : ses commandes ne sont pas lues, mais le changement de mode tombe quand même dessus.</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>Les seuils {0} se chevauchent : "{1}" est {2} et "{3}" est {4}.</value>

@@ -435,7 +435,7 @@
     <value>[. Thé dévíçé štóréš ít íñ 14 bítš, šó ít árrívéš áš {0}. xxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>[Thé dévíçé šúppórtš 16 módéš; ít ígñóréš thíš módé áñd áñý áftér ít. xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé dévíçé háš róóm fór 16 módéš. Thíš óñé íš pášt thát, šó ítš çóñtrólš áré ñót réád, bút šwítçhíñg módéš štíll láñdš óñ ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>[Thé {0} thréšhóldš rúñ íñtó éáçh óthér: "{1}" íš {2} áñd "{3}" íš {4}.  xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>

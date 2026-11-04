@@ -432,7 +432,7 @@
     <value>। डिवाइस इसे 14 बिट में संग्रहीत करता है, इसलिए यह {0} के रूप में पहुंचता है।</value>
   </data>
   <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
-    <value>डिवाइस 16 मोड को सपोर्ट करता है; यह इस मोड और इसके बाद के किसी भी मोड को अनदेखा करता है।</value>
+    <value>डिवाइस में 16 मोड की जगह है। यह मोड उसके बाद है, इसलिए इसके कंट्रोल पढ़े नहीं जाते, लेकिन मोड बदलने पर डिवाइस फिर भी इस पर पहुँच जाता है।</value>
   </data>
   <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
     <value>{0} थ्रेशोल्ड एक-दूसरे में टकराते हैं: "{1}" {2} है और "{3}" {4} है।</value>
