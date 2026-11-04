@@ -657,6 +657,65 @@ public class FollowLinkTests
         finally { Close(w); }
     }
 
+    // Drive: the modified time, and a failing export so the read falls
+    // through to the public link, as for a sheet this app cannot export.
+    sealed class Drive : HttpMessageHandler
+    {
+        public string Modified = "t1";
+        public int MetadataRequests;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            if (request.RequestUri!.Query.Contains("fields=modifiedTime"))
+            {
+                Interlocked.Increment(ref MetadataRequests);
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                { Content = new StringContent($"{{\"modifiedTime\":\"{Modified}\"}}") });
+            }
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("") });
+        }
+    }
+
+    // A sheet this app made is asked for its modified time first. A new time
+    // whose download then fails is not taken as seen, so the next check
+    // downloads again instead of calling the sheet unchanged.
+    [AvaloniaFact]
+    public async Task A_failed_download_after_a_new_drive_time_is_tried_again()
+    {
+        using var waits = new Waits();
+        var local = Profile("Walking");
+        using var lib = new Library(local, follow: true, autoCheck: true);
+        const string id = "1AbCdEfGhIjKlMnOpQrStUvWxYz012345";
+        var s = Settings.Load();
+        s.Follows[lib.Path] = new FollowLink { Link = Link, SheetId = id, LastModifiedTime = "t0" };
+        s.DriveLinks["/elsewhere/mine.csv"] = new DriveLink { SpreadsheetId = id };
+        Settings.Save(s);
+
+        var sheet = new Flaky(Profile("Walking", "Driving"), Status(HttpStatusCode.Forbidden));
+        using var http = new HttpClient(sheet);
+        var w = new MainWindow { HttpOverrideForTest = http };
+        w.ShowImportReview = (_, _) => Task.CompletedTask;
+        var drive = new Drive();
+        w.BackupForTest = new DriveBackup(new DriveClient(drive, _ => Task.FromResult("token")),
+            () => w.CurrentSettings, () => true,
+            (_, _) => Task.FromResult(ConflictChoice.KeepOnline), (_, _) => Task.FromResult(false),
+            (_, _) => { }, () => Task.FromResult(false));
+        w.Show();
+        try
+        {
+            w.OpenPath(lib.Path);              // the first check: new time, export refused
+            await Check(w, http);              // the second: same time, so it must download
+            Assert.True(drive.MetadataRequests >= 2);
+            Assert.True(w.FollowBannerShown);
+            Assert.Equal("t1", w.CurrentSettings.Follows[lib.Path].LastModifiedTime);
+            Assert.Equal(local, File.ReadAllText(lib.Path));
+        }
+        finally
+        {
+            var t = Settings.Load(); t.DriveLinks.Remove("/elsewhere/mine.csv"); Settings.Save(t);
+            Close(w);
+        }
+    }
+
     [AvaloniaFact]
     public void The_same_profile_has_no_changes_even_with_a_different_backup_id()
     {

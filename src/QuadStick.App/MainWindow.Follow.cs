@@ -434,6 +434,10 @@ public partial class MainWindow
     DateTime _followLast = DateTime.MinValue, _followNotBefore = DateTime.MinValue;
     bool _followChecking;
 
+    /// <summary>Test seam: a Drive engine with a fake client, in place of one
+    /// built from a stored Google token.</summary>
+    internal DriveBackup BackupForTest { set => _driveBackup = value; }
+
     /// <summary>Test seam: the clock the check reads.</summary>
     internal Func<DateTime> FollowClock = () => DateTime.UtcNow;
 
@@ -480,18 +484,21 @@ public partial class MainWindow
         _followLast = FollowClock();
         try
         {
+            string? modified = null;
             if (follow.SheetId.Length > 0 && Backup() is DriveBackup backup && backup.Knows(follow.SheetId))
             {
-                string? modified = null;
                 try { modified = await backup.ModifiedTimeAsync(follow.SheetId); }
                 catch (Exception ex) when (ex is DriveApiException or GoogleAuthRevokedException
                     or HttpRequestException or TaskCanceledException or InvalidOperationException) { }
                 if (modified is not null && modified == follow.LastModifiedTime) { Settled(); return; }
-                if (modified is not null) follow.LastModifiedTime = modified;
             }
 
             var got = await FetchSheetAsync(follow.Link, http ?? HttpOverrideForTest ?? HttpClient);
-            if (Refusal(got) is null && Hash(got.Text) is var hash && hash != follow.LastHash)
+            if (Refusal(got) is not null) return; // looked at again next time, modified time not taken
+            // Kept only once the download it stands for has been compared, so a
+            // failed download is tried again rather than taken as seen.
+            if (modified is not null) follow.LastModifiedTime = modified;
+            if (Hash(got.Text) is var hash && hash != follow.LastHash)
             {
                 ProfileFile? local = null;
                 try { local = ProfileFile.Load(await File.ReadAllTextAsync(path)); } catch { local = null; }
