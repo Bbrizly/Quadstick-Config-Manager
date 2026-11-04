@@ -73,8 +73,10 @@ App Privacy table needs a line for profile text passing through the relay.
 6. **Export compliance**: before sessions, encryption was only HTTPS through
    the OS: exempt. `scripts/store-mac.sh` answers
    `export_compliance_uses_encryption: false` and `make-macos-app.sh` writes
-   `ITSAppUsesNonExemptEncryption` false. Sessions add AES-GCM; recheck both
-   (see the decision above).
+   `ITSAppUsesNonExemptEncryption` false. Sessions add AES-GCM (.NET
+   `AesGcm`, PBKDF2), so this is a blocker until answered: if it is not
+   "encryption within the OS" exempt, flip both lines and answer the
+   questionnaire. Unverified which way it goes (Codex review 2026-11-04).
 7. **Review notes** (paste):
    "This is an accessibility tool for the QuadStick, a sip and puff game
    controller for quadriplegic players. It edits profile files. You do not
