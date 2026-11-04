@@ -112,23 +112,30 @@ public partial class MainWindow
         if (now is null || now.Rev != was.Rev || now.Path != was.Path) return ("stale", null, false);
 
         var target = was.FromDevice ? Path.Combine(LibraryDir, was.Name) : was.Path;
+        bool stale = false;
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-            if (File.Exists(target))
+            await Task.Run(() =>
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                if (!File.Exists(target)) { ProfileFile.WriteAtomic(target, csv); return; }
+                // Read once, right before the write: the text checked is the
+                // text rescued, so nothing saved in between is lost unseen.
+                var old = File.ReadAllText(target);
+                if (!was.FromDevice && RemoteCrypto.Rev(old) != was.Rev) { stale = true; return; }
                 Directory.CreateDirectory(CrashGuard.RescueDir);
                 var name = Path.GetFileNameWithoutExtension(target);
-                File.Copy(target, Path.Combine(CrashGuard.RescueDir,
-                    $"{name}-before-clinician-{DateTime.Now:yyyyMMdd-HHmmss}-{DateTime.Now.Ticks % 10000}.csv"));
-            }
-            await Task.Run(() => ProfileFile.WriteAtomic(target, csv));
+                File.WriteAllText(Path.Combine(CrashGuard.RescueDir,
+                    $"{name}-before-clinician-{DateTime.Now:yyyyMMdd-HHmmss}-{DateTime.Now.Ticks % 10000}.csv"), old);
+                ProfileFile.WriteAtomic(target, csv);
+            });
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotSaveExMessage, ex.Message), StatusKind.Error);
             return ("save_failed", null, false);
         }
+        if (stale) return ("stale", null, false);
 
         OpenInEditor(ProfileFile.Load(csv), target, ProfileSource.File);
         Status(string.Format(CultureInfo.CurrentCulture, Strings.Remote_Saved, target), StatusKind.Ready);
@@ -189,38 +196,58 @@ public partial class MainWindow
     }
 
     /// <summary>Which modes and rows the proposal changes, one line each.
-    /// Modes are matched by position, the way the firmware counts them.</summary>
+    /// Modes are matched by position, the way the firmware counts them. Every
+    /// changed line of the file is listed, bindings under their mode and the
+    /// rest (names, settings, comments) after, so nothing is accepted unseen.</summary>
     internal static List<string> RemoteChanges(string oldCsv, string newCsv)
     {
         var lines = new List<string>();
         if (oldCsv == newCsv) { lines.Add(Strings.Remote_NoChanges); return lines; }
-        IReadOnlyList<ModeSheet> a, b;
-        try { a = ProfileFile.Load(oldCsv).Document.Sheets; }
-        catch (Exception) { a = Array.Empty<ModeSheet>(); }
-        b = ProfileFile.Load(newCsv).Document.Sheets;
+        ProfileFile a, b;
+        try { a = ProfileFile.Load(oldCsv); }
+        catch (Exception) { a = ProfileFile.Load(""); }
+        b = ProfileFile.Load(newCsv);
 
         int mode = 0;
-        for (int i = 0; i < Math.Max(a.Count, b.Count); i++)
+        var sa = a.Document.Sheets;
+        var sb = b.Document.Sheets;
+        for (int i = 0; i < Math.Max(sa.Count, sb.Count); i++)
         {
-            var sheet = i < b.Count ? b[i] : a[i];
+            var sheet = i < sb.Count ? sb[i] : sa[i];
             var label = sheet.Type == SheetType.ProfileName
                 ? string.Format(CultureInfo.CurrentCulture, Strings.Remote_ModeLabel, ++mode, sheet.ModeName)
                 : sheet.Type.ToString();
-            if (i >= a.Count) { lines.Add(string.Format(CultureInfo.CurrentCulture, Strings.Remote_ModeAdded, label)); continue; }
-            if (i >= b.Count) { lines.Add(string.Format(CultureInfo.CurrentCulture, Strings.Remote_ModeRemoved, label)); continue; }
-
-            var removed = a[i].Bindings.Select(Line).ToList();
-            var added = new List<string>();
-            foreach (var row in b[i].Bindings.Select(Line))
-                if (!removed.Remove(row)) added.Add(row);
-            if (removed.Count == 0 && added.Count == 0) continue;
-            lines.Add(label);
-            lines.AddRange(removed.Select(r => string.Format(CultureInfo.CurrentCulture, Strings.Remote_RowRemoved, r)));
-            lines.AddRange(added.Select(r => string.Format(CultureInfo.CurrentCulture, Strings.Remote_RowAdded, r)));
+            if (i >= sa.Count) { lines.Add(string.Format(CultureInfo.CurrentCulture, Strings.Remote_ModeAdded, label)); continue; }
+            if (i >= sb.Count) { lines.Add(string.Format(CultureInfo.CurrentCulture, Strings.Remote_ModeRemoved, label)); continue; }
+            AddDiff(lines, label, sa[i].Bindings.Select(x => RowText(a, x.Row)), sb[i].Bindings.Select(x => RowText(b, x.Row)));
         }
+        AddDiff(lines, Strings.Remote_OtherLines, OtherRows(a), OtherRows(b));
         if (lines.Count == 0) lines.Add(Strings.Remote_OtherChanges);
         return lines;
+    }
 
-        static string Line(Binding x) => $"{x.Output}, {x.Function}, {string.Join(" ", x.Inputs)}";
+    static void AddDiff(List<string> lines, string heading, IEnumerable<string> before, IEnumerable<string> after)
+    {
+        var removed = before.ToList();
+        var added = new List<string>();
+        foreach (var row in after)
+            if (!removed.Remove(row)) added.Add(row);
+        if (removed.Count == 0 && added.Count == 0) return;
+        lines.Add(heading);
+        lines.AddRange(removed.Select(r => string.Format(CultureInfo.CurrentCulture, Strings.Remote_RowRemoved, r)));
+        lines.AddRange(added.Select(r => string.Format(CultureInfo.CurrentCulture, Strings.Remote_RowAdded, r)));
+    }
+
+    // A whole row as the file holds it, every cell, trailing blanks dropped.
+    static string RowText(ProfileFile f, int row) =>
+        row - 1 < f.Grid.Count ? string.Join(", ", f.Grid[row - 1].Reverse().SkipWhile(c => c.Trim().Length == 0).Reverse()) : "";
+
+    // Every non-blank row that is not a binding: headers, mode names, settings
+    // the parser does not read as a binding, comments.
+    static IEnumerable<string> OtherRows(ProfileFile f)
+    {
+        var bound = f.Document.Sheets.SelectMany(x => x.Bindings).Select(x => x.Row).ToHashSet();
+        for (int r = 1; r <= f.Grid.Count; r++)
+            if (!bound.Contains(r) && RowText(f, r) is { Length: > 0 } t) yield return t;
     }
 }

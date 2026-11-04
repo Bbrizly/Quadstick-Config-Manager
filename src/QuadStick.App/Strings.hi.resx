@@ -3813,7 +3813,7 @@
     <value>यह QuadStick प्रोफ़ाइल नहीं है।</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>सिर्फ़ नाम, सेटिंग या टिप्पणियाँ बदलीं।</value>
+    <value>सिर्फ़ पंक्तियों का क्रम या खाली पंक्तियाँ बदलीं।</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>प्रोफ़ाइल: {0}</value>
@@ -3883,5 +3883,8 @@
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>एक साथ बहुत ज़्यादा भेजा गया, इसलिए सेवा ने सत्र बंद कर दिया। नए कोड के लिए फिर से शुरू करें।</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>फ़ाइल की अन्य पंक्तियाँ</value>
   </data>
 </root>

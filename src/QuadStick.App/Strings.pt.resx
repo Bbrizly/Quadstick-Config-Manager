@@ -3813,7 +3813,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>Isto não é um perfil do QuadStick.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Só mudaram nomes, ajustes ou comentários.</value>
+    <value>Só mudou a ordem das linhas ou as linhas em branco.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Perfil: {0}</value>
@@ -3883,5 +3883,8 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>O serviço encerrou a sessão porque foi enviado muito de uma vez. Comece de novo para um novo código.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Outras linhas do arquivo</value>
   </data>
 </root>

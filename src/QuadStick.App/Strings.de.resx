@@ -3813,7 +3813,7 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
     <value>Das ist kein QuadStick-Profil.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Nur Namen, Einstellungen oder Kommentare wurden geändert.</value>
+    <value>Nur die Reihenfolge der Zeilen oder Leerzeilen hat sich geändert.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Profil: {0}</value>
@@ -3883,5 +3883,8 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>Der Sitzungsdienst hat die Sitzung beendet, weil zu viel auf einmal gesendet wurde. Starten Sie neu für einen neuen Code.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Andere Zeilen in der Datei</value>
   </data>
 </root>

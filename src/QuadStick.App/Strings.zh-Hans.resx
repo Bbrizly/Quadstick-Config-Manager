@@ -3813,7 +3813,7 @@
     <value>这不是 QuadStick 配置文件。</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>只改了名称、设置或备注。</value>
+    <value>只改了行的顺序或空行。</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>配置文件：{0}</value>
@@ -3883,5 +3883,8 @@
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>一次发送的内容太多，会话已被关闭。请重新开始获取新代码。</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>文件中的其他行</value>
   </data>
 </root>

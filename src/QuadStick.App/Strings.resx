@@ -3951,7 +3951,7 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
     <value>This is not a QuadStick profile.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Only names, settings or comments changed.</value>
+    <value>Only the order of rows or blank lines changed.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Profile: {0}</value>
@@ -4021,5 +4021,8 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>The session service closed the session for sending too much at once. Start again for a new code.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Other lines in the file</value>
   </data>
 </root>

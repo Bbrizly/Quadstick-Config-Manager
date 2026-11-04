@@ -735,6 +735,26 @@ public class RemoteSessionTests : IDisposable
             MainWindow.RemoteChanges(Profile, Profile + "\n"));
     }
 
+    [Fact]
+    public void A_change_outside_the_bindings_is_listed_beside_one_inside_them()
+    {
+        // The binding change is easy to see; the renamed header and the comment
+        // added past the inputs are the ones a summary could hide.
+        var sneaky = Changed.Replace("game.csv", "other.csv").Replace("square,normal,lip", "square,normal,lip,,,,,,,,note");
+        var lines = MainWindow.RemoteChanges(Profile, sneaky);
+        Assert.Contains(lines, l => l.Contains("cross"));
+        Assert.Contains(Strings.Remote_OtherLines, lines);
+        Assert.Contains(lines, l => l.Contains("other.csv") && l.StartsWith(Strings.Remote_RowAdded.Split('{')[0]));
+        Assert.Contains(lines, l => l.Contains("note") && l.StartsWith(Strings.Remote_RowAdded.Split('{')[0]));
+    }
+
+    [Fact]
+    public void Rows_that_only_moved_say_so()
+    {
+        var moved = "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\ncircle,normal,right_sip\nsquare,normal,lip\n";
+        Assert.Equal(new[] { Strings.Remote_OtherChanges }, MainWindow.RemoteChanges(Profile, moved));
+    }
+
     // ---- live ----
 
     static LiveState Sending(double x, params string[] outputs) =>

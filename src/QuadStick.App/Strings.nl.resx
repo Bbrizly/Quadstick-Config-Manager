@@ -3813,7 +3813,7 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
     <value>Dit is geen QuadStick-profiel.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Alleen namen, instellingen of opmerkingen zijn veranderd.</value>
+    <value>Alleen de volgorde van regels of lege regels is veranderd.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Profiel: {0}</value>
@@ -3883,5 +3883,8 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>De sessiedienst heeft de sessie gesloten omdat er te veel tegelijk werd verstuurd. Begin opnieuw voor een nieuwe code.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Andere regels in het bestand</value>
   </data>
 </root>

@@ -3813,7 +3813,7 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
     <value>QuadStick 프로필이 아닙니다.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>이름, 설정 또는 메모만 바뀌었습니다.</value>
+    <value>줄 순서나 빈 줄만 바뀌었습니다.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>프로필: {0}</value>
@@ -3883,5 +3883,8 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>한 번에 너무 많이 보내서 세션이 닫혔습니다. 새 코드로 다시 시작하세요.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>파일의 다른 줄</value>
   </data>
 </root>

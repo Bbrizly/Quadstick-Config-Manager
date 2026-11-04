@@ -3813,7 +3813,7 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
     <value>Questo non è un profilo QuadStick.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Sono cambiati solo nomi, impostazioni o commenti.</value>
+    <value>È cambiato solo l'ordine delle righe o le righe vuote.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Profilo: {0}</value>
@@ -3883,5 +3883,8 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>Il servizio ha chiuso la sessione perché è stato inviato troppo in una volta. Ricomincia per un nuovo codice.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Altre righe del file</value>
   </data>
 </root>

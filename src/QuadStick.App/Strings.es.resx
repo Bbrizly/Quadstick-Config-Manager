@@ -3813,7 +3813,7 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
     <value>Esto no es un perfil de QuadStick.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Solo cambiaron nombres, ajustes o comentarios.</value>
+    <value>Solo cambió el orden de las filas o las líneas en blanco.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Perfil: {0}</value>
@@ -3883,5 +3883,8 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>El servicio cerró la sesión porque se envió demasiado de una vez. Empieza de nuevo para obtener un código nuevo.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Otras líneas del archivo</value>
   </data>
 </root>

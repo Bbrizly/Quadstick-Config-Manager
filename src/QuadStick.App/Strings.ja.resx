@@ -3811,7 +3811,7 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
     <value>QuadStick のプロファイルではありません。</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>名前、設定、コメントだけが変わりました。</value>
+    <value>行の順序または空行だけが変わりました。</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>プロファイル：{0}</value>
@@ -3881,5 +3881,8 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>一度に送るデータが多すぎたため、セッションが閉じられました。新しいコードでもう一度始めてください。</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>ファイルのその他の行</value>
   </data>
 </root>

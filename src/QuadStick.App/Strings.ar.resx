@@ -3813,7 +3813,7 @@
     <value>هذا ليس ملف QuadStick.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>تغيرت الأسماء أو الإعدادات أو التعليقات فقط.</value>
+    <value>تغير ترتيب الأسطر أو الأسطر الفارغة فقط.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>الملف: {0}</value>
@@ -3883,5 +3883,8 @@
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>أغلقت الخدمة الجلسة لأن ما أُرسل دفعة واحدة كان كثيرًا. ابدأ من جديد لرمز جديد.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>أسطر أخرى في الملف</value>
   </data>
 </root>

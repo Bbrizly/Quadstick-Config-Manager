@@ -3813,7 +3813,7 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
     <value>To nie jest profil QuadStick.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Zmieniły się tylko nazwy, ustawienia lub komentarze.</value>
+    <value>Zmieniła się tylko kolejność wierszy lub puste wiersze.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Profil: {0}</value>
@@ -3883,5 +3883,8 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>Usługa zamknęła sesję, bo wysłano za dużo naraz. Zacznij od nowa, aby dostać nowy kod.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Inne wiersze w pliku</value>
   </data>
 </root>

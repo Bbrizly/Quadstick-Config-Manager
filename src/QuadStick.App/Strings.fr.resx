@@ -3813,7 +3813,7 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
     <value>Ce n'est pas un profil QuadStick.</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>Seuls des noms, réglages ou commentaires ont changé.</value>
+    <value>Seuls l'ordre des lignes ou des lignes vides ont changé.</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>Profil : {0}</value>
@@ -3883,5 +3883,8 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>Le service a fermé la session car trop de données ont été envoyées d'un coup. Recommencez pour un nouveau code.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Autres lignes du fichier</value>
   </data>
 </root>

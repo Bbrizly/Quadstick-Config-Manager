@@ -3951,7 +3951,7 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
     <value>[Thíš íš ñót á QúádŠtíçk prófílé. xxxxxxxxxxxx]</value>
   </data>
   <data name="Remote_OtherChanges" xml:space="preserve">
-    <value>[Óñlý ñáméš, šéttíñgš ór çómméñtš çháñgéd. xxxxxxxxxxxxxxxx]</value>
+    <value>[Óñlý thé órdér óf rówš ór bláñk líñéš çháñgéd. xxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Remote_ProposalFor" xml:space="preserve">
     <value>[Prófílé: {0} xxxx]</value>
@@ -4021,5 +4021,8 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   </data>
   <data name="Remote_TooMuch" xml:space="preserve">
     <value>[Thé šéššíóñ šérvíçé çlóšéd thé šéššíóñ fór šéñdíñg tóó múçh át óñçé. Štárt ágáíñ fór á ñéw çódé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>[Óthér líñéš íñ thé fílé xxxxxxxxx]</value>
   </data>
 </root>
