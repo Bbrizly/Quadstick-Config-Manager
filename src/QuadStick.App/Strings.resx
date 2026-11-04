@@ -3872,4 +3872,154 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>Could not save the reference sheet to {0}: {1}</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>Session service is busy, try again later.</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>What your clinician changed</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>Code doesn't match. Start again and read the new code to your clinician.</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>Your code is {0}</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>Your clinician is connected</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>Copied.</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>Copy code</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>Copy the code to send to your clinician</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>Copy link</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>Copy a link your clinician can open to join</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>Session ended</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>End the session with your clinician</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>No clinician joined within 10 minutes, so the session ended. Start again for a new code.</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>Your clinician can see your saved profile and what your QuadStick is sending, and can send you a change. Nothing is saved or installed unless you click. The session is end-to-end encrypted.</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>The new profile is saved. Install it on your QuadStick now? The file on the device is backed up first.</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>Install the new profile?</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>Keep mine</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>Keep my profile as it is</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>{0}: new mode</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>Mode {0} ({1})</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>{0}: removed</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>No changes.</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>This is not a QuadStick profile.</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>Only names, settings or comments changed.</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>Profile: {0}</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>Note from your clinician: {0}</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>Keep mine leaves your profile as it is. Use this saves the change, keeps a copy of your old file, then asks before installing.</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>Your clinician sent a change</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>Someone else is already using this code. Start again for a new code.</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>Added: {0}</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>Removed: {0}</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>Saved your clinician's change to {0}. Your old file is in the rescue folder.</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>Your clinician asked for your profile. Save it first, then they can ask again.</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>Share with my clinician</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>Start a session so your clinician can see this profile and suggest changes</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>Start again</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>Start a session and get a code for your clinician</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>Sessions end after 2 hours. Start again for a new code.</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>Couldn't reach the session service. Your network may block it. Try another network, or use Google Sheets sharing.</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>Use this</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>Use your clinician's change and save it</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>Waiting for your clinician</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>Your clinician is watching your inputs</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>Share with my clinician</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>Give your clinician this code:</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>The session service closed the session for sending too much at once. Start again for a new code.</value>
+  </data>
 </root>

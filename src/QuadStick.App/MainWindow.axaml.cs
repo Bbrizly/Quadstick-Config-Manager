@@ -451,7 +451,9 @@ public partial class MainWindow : Window
         var open = new MenuItem { Header = Strings.Main_OpenInGoogleSheets };
         AutomationProperties.SetName(open, Strings.Main_OpenThisProfileSGoogle);
         open.Click += async (_, _) => await OpenInSheetsAsync(path);
-        return new MenuFlyout { Items = { copy, open } };
+        var menu = new MenuFlyout { Items = { copy, open } };
+        if (path is null) menu.Items.Add(RemoteMenuItem()); // the editor's flyout only
+        return menu;
     }
 
     // Sharing needs backup on and connected. When off, the actions still show,
@@ -6550,9 +6552,7 @@ public partial class MainWindow : Window
     void UpdateLiveRows()
     {
         var now = new HashSet<int>();
-        if (_live is { OutputsUnderstood: true } state && CurrentSheet is { } sheet)
-            foreach (var b in sheet.Bindings)
-                if (state.Outputs.Contains(b.Output)) now.Add(b.Row);
+        foreach (var b in FiringBindings(_live, CurrentSheet)) now.Add(b.Row);
         if (now.SetEquals(_liveRows)) return;
         // Only the rows that changed, so holding a button does not repaint the
         // mode: a stick sends hundreds of reports a second.

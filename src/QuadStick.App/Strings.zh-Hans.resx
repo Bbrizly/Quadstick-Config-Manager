@@ -3734,4 +3734,154 @@
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>无法将参考表保存到 {0}：{1}</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>会话服务繁忙，请稍后再试。</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>你的治疗师改了什么</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>代码不匹配。请重新开始，并把新代码告诉治疗师。</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>你的代码是 {0}</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>治疗师已连接</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>正在连接...</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>已复制。</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>复制代码</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>复制要发给治疗师的代码</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>复制链接</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>复制治疗师可以打开加入的链接</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>结束</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>会话已结束</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>结束与治疗师的会话</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>10 分钟内没有人加入，会话已结束。请重新开始获取新代码。</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>治疗师可以看到你保存的配置文件和 QuadStick 正在发送的内容，并可以给你发送修改。除非你点击，否则不会保存或安装任何东西。会话是端到端加密的。</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>新配置文件已保存。现在安装到 QuadStick 吗？设备上的文件会先备份。</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>安装新配置文件？</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>保留我的</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>保持我的配置文件不变</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>{0}：新模式</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>模式 {0}（{1}）</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>{0}：已删除</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>没有更改。</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>这不是 QuadStick 配置文件。</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>只改了名称、设置或备注。</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>配置文件：{0}</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>治疗师的备注：{0}</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>保留我的会保持配置文件不变。使用这个会保存修改，保留旧文件的副本，然后在安装前询问。</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>治疗师发来了修改</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>其他人已在使用此代码。请重新开始获取新代码。</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>已添加：{0}</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>已删除：{0}</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>已将治疗师的修改保存到 {0}。旧文件在恢复文件夹中。</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>治疗师请求了你的配置文件。请先保存，然后对方可以再次请求。</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>与我的治疗师共享</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>开始会话，让治疗师查看此配置文件并提出修改</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>开始</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>重新开始</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>开始会话并获取给治疗师的代码</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>会话 2 小时后结束。请重新开始获取新代码。</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>无法连接会话服务。你的网络可能阻止了它。请换一个网络，或使用 Google 表格共享。</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>使用这个</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>使用治疗师的修改并保存</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>正在等待治疗师</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>治疗师正在查看你的输入</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>与我的治疗师共享</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>把这个代码告诉治疗师：</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>一次发送的内容太多，会话已被关闭。请重新开始获取新代码。</value>
+  </data>
 </root>

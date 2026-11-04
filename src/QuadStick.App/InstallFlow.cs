@@ -193,6 +193,7 @@ public partial class MainWindow
             close.Focus();
 
             Telemetry.Installed();
+            CountInstall();
             Status(string.Format(CultureInfo.CurrentCulture, Strings.Install_InstalledPathGetFileNameResultInstalledPath, Path.GetFileName(result.InstalledPath), root), StatusKind.Ready);
         }
         // Anything at all, not a named few. The panel on screen while the

@@ -3734,4 +3734,154 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>Não foi possível salvar a folha de referência em {0}: {1}</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>O serviço de sessão está ocupado, tente de novo mais tarde.</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>O que seu terapeuta mudou</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>O código não confere. Comece de novo e leia o novo código para seu terapeuta.</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>Seu código é {0}</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>Seu terapeuta está conectado</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>Conectando...</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>Copiado.</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>Copiar código</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>Copiar o código para enviar ao seu terapeuta</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>Copiar link</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>Copiar um link que seu terapeuta pode abrir para entrar</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>Encerrar</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>Sessão encerrada</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>Encerrar a sessão com seu terapeuta</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>Ninguém entrou em 10 minutos, então a sessão foi encerrada. Comece de novo para um novo código.</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>Seu terapeuta pode ver seu perfil salvo e o que seu QuadStick está enviando, e pode mandar uma mudança. Nada é salvo ou instalado sem o seu clique. A sessão é criptografada de ponta a ponta.</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>O novo perfil foi salvo. Instalar agora no seu QuadStick? O arquivo do dispositivo é copiado antes.</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>Instalar o novo perfil?</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>Manter o meu</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>Manter meu perfil como está</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>{0}: modo novo</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>Modo {0} ({1})</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>{0}: removido</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>Nenhuma mudança.</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>Isto não é um perfil do QuadStick.</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>Só mudaram nomes, ajustes ou comentários.</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>Perfil: {0}</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>Nota do seu terapeuta: {0}</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>Manter o meu deixa seu perfil como está. Usar este salva a mudança, guarda uma cópia do arquivo antigo e pergunta antes de instalar.</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>Seu terapeuta mandou uma mudança</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>Outra pessoa já está usando este código. Comece de novo para um novo código.</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>Adicionado: {0}</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>Removido: {0}</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>A mudança do seu terapeuta foi salva em {0}. Seu arquivo antigo está na pasta de resgate.</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>Seu terapeuta pediu seu perfil. Salve primeiro, depois ele pode pedir de novo.</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>Compartilhar com meu terapeuta</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>Iniciar uma sessão para seu terapeuta ver este perfil e sugerir mudanças</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>Iniciar</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>Iniciar de novo</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>Iniciar uma sessão e receber um código para seu terapeuta</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>As sessões terminam depois de 2 horas. Comece de novo para um novo código.</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>Não foi possível acessar o serviço de sessão. Sua rede pode estar bloqueando. Tente outra rede ou compartilhe pelo Google Sheets.</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>Usar este</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>Usar a mudança do seu terapeuta e salvar</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>Esperando seu terapeuta</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>Seu terapeuta está vendo suas entradas</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>Compartilhar com meu terapeuta</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>Passe este código para seu terapeuta:</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>O serviço encerrou a sessão porque foi enviado muito de uma vez. Comece de novo para um novo código.</value>
+  </data>
 </root>
