@@ -3992,4 +3992,7 @@
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>फ़ाइल की अन्य पंक्तियाँ</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>सत्र शुरू करें ताकि थेरेपिस्ट आपके QuadStick की प्रोफ़ाइल देखकर बदलाव सुझा सकें</value>
+  </data>
 </root>

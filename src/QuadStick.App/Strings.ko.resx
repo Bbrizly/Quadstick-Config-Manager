@@ -3992,4 +3992,7 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>파일의 다른 줄</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>치료사가 QuadStick의 프로필을 보고 변경을 제안할 수 있도록 세션 시작</value>
+  </data>
 </root>

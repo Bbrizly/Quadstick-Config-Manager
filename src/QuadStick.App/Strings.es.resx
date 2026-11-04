@@ -3992,4 +3992,7 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Otras líneas del archivo</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Iniciar una sesión para que tu terapeuta vea el perfil de tu QuadStick y sugiera cambios</value>
+  </data>
 </root>

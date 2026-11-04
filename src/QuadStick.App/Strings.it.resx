@@ -3992,4 +3992,7 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Altre righe del file</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Avvia una sessione perché il tuo terapista veda il profilo del tuo QuadStick e suggerisca modifiche</value>
+  </data>
 </root>

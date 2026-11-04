@@ -3992,4 +3992,7 @@ Os jogos que não usam SDL não verão o controle. Para esses, use o modo 7. Des
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Outras linhas do arquivo</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Iniciar uma sessão para seu terapeuta ver o perfil do seu QuadStick e sugerir mudanças</value>
+  </data>
 </root>

@@ -817,6 +817,8 @@ public partial class MainWindow : Window
         ShareButton.IsVisible = NetworkFeature.Enabled;
         HomeSheetsPanel.IsVisible = NetworkFeature.Enabled;
         HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
+        HomeRemoteButton.IsVisible = NetworkFeature.Enabled;
+        HomeRemoteButton.Click += (_, _) => ShowRemoteSession();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
         HomeDriveButton.Click += (_, _) => OnDriveButtonClick();

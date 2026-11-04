@@ -4130,4 +4130,7 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Other lines in the file</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Start a session so your clinician can see the profile on your QuadStick and suggest changes</value>
+  </data>
 </root>

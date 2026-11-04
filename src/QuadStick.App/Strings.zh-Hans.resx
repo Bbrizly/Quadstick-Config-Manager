@@ -3992,4 +3992,7 @@
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>文件中的其他行</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>开始会话，让治疗师查看 QuadStick 上的配置文件并提出修改</value>
+  </data>
 </root>

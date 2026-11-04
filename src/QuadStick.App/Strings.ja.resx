@@ -3990,4 +3990,7 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>ファイルのその他の行</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>セッションを始めて、担当者が QuadStick のプロファイルを見て変更を提案できるようにする</value>
+  </data>
 </root>

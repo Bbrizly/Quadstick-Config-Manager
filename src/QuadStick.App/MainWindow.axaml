@@ -153,6 +153,13 @@
                         AutomationProperties.Name="{x:Static app:Strings.Shell_ManageTheProfileFilesOn}">
                   <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconFiles}"/><TextBlock Text="{x:Static app:Strings.Shell_ManageFiles}"/></StackPanel>
                 </Button>
+                <!-- Drew's flow: plug the QuadStick in, the clinician sees it.
+                     With nothing open, a session serves the drive's default.csv. -->
+                <Button x:Name="HomeRemoteButton" VerticalAlignment="Center" Classes="quiet"
+                        FontSize="{DynamicResource SmallSize}"
+                        AutomationProperties.Name="{x:Static app:Strings.Remote_ShareFromHomeName}">
+                  <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconShare}"/><TextBlock Text="{x:Static app:Strings.Remote_ShareWithClinician}"/></StackPanel>
+                </Button>
               </StackPanel>
               <!-- Drew Redepenning, 2026-09-05: gamers read this list as the
                    modes. It is the files, and that correction is the only part

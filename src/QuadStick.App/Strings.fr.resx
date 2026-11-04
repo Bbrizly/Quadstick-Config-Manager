@@ -3992,4 +3992,7 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Autres lignes du fichier</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Démarrer une session pour que votre thérapeute voie le profil de votre QuadStick et suggère des changements</value>
+  </data>
 </root>

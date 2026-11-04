@@ -4130,4 +4130,7 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>[Óthér líñéš íñ thé fílé xxxxxxxxx]</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>[Štárt á šéššíóñ šó ýóúr çlíñíçíáñ çáñ šéé thé prófílé óñ ýóúr QúádŠtíçk áñd šúggéšt çháñgéš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
 </root>

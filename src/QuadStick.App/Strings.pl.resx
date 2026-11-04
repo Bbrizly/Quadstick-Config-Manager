@@ -3992,4 +3992,7 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Inne wiersze w pliku</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Rozpocznij sesję, aby terapeuta zobaczył profil z Twojego QuadSticka i zaproponował zmiany</value>
+  </data>
 </root>

@@ -3992,4 +3992,7 @@
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>أسطر أخرى في الملف</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>بدء جلسة ليرى معالجك الملف الموجود على QuadStick ويقترح تغييرات</value>
+  </data>
 </root>

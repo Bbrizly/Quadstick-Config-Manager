@@ -3992,4 +3992,7 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Andere regels in het bestand</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Een sessie starten zodat je therapeut het profiel op je QuadStick ziet en wijzigingen voorstelt</value>
+  </data>
 </root>

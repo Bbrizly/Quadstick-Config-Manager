@@ -896,6 +896,24 @@ public class RemoteSessionTests : IDisposable
         w.RemoteWindowForTest!.Close();
     }
 
+    [AvaloniaFact]
+    public void Home_starts_a_session_that_serves_the_plugged_in_quadstick()
+    {
+        var drive = Directory.CreateDirectory(Path.Combine(_dir, "QUADSTICK")).FullName;
+        File.WriteAllText(Path.Combine(drive, "default.csv"), Profile);
+        var w = NewWindow(() => new[] { drive });
+        var home = w.FindControl<Button>("HomeRemoteButton")!;
+        Assert.True(home.IsVisible);
+        Assert.Equal(Strings.Remote_ShareFromHomeName, AutomationProperties.GetName(home));
+        Ui.Click(home);
+        Assert.NotNull(w.RemoteWindowForTest);
+        var (served, error) = w.RemoteCurrentProfile();
+        Assert.Null(error);
+        Assert.Equal(Path.Combine(drive, "default.csv"), served!.Path);
+        Assert.True(served.FromDevice);
+        w.RemoteWindowForTest!.Close();
+    }
+
     static IEnumerable<Avalonia.Visual> Descendants(Avalonia.Visual v) =>
         Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(v);
 

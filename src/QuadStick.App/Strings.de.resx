@@ -3992,4 +3992,7 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   <data name="Remote_OtherLines" xml:space="preserve">
     <value>Andere Zeilen in der Datei</value>
   </data>
+  <data name="Remote_ShareFromHomeName" xml:space="preserve">
+    <value>Eine Sitzung starten, damit das Profil auf deinem QuadStick angesehen und Änderungen vorgeschlagen werden können</value>
+  </data>
 </root>
