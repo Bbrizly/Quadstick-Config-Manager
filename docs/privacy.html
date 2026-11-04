@@ -112,6 +112,10 @@
     <h2>What is never sent</h2>
     <p>Usage telemetry and crash reports do not include your profiles or their contents, file names or paths, Google account, tokens, sheet IDs, or share links. Text you type is not included in telemetry or crash reports. Feedback text is sent only when you press Send. A Sheets link is used only for the import you request; a profile you explicitly share as a Google Sheet is accessible to anyone who has its link, as described above. Your name, user name, and computer name are not sent in telemetry. A crash report carries the error type and the list of functions it happened in, never the error message, because a message can quote your own data back.</p>
 
+    <h2>Clinician sessions</h2>
+    <p>Optional, and only when you press Start under Share with my clinician. The app makes a code; you give it to your clinician. While the session runs, your clinician can ask for the profile you have open (its saved file and file name), see what your QuadStick is sending while they have live view on, and send you a change. Nothing is saved or installed unless you click.</p>
+    <p>Everything in a session is end-to-end encrypted with a key made from the code, on your computer and theirs. The frames pass through a relay run on Cloudflare, which sees only encrypted bytes and the IP address of each connection. The relay stores nothing and keeps nothing after the session closes. The app stores nothing new either, apart from a profile you choose to save.</p>
+
     <h2>The install ID</h2>
     <p>A random identifier made once and stored on your computer. It is not derived from anything about you or your machine, and it is only made when you first turn usage data on or press Send on a crash report. It exists so that a count of installs is a real number rather than a count of launches, and so a deletion request can find your data. You can see it and copy it in Settings, under Advanced.</p>
 

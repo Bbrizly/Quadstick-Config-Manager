@@ -36,12 +36,27 @@ report and asks. Nothing leaves your computer unless you press Send.
 
 ## What is never sent
 
-Your profiles and their contents. File names and file paths. Anything you type,
+Your profiles and their contents, except to a clinician in a session you start
+(below). File names and file paths. Anything you type,
 apart from the feedback box, which is only sent when you press Send on it. Your
 Google account, tokens, sheet IDs, or share links. Your name, your user name, or
 your computer's name. A crash report carries the type of error and the list of
 functions it happened in, never the error message, because a message can quote
 your own data back.
+
+## Clinician sessions
+
+Optional, and only when you press Start under Share with my clinician. The app
+makes a code; you give it to your clinician. While the session runs, your
+clinician can ask for the profile you have open (its saved file and file name),
+see what your QuadStick is sending while they have live view on, and send you a
+change. Nothing is saved or installed unless you click.
+
+Everything in a session is end-to-end encrypted with a key made from the code,
+on your computer and theirs. The frames pass through a relay run on Cloudflare,
+which sees only encrypted bytes and the IP address of each connection. The relay
+stores nothing and keeps nothing after the session closes. The app stores
+nothing new either, apart from a profile you choose to save.
 
 ## The install ID
 
