@@ -20,7 +20,7 @@ public static class RemoteCrypto
     public const int CodeLength = 12;
     const int NonceBytes = 12;
     const int TagBytes = 16;
-    const int Iterations = 200_000;
+    const int Iterations = 600_000;
 
     /// <summary>12 characters, 60 bits, from the OS random source.</summary>
     public static string NewCode()
@@ -49,14 +49,16 @@ public static class RemoteCrypto
         return sb.Length == CodeLength ? sb.ToString() : null;
     }
 
-    /// <summary>First 32 hex characters of SHA-256("qcm-room-v1:" + code).</summary>
-    public static string Room(string code) =>
-        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes("qcm-room-v1:" + code)))[..32].ToLowerInvariant();
-
-    /// <summary>PBKDF2-HMAC-SHA256, 200000 rounds, salted with the room.</summary>
-    public static byte[] Key(string code, string room) =>
-        Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(code), Encoding.UTF8.GetBytes("qcm-key-v1:" + room),
-            Iterations, HashAlgorithmName.SHA256, 32);
+    /// <summary>One PBKDF2-HMAC-SHA256 run, 600000 rounds, 48 bytes: the room is
+    /// the hex of the first 16, the AES-256 key the last 32. The room comes out
+    /// of the same slow function as the key, so a relay that sees room ids gets
+    /// no cheaper way to guess the code than an attacker holding a frame.</summary>
+    public static (string Room, byte[] Key) Derive(string code)
+    {
+        var bits = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(code), Encoding.UTF8.GetBytes("qcm-session-v2"),
+            Iterations, HashAlgorithmName.SHA256, 48);
+        return (Convert.ToHexString(bits, 0, 16).ToLowerInvariant(), bits[16..]);
+    }
 
     /// <summary>base64url(nonce || ciphertext || tag), AAD = room. The nonce is
     /// random unless a test passes one to reproduce a vector.</summary>

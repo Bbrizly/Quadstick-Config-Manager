@@ -9,8 +9,12 @@ Rejected: WebRTC P2P (needs STUN + TURN anyway for hospital UDP blocks, SIPSorce
 ## Pairing code
 - Patient QCM: Share with my clinician > Start. QCM makes a code: 12 chars from Crockford base32 (no I L O U), shown `K7QM-4XPA-9RTD` (60 bits). Also "Copy link": `https://clinic.bassamkamal.dev/#join=K7QM4XPA9RTD` (fragment never reaches a server).
 - Normalize: uppercase, strip `-` and spaces, map O->0, I/L->1.
-- `room` = first 32 hex chars of SHA-256("qcm-room-v1:" + code). The relay never sees the code.
-- `key` = PBKDF2-HMAC-SHA256(password = code, salt = "qcm-key-v1:" + room, 200000 iterations, 32 bytes). AES-256-GCM.
+- `bits` = PBKDF2-HMAC-SHA256(password = normalized code (utf8), salt = "qcm-session-v2" (utf8), 600000 iterations, 48 bytes). One run per session.
+- `room` = lowercase hex of bits[0..16) (32 hex chars). The relay never sees the code.
+- `key` = bits[16..48). AES-256-GCM.
+- Why one derivation (v2, 2026-11-04, after Codex review): v1 made the room a fast SHA-256 of the code, so anyone who saw room ids (the relay operator, a log) could brute-force the 60-bit code offline cheaply and then derive the key. The room must never be cheaper to compute than the key. Now both come out of the same slow PBKDF2 run, and the room bits and key bits are independent outputs of it.
+- Residual risk (Codex, 2026-11-04): the room, like any frame, still lets someone who records it test guesses offline. Each guess now costs 1.2M HMAC-SHA256 rounds (two PBKDF2 blocks), so the 60-bit space averages millions of GPU-years. A recorded session is protected by that cost alone (no forward secrecy). Accepted. Removing it fully needs a PAKE, which stdlib does not have.
+- Cost: about 0.1 to 1 s once per session (WebCrypto or .NET). Both apps show "Connecting..." while it runs, and QCM runs it off the UI thread.
 - Both sides: WebCrypto (browser), `Rfc2898DeriveBytes.Pbkdf2` + `AesGcm` (.NET). Stdlib only.
 
 ## Relay rules (Worker + DO)

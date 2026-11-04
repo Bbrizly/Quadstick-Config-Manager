@@ -80,8 +80,13 @@ public class RemoteSessionTests : IDisposable
     // The other end, with its own seq.
     sealed class Clinician(string code, string from = "clinician")
     {
-        readonly string _room = RemoteCrypto.Room(code);
-        readonly byte[] _key = RemoteCrypto.Key(code, RemoteCrypto.Room(code));
+        static readonly Dictionary<string, (string Room, byte[] Key)> Derived = [];
+        static (string Room, byte[] Key) Of(string code)
+        {
+            lock (Derived) return Derived.TryGetValue(code, out var d) ? d : Derived[code] = RemoteCrypto.Derive(code);
+        }
+        readonly string _room = Of(code).Room;
+        readonly byte[] _key = Of(code).Key;
         long _seq;
 
         public string Frame(string type, JsonObject? body = null, long? seq = null)
@@ -127,11 +132,20 @@ public class RemoteSessionTests : IDisposable
         return path;
     }
 
+    // RunAsync, then wait out the key derivation (600000 PBKDF2 rounds, on a
+    // worker thread) so the session is past Connecting.
+    static async Task<Task> Started(RemoteSession s)
+    {
+        var run = s.RunAsync(new Uri("wss://relay.test"));
+        for (int i = 0; i < 500 && s.Status == RemoteStatus.Connecting && !run.IsCompleted; i++) await Task.Delay(10);
+        return run;
+    }
+
     static async Task<Rig> Connected(MainWindow? window = null)
     {
         var r = new Rig { Window = window ?? NewWindow() };
         r.Session = new RemoteSession(r.Window, r.Socket, Code);
-        r.Run = r.Session.RunAsync(new Uri("wss://relay.test"));
+        r.Run = await Started(r.Session);
         await r.Say("hello", new JsonObject { ["role"] = "clinician", ["app"] = "Clinic", ["version"] = "1" });
         Assert.Equal(RemoteStatus.Connected, r.Session.Status);
         return r;
@@ -156,8 +170,8 @@ public class RemoteSessionTests : IDisposable
         Assert.Equal(2, all.Count);
         foreach (var v in all)
         {
-            Assert.Equal(v.Room, RemoteCrypto.Room(v.Code));
-            var key = RemoteCrypto.Key(v.Code, v.Room);
+            var (room, key) = RemoteCrypto.Derive(v.Code);
+            Assert.Equal(v.Room, room);
             Assert.Equal(v.KeyHex, Convert.ToHexString(key).ToLowerInvariant());
             Assert.Equal(v.Plaintext, RemoteCrypto.Open(key, v.Room, v.Frame));
             Assert.Equal(v.Frame, RemoteCrypto.Seal(key, v.Room, v.Plaintext, Convert.FromHexString(v.NonceHex)));
@@ -168,9 +182,9 @@ public class RemoteSessionTests : IDisposable
     public void A_frame_does_not_open_with_the_wrong_room_key_or_a_flipped_bit()
     {
         var v = Vectors().First();
-        var key = RemoteCrypto.Key(v.Code, v.Room);
+        var key = RemoteCrypto.Derive(v.Code).Key;
         Assert.Null(RemoteCrypto.Open(key, "00000000000000000000000000000000", v.Frame));
-        Assert.Null(RemoteCrypto.Open(RemoteCrypto.Key("0123456789AB", v.Room), v.Room, v.Frame));
+        Assert.Null(RemoteCrypto.Open(RemoteCrypto.Derive("0123456789AB").Key, v.Room, v.Frame));
         var flipped = (v.Frame[20] == 'A' ? 'B' : 'A') + "";
         Assert.Null(RemoteCrypto.Open(key, v.Room, v.Frame[..20] + flipped + v.Frame[21..]));
         Assert.Null(RemoteCrypto.Open(key, v.Room, "not base64 !"));
@@ -224,9 +238,9 @@ public class RemoteSessionTests : IDisposable
     {
         var r = new Rig { Window = NewWindow() };
         r.Session = new RemoteSession(r.Window, r.Socket, Code);
-        r.Run = r.Session.RunAsync(new Uri("wss://relay.test"));
+        r.Run = await Started(r.Session);
 
-        Assert.Equal(new Uri("wss://relay.test/r/fd206258c608e3132f9d4606dd47bd13"), r.Socket.ConnectedTo);
+        Assert.Equal(new Uri("wss://relay.test/r/b8777f0e6940d1f2ecd52293638b8239"), r.Socket.ConnectedTo);
         Assert.Equal(RemoteStatus.Waiting, r.Session.Status);
         Assert.Empty(r.Sent); // the relay would drop a hello sent to nobody
         await r.Session.HandleFrameAsync("{\"relay\":\"peer-joined\"}");
@@ -244,7 +258,7 @@ public class RemoteSessionTests : IDisposable
     {
         var r = new Rig { Window = NewWindow() };
         r.Session = new RemoteSession(r.Window, r.Socket, Code);
-        r.Run = r.Session.RunAsync(new Uri("wss://relay.test"));
+        r.Run = await Started(r.Session);
         await r.Session.HandleFrameAsync("{\"relay\":\"peer-joined\"}");
         Assert.Equal(RemoteStatus.Waiting, r.Session.Status); // not until their hello decrypts
         await r.Say("hello", new JsonObject { ["role"] = "clinician" });
@@ -266,7 +280,7 @@ public class RemoteSessionTests : IDisposable
     {
         var r = new Rig { Window = NewWindow() };
         r.Session = new RemoteSession(r.Window, r.Socket, Code);
-        r.Run = r.Session.RunAsync(new Uri("wss://relay.test"));
+        r.Run = await Started(r.Session);
         await r.Say("hello", new JsonObject { ["role"] = "patient" });
         Assert.Equal(RemoteStatus.Waiting, r.Session.Status);
     }
@@ -303,7 +317,7 @@ public class RemoteSessionTests : IDisposable
     {
         var r = new Rig { Window = NewWindow() };
         r.Session = new RemoteSession(r.Window, r.Socket, Code);
-        r.Run = r.Session.RunAsync(new Uri("wss://relay.test"));
+        r.Run = await Started(r.Session);
         await r.Say("profile.get", new JsonObject { ["id"] = "a" });
         Assert.Empty(r.Sent);
     }
@@ -353,7 +367,7 @@ public class RemoteSessionTests : IDisposable
     {
         var r = new Rig { Window = NewWindow() };
         r.Session = new RemoteSession(r.Window, r.Socket, Code);
-        r.Run = r.Session.RunAsync(new Uri("wss://relay.test"));
+        r.Run = await Started(r.Session);
         r.Socket.CloseCode = code;
         r.Socket.Incoming.Writer.TryWrite(null);
         await r.Run;
@@ -833,6 +847,8 @@ public class RemoteSessionTests : IDisposable
         Ui.Click(win.StartButton);
 
         var s = win.Session!;
+        Assert.Equal(Strings.Remote_Connecting, win.StatusText); // while the key is derived
+        for (int i = 0; i < 500 && s.Status == RemoteStatus.Connecting; i++) await Task.Delay(10);
         Assert.Equal(Strings.Remote_Waiting, win.StatusText);
         var code = FindText(win, RemoteCrypto.Display(s.Code));
         Assert.Contains(string.Join(" ", s.Code.ToCharArray()), AutomationProperties.GetName(code));

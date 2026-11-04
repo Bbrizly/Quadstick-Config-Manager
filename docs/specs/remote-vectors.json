@@ -1,21 +1,21 @@
 {
-  "about": "qcm remote session v1 crypto vectors. room = first 32 hex of SHA-256(\"qcm-room-v1:\"+code). key = PBKDF2-SHA256(code, \"qcm-key-v1:\"+room, 200000, 32). frame = base64url(nonce12 || AES-256-GCM(ciphertext||tag16)), AAD = room (utf8).",
+  "about": "qcm remote session v2 crypto vectors. bits = PBKDF2-HMAC-SHA256(password = code (utf8), salt = \"qcm-session-v2\" (utf8), 600000 iterations, 48 bytes). room = lowercase hex of bits[0..16). key = bits[16..48), AES-256-GCM. frame = base64url(nonce12 || AES-256-GCM(ciphertext||tag16)), AAD = room (utf8).",
   "vectors": [
     {
       "code": "K7QM4XPA9RTD",
-      "room": "fd206258c608e3132f9d4606dd47bd13",
-      "keyHex": "85f5c6ff34a623602fa4d90fd9fbd1bce5b6af2a0c278029480aca7de55ed3d3",
+      "room": "b8777f0e6940d1f2ecd52293638b8239",
+      "keyHex": "eb5c4d122de1107c8f5b5f44d529a2fed148749a78ad2ce431b75bab7a31dd77",
       "nonceHex": "000102030405060708090a0b",
       "plaintext": "{\"v\":1,\"seq\":1,\"type\":\"hello\",\"role\":\"patient\",\"app\":\"QCM\",\"version\":\"1.9.0\"}",
-      "frame": "AAECAwQFBgcICQoLV5rV0quPaTqtPPxjeEHCAQD2bfmCbcCr9xdiCtAeOO_06ec_r2VRMlt9ZX9MYmrmpwZELprSkd_0or6kdM03O2ePOPYyUuXvMakfpd1eHMgaOf2Yq612zEiUbqEt"
+      "frame": "AAECAwQFBgcICQoLQLkb-5VHx3IFQ40fL3bVG2xng8k1nvlGkHQ8ZQ8fghbZGP_H8DNeHrmf7BzFRek5j2CNjg-5B96XB0dSz4OSZs5TCgUWKZ24wlJ1A3c0f6SQS7lgNyN7PwIc10Uu"
     },
     {
       "code": "0123456789AB",
-      "room": "2a00b05f32230b8571cf3b04f9bad8bb",
-      "keyHex": "d78d1390b3c704c5b4bceaa388d78a580542448690ff843211dec0fdf3238ac7",
+      "room": "1952dca53f9c9869c302188dced8200a",
+      "keyHex": "4b464e63b56237aa763e69f49912db2124e578ca440a1502d0299e6e4efa919e",
       "nonceHex": "ffeeddccbbaa998877665544",
       "plaintext": "{\"v\":1,\"seq\":2,\"type\":\"profile.get\",\"id\":\"a1\"}",
-      "frame": "_-7dzLuqmYh3ZlVEEfZQtxB-OIlYUljwRt339c24HFCOtzn6kaP1u9ehvPAk-YzHxcx9hs7uR2GwH64ZToZuja5wj_sXMLoAN7A"
+      "frame": "_-7dzLuqmYh3ZlVEuGuZ4qUUQu9BjGn4ROniyv7liPMBmk5wT3OG5RVFHgDWhmH3fPp-8Dvh4Hs0OnkwfrzgoKbibW89nwLSRqQ"
     }
   ]
 }

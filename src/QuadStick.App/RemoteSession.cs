@@ -107,7 +107,8 @@ public sealed class RemoteSession
 
     readonly MainWindow _owner;
     readonly IRemoteSocket _socket;
-    readonly byte[] _key;
+    byte[] _key = [];
+    readonly Task _derived;
     readonly CancellationTokenSource _stop = new();
     DispatcherTimer? _liveTimer;
 
@@ -122,7 +123,8 @@ public sealed class RemoteSession
     long _liveStartedAt;
 
     public string Code { get; }
-    public string Room { get; }
+    /// <summary>Empty until RunAsync has derived it.</summary>
+    public string Room { get; private set; } = "";
     public RemoteStatus Status { get; private set; } = RemoteStatus.Connecting;
     /// <summary>Why the session ended, in words for the patient. Null while it runs.</summary>
     public string? EndReason { get; private set; }
@@ -146,8 +148,8 @@ public sealed class RemoteSession
         _owner = owner;
         _socket = socket;
         Code = code;
-        Room = RemoteCrypto.Room(code);
-        _key = RemoteCrypto.Key(code, Room);
+        // 600000 PBKDF2 rounds: off the UI thread, while the window says Connecting.
+        _derived = DeriveAsync(code);
         LiveSource = () => owner.LiveReading;
         LiveSheet = () => owner.RemoteLiveSheet;
     }
@@ -165,6 +167,8 @@ public sealed class RemoteSession
         return new Uri(DefaultRelay);
     }
 
+    async Task DeriveAsync(string code) => (Room, _key) = await Task.Run(() => RemoteCrypto.Derive(code));
+
     public static string JoinLink(string code) => "https://clinic.bassamkamal.dev/#join=" + code;
 
     /// <summary>Connect, say hello, and read frames until the session ends.</summary>
@@ -172,6 +176,7 @@ public sealed class RemoteSession
     {
         try
         {
+            await _derived;
             using (var timeout = CancellationTokenSource.CreateLinkedTokenSource(_stop.Token))
             {
                 timeout.CancelAfter(ConnectTimeout);
@@ -215,6 +220,7 @@ public sealed class RemoteSession
     /// directly with frames they sealed themselves.</summary>
     internal async Task HandleFrameAsync(string frame)
     {
+        await _derived;
         if (Status == RemoteStatus.Ended) return;
 
         // The relay's own two frames are the only plaintext ones.

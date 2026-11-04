@@ -15,9 +15,9 @@ the session service". Pick one before uploading:
 - **Hide it behind a setting** for this build and ship sessions in 1.9.1. Not
   done in code yet; it is a small change if chosen.
 
-Also check before submitting with sessions on: the export compliance answer
-(sessions add AES-GCM end to end encryption, not only HTTPS) and whether the
-App Privacy table needs a line for profile text passing through the relay.
+Also check before submitting with sessions on: whether the App Privacy table
+needs a line for profile text passing through the relay. (Export compliance
+is resolved, gate 6.)
 
 ## Gates, before either upload
 
@@ -70,13 +70,17 @@ App Privacy table needs a line for profile text passing through the relay.
    version: Yes, data is collected. Device ID, Product Interaction, Crash
    Data, Health (strength test), Customer Support. All not linked to the
    user, none used for tracking. Not "Data Not Collected".
-6. **Export compliance**: before sessions, encryption was only HTTPS through
-   the OS: exempt. `scripts/store-mac.sh` answers
-   `export_compliance_uses_encryption: false` and `make-macos-app.sh` writes
-   `ITSAppUsesNonExemptEncryption` false. Sessions add AES-GCM (.NET
-   `AesGcm`, PBKDF2), so this is a blocker until answered: if it is not
-   "encryption within the OS" exempt, flip both lines and answer the
-   questionnaire. Unverified which way it goes (Codex review 2026-11-04).
+6. **Export compliance**: resolved 2026-11-04. Session encryption uses .NET
+   `AesGcm`, which on macOS since .NET 8 calls Apple CryptoKit
+   (https://learn.microsoft.com/en-us/dotnet/standard/security/cross-platform-cryptography),
+   and PBKDF2 from the OS. Transport is OS TLS. Apple: encryption limited to
+   that within the Apple operating system needs no documentation
+   (https://developer.apple.com/help/app-store-connect/reference/app-information/export-compliance-documentation-for-encryption/).
+   Windows: .NET uses CNG, the OS crypto. If App Store Connect asks, answer:
+   uses encryption, only encryption built into the OS. Not legal advice; if
+   Apple questions it, answer their questionnaire honestly.
+   `scripts/store-mac.sh` keeps `export_compliance_uses_encryption: false`
+   and `make-macos-app.sh` keeps `ITSAppUsesNonExemptEncryption` false.
 7. **Review notes** (paste):
    "This is an accessibility tool for the QuadStick, a sip and puff game
    controller for quadriplegic players. It edits profile files. You do not
