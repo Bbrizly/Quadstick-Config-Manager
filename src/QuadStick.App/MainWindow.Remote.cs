@@ -143,8 +143,8 @@ public partial class MainWindow
         return (null, RemoteCrypto.Rev(csv), installed);
     }
 
-    // ponytail: a minimal change list. Swap to the follow-link diff dialog
-    // (ProfileChanges.cs on branch follow-link) once that is merged to main.
+    // Not the follow-link dialog: ProfileChanges gives counts per mode, and a
+    // clinician's change must show every changed line before it is accepted.
     async Task<bool> ShowRemoteProposalAsync(RemoteProposal p)
     {
         var keep = new Button { Content = Strings.Remote_Keep, MinWidth = 140, IsDefault = true, IsCancel = true };
