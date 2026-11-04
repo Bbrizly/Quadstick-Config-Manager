@@ -2,6 +2,22 @@
 
 Both stores, drag and drop. Written 2026-11-04 on branch `finalize-1.9`.
 
+## Decision first: the clinician button
+
+1.9.0 has "Share with my clinician" (editor Share menu and Home). It cannot
+connect until the relay (`clinic-remote/relay`) is deployed to
+`wss://relay.bassamkamal.dev`. A reviewer who presses it sees "Couldn't reach
+the session service". Pick one before uploading:
+
+- **Deploy the relay first, then submit (recommended).** The button works for
+  the reviewer, and the release notes and listing can say so.
+- **Hide it behind a setting** for this build and ship sessions in 1.9.1. Not
+  done in code yet; it is a small change if chosen.
+
+Also check before submitting with sessions on: the export compliance answer
+(sessions add AES-GCM end to end encryption, not only HTTPS) and whether the
+App Privacy table needs a line for profile text passing through the relay.
+
 ## Gates, before either upload
 
 1. **Name (APPSTORE.md "HARD GATE")**: cleared. The app is live as
@@ -42,16 +58,22 @@ Both stores, drag and drop. Written 2026-11-04 on branch `finalize-1.9`.
      changes. Nothing is replaced until you say yes. Send a profile and
      measure sip and puff over the Bluetooth or cable console. Fixes for the
      Xbox controller bridge and clearer warnings."
+     Add only once the relay is deployed: "Share with my clinician: a
+     clinician can see your profile live and suggest changes, which you
+     accept or decline."
    - **Promotional text**: "Edit, check and install QuadStick profiles
      safely, with backups every time."
    - **Description**: keep the current one. If it is rewritten, it must not
-     mention clinician remote sessions: that is not shipped.
+     mention clinician remote sessions until the relay is deployed.
 5. **App Privacy**: the table in `APPSTORE.md` under "App Privacy". Short
    version: Yes, data is collected. Device ID, Product Interaction, Crash
    Data, Health (strength test), Customer Support. All not linked to the
    user, none used for tracking. Not "Data Not Collected".
-6. **Export compliance**: uses encryption only through the OS (HTTPS): exempt.
-   `store-mac.sh` already answers `uses_encryption: false`.
+6. **Export compliance**: before sessions, encryption was only HTTPS through
+   the OS: exempt. `scripts/store-mac.sh` answers
+   `export_compliance_uses_encryption: false` and `make-macos-app.sh` writes
+   `ITSAppUsesNonExemptEncryption` false. Sessions add AES-GCM; recheck both
+   (see the decision above).
 7. **Review notes** (paste):
    "This is an accessibility tool for the QuadStick, a sip and puff game
    controller for quadriplegic players. It edits profile files. You do not
@@ -59,6 +81,10 @@ Both stores, drag and drop. Written 2026-11-04 on branch `finalize-1.9`.
    QuadStick and choose any empty folder. The app writes the profile there
    and makes a backup. Google Sheets import works with any shared sheet link.
    The console page needs a QuadStick and shows a plain message without one."
+   If the relay is deployed, add: "Share with my clinician starts an end to
+   end encrypted session with a clinician's web page. To try it, open the
+   join link the app shows (https://clinic.bassamkamal.dev/#join=<code>) in
+   a browser. Nothing is written unless the patient presses Use this."
 8. Submit for review.
 
 ## Microsoft Store
