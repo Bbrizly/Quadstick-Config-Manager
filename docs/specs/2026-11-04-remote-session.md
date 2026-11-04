@@ -24,7 +24,7 @@ Rejected: WebRTC P2P (needs STUN + TURN anyway for hospital UDP blocks, SIPSorce
 ## Frame format
 Text frame = base64url(nonce 12 bytes || AES-GCM ciphertext+tag). AAD = room. Plaintext is JSON:
 `{"v":1,"seq":<int, per-sender, starts 1, strictly increasing>,"type":"...", ...}`
-Receiver drops a frame whose seq <= last seen from that peer (replay). Decryption failure: drop and count; 3 failures close the session ("Code doesn't match").
+Every plaintext also carries `"from":"clinician"` (Clinic) or `"from":"patient"` (QCM). Receiver drops a frame whose seq <= last seen from that peer (replay). Decryption failure: drop and count; 3 failures close the session ("Code doesn't match").
 
 ## Messages
 - `hello {role:"patient"|"clinician", app, version}`. Both send first. Session is "connected" when each side has decrypted the other's hello. QCM shows "Your clinician is connected" + End button.
@@ -33,6 +33,7 @@ Receiver drops a frame whose seq <= last seen from that peer (replay). Decryptio
 - `live.start` / `live.stop` (clinician). While started and a QuadStick is connected, patient sends `live {t, lit:[{input, output}], buttons, axes}` ONLY on change, coalesced to at most 10 per second. `lit` reuses QCM's practice-light attribution (which profile rows are firing). Patient side shows a visible "Your clinician is watching your inputs" indicator while live is on.
 - `bye {}` either side, then close. Closing the QCM window or End also ends.
 - Unknown types ignored.
+- Reflection guard: a receiver drops, and counts as a bad frame (toward the 3 that close the session), any message whose `from` is missing or equals its own role. Why: one key and one AAD serve both directions, so a frame the relay sends back to its sender would decrypt and look valid (a clinician's `bye` returned to the clinician, a patient's `profile` returned to the patient). `from` inside the ciphertext is authenticated, so the relay cannot change it. The vectors are unchanged: they test the crypto only.
 
 ## Reconnect
 No resume. Dropped socket = session over; patient clicks Start again for a new code. Pending proposal dialogs stay open locally but can't reply. Never auto-resend.
@@ -51,3 +52,13 @@ No resume. Dropped socket = session over; patient clicks Start again for a new c
 - QCM PRIVACY.md: add "Clinician sessions" section: optional, end-to-end encrypted, relay by Cloudflare sees only encrypted bytes and the connection's IP address, nothing stored.
 - Clinic: Tauri `network` on for relay host only, CSP `connect-src 'self' wss://relay.bassamkamal.dev`. PRIVACY.md updated. Reopens spec decision 7.
 - Store listing copy does not mention sessions until the relay is deployed.
+
+## Implementation notes (Clinic, 2026-11-04)
+- Control frames: when the second socket joins, the relay sends `{"relay":"peer-joined"}` to both. Each side sends its hello on that frame (or in answer to the other's hello, if that came first). A hello sent before the peer is there is dropped by the relay, so QCM must also send hello on peer-joined.
+- A room that has had two peers takes no new peer (4001) until it is empty: no resume.
+- The 2 hour cap counts from the first join.
+- Busy: a browser cannot read the HTTP status of a failed WebSocket upgrade, so a 503 looks like any failed connection. When the Worker runs but the room's Durable Object cannot be reached, the relay accepts the socket and closes it with 1013 ("busy"); apps show the busy sentence for 1013. A Worker over its own free-tier limit still reads as "Couldn't reach the session service".
+- Binary frames are closed with 1003. Frames are text only.
+- The clinician refuses to send a frame over 64 KB (the relay would close the session) and says the profile is too big; Google Sheets sharing is the fallback.
+- Clinic: `HostConfig.network` stays `false` (native commands only). The page's WebSocket is allowed by CSP `connect-src wss://relay.bassamkamal.dev`; the Tauri dev CSP also allows `ws://localhost:8787` for `wrangler dev`. `pnpm dev` (the website on this machine) carries no CSP; only deployed web builds get head.html, which allows the wss host alone (`CLINIC_RELAY=ws://localhost:8787 pnpm dev`).
+- Relay admission: at most 20 new sockets a minute per IP address (Workers rate limiting binding, per Cloudflare location); past it the socket is closed 1013 (busy).
