@@ -1193,7 +1193,7 @@ La plupart des profils n'ont qu'un seul mode, cette liste n'affiche donc souvent
     <value>La sauvegarde Google Drive n'est pas disponible dans cette version.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google a renvoyé une page web au lieu du profil. La feuille n'est probablement pas partagée publiquement (Fichier &gt; Partager &gt; Tous les utilisateurs disposant du lien).</value>
+    <value>Cette feuille n'est pas partagée, l'app ne peut donc pas la lire. Dans Google Sheets, choisissez Partager, puis sous Accès général, Tous les utilisateurs qui ont le lien, en tant que Lecteur.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Maintenez pour activer. La sortie reste active seulement tant que votre entrée est active.</value>
@@ -3814,5 +3814,29 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Votre QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>Ce profil a changé dans Google Sheets.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Voir la mise à jour</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Pas maintenant</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Moins de modes : la feuille en a {0}, votre copie en a {1}. Utiliser la feuille retire les autres.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>La feuille contient des erreurs : elle ne peut pas être utilisée avant leur correction dans Google Sheets :</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Avertissements dans la feuille :</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Vérifier automatiquement si les feuilles liées ont changé</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Pour un profil qui suit un lien Google Sheets, l'app regarde la feuille quand vous ouvrez le profil, quand vous revenez à la fenêtre, et toutes les 5 minutes tant que la fenêtre est au premier plan. Elle vous prévient seulement. Rien n'est remplacé avant votre accord.</value>
   </data>
 </root>

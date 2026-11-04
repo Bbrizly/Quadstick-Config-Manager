@@ -1193,7 +1193,7 @@ La mayoría de los perfiles tienen un solo modo, así que esta lista suele mostr
     <value>La copia de seguridad en Google Drive no está disponible en esta versión.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google devolvió una página web en lugar del perfil. Probablemente la hoja no está compartida públicamente (Archivo &gt; Compartir &gt; Cualquier persona con el enlace).</value>
+    <value>Esta hoja no está compartida, así que la app no puede leerla. En Hojas de cálculo de Google, elige Compartir y, en Acceso general, Cualquier persona que tenga el enlace, como Lector.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Mantenga para activar. La salida sigue activa solo mientras su entrada esté activa.</value>
@@ -3814,5 +3814,29 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Tu QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>Este perfil cambió en Hojas de cálculo de Google.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Revisar la actualización</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Ahora no</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Menos modos: la hoja tiene {0} y tu copia tiene {1}. Usar la hoja quita los demás.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>La hoja tiene errores y no se puede usar hasta corregirlos en Hojas de cálculo de Google:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Advertencias en la hoja:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Comprobar automáticamente si cambian las hojas vinculadas</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Para un perfil que sigue un enlace de Hojas de cálculo de Google, la app mira la hoja al abrir el perfil, al volver a la ventana y cada 5 minutos mientras la ventana está delante. Solo te avisa. Nada se reemplaza hasta que digas que sí.</value>
   </data>
 </root>

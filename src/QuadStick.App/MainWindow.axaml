@@ -233,6 +233,22 @@
     <!-- ============ EDITOR ============ -->
     <DockPanel x:Name="EditorView" IsVisible="False">
 
+      <!-- The followed sheet changed. Said, never acted on: Review opens the
+           same question "Get the latest" asks, and nothing is replaced without
+           a yes there. -->
+      <Border x:Name="FollowBannerBar" DockPanel.Dock="Top" Classes="hostbanner" IsVisible="False">
+        <WrapPanel>
+          <TextBlock x:Name="FollowBannerText" Classes="hostbannertext" TextWrapping="Wrap"
+                     VerticalAlignment="Center" Margin="0,0,12,0"
+                     AutomationProperties.LiveSetting="Polite"
+                     Text="{x:Static app:Strings.Follow_BannerText}"/>
+          <Button x:Name="FollowBannerReview" Classes="command" Margin="0,0,8,0"
+                  Content="{x:Static app:Strings.Follow_BannerReview}"/>
+          <Button x:Name="FollowBannerDismiss" Classes="command quiet"
+                  Content="{x:Static app:Strings.Follow_BannerDismiss}"/>
+        </WrapPanel>
+      </Border>
+
       <!-- The command band. Wrapping, not a Grid: interface scale divides the
            width the layout actually gets (ScaleContent.Width = window / scale),
            so a 1180px window at 200% lays out in 590 logical px. A row that

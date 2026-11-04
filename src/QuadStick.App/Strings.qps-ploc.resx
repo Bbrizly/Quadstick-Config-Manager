@@ -1217,7 +1217,7 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
     <value>[Góóglé Drívé báçkúp íš ñót áváíláblé íñ thíš búíld. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>[Góóglé rétúrñéd á wéb págé íñštéád óf thé prófílé. Thé šhéét íš próbáblý ñót šháréd públíçlý (Fílé &gt; Šháré &gt; Áñýóñé wíth thé líñk). xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thíš šhéét íš ñót šháréd, šó thé ápp çáññót réád ít. Íñ Góóglé Šhéétš, çhóóšé Šháré, théñ úñdér Géñérál áççéšš píçk Áñýóñé wíth thé líñk, áš Víéwér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>[Hóld tó áçtíváté. Thé óútpút štáýš óñ óñlý whílé ýóúr íñpút íš áçtívé. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -2273,7 +2273,7 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
     <value>[Módéš {0} štíll hávé ñó wáý tó šwítçh áñd wéré léft áš théý wéré, béçáúšé théír šídé túbé íš íñ úšé ór théý hávé ñó rówš tó špáré. Áñýóñé whó réáçhéš óñé štáýš théré úñtíl ýóú ádd á wáý óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Modes_PushedPastLimit" xml:space="preserve">
-    <value>[Thé módé thát wáš ñúmbér 16 íš ñów ñúmbér 17, pášt thé dévíçé'š 16 módéš, šó ítš çóñtrólš áré ñót réád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé módé thát wáš ñúmbér 16 íš ñów ñúmbér 17, pášt thé dévíçé'š 16 módéš, šó ítš çóñtrólš áré ñót réád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Modes_ModeCopied" xml:space="preserve">
     <value>[Módé çópíéd. xxxx]</value>
@@ -3819,7 +3819,7 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
     <value>[Máké á príñtáblé šhéét óf thíš prófílé'š çóñtrólš íñ évérý módé. Ít ópéñš íñ ýóúr brówšér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Sheet_ModePastLimit" xml:space="preserve">
-    <value>[{0} (pášt thé dévíçé'š 16 módéš, ítš çóñtrólš áré ñót réád) xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[{0} (pášt thé dévíçé'š 16 módéš, ítš çóñtrólš áré ñót réád) xxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Sheet_SaveTitle" xml:space="preserve">
     <value>[Šávé référéñçé šhéét xxxxxxxx]</value>
@@ -3952,5 +3952,29 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>[Ýóúr QúádŠtíçk xxxxx]</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>[Thíš prófílé çháñgéd íñ Góóglé Šhéétš. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>[Révíéw thé úpdáté xxxxxx]</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>[Ñót ñów xx]</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>[Féwér módéš: thé šhéét háš {0}, ýóúr çópý háš {1}. Úšíñg thé šhéét rémóvéš thé óthérš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>[Thé šhéét háš érrórš, šó ít çáññót bé úšéd úñtíl théý áré fíxéd íñ Góóglé Šhéétš: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>[Wárñíñgš íñ thé šhéét: xxxxxxxx]</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>[Çhéçk líñkéd šhéétš fór çháñgéš áútómátíçállý xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>[Fór á prófílé thát fóllówš á Góóglé Šhéétš líñk, thé ápp lóókš át thé šhéét whéñ ýóú ópéñ thé prófílé, whéñ ýóú çómé báçk tó thé wíñdów, áñd évérý 5 míñútéš whílé thé wíñdów íš íñ fróñt. Ít óñlý téllš ýóú. Ñóthíñg íš répláçéd úñtíl ýóú šáý ýéš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>

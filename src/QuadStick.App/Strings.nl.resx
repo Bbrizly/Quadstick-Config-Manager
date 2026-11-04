@@ -1193,7 +1193,7 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één reg
     <value>Back-up naar Google Drive is niet beschikbaar in deze build.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google gaf een webpagina terug in plaats van het profiel. Het blad is waarschijnlijk niet openbaar gedeeld (Bestand &gt; Delen &gt; Iedereen met de link).</value>
+    <value>Dit blad is niet gedeeld, dus de app kan het niet lezen. Kies in Google Spreadsheets Delen en dan onder Algemene toegang Iedereen met de link, als Lezer.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Houd vast om te activeren. De uitgang blijft alleen aan zolang uw invoer actief is.</value>
@@ -3814,5 +3814,29 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Je QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>Dit profiel is gewijzigd in Google Spreadsheets.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Update bekijken</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Niet nu</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Minder modi: het blad heeft er {0}, je kopie {1}. Met het blad verdwijnen de andere.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>Het blad bevat fouten en kan pas worden gebruikt als ze in Google Spreadsheets zijn opgelost:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Waarschuwingen in het blad:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Gekoppelde bladen automatisch op wijzigingen controleren</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Bij een profiel dat een Google Spreadsheets-link volgt, kijkt de app in het blad als je het profiel opent, als je terugkomt naar het venster, en elke 5 minuten zolang het venster vooraan staat. Het meldt het alleen. Er wordt niets vervangen voordat je ja zegt.</value>
   </data>
 </root>

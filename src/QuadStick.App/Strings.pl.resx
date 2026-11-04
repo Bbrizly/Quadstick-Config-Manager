@@ -1193,7 +1193,7 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje jedną
     <value>Kopia zapasowa na Google Drive nie jest dostępna w tej wersji.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google zwróciło stronę internetową zamiast profilu. Arkusz prawdopodobnie nie jest udostępniony publicznie (Plik &gt; Udostępnij &gt; Każda osoba mająca link).</value>
+    <value>Ten arkusz nie jest udostępniony, więc aplikacja nie może go odczytać. W Arkuszach Google wybierz Udostępnij, a w sekcji Dostęp ogólny wybierz Każda osoba mająca link, jako Przeglądający.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Przytrzymanie włącza. Wyjście jest włączone tylko wtedy, gdy wejście jest aktywne.</value>
@@ -3814,5 +3814,29 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Twój QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>Ten profil zmienił się w Arkuszach Google.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Przejrzyj zmianę</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Nie teraz</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Mniej trybów: arkusz ma {0}, Twoja kopia ma {1}. Użycie arkusza usuwa pozostałe.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>Arkusz ma błędy, więc nie można go użyć, dopóki nie zostaną poprawione w Arkuszach Google:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Ostrzeżenia w arkuszu:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Automatycznie sprawdzaj zmiany w połączonych arkuszach</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Dla profilu, który śledzi link do Arkuszy Google, aplikacja sprawdza arkusz, gdy otwierasz profil, gdy wracasz do okna, i co 5 minut, gdy okno jest na wierzchu. Tylko informuje. Nic nie zostanie zastąpione, dopóki się nie zgodzisz.</value>
   </data>
 </root>

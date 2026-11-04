@@ -508,7 +508,7 @@ public sealed class CommunityProfilesViewTests : IDisposable
 
         Assert.Null(w.OpenFile);
         Assert.True(win.IsVisible); // still open, so the message can be read
-        Assert.True(Says(win, "not shared publicly"));
+        Assert.True(Says(win, Strings.Main_GoogleReturnedAWebPage));
         var home = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Name == "HomeStatusText");
         Assert.False(home.IsVisible);
         w.Close();

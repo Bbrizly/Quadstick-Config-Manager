@@ -1217,7 +1217,7 @@ Most profiles have just one mode, so this list often shows a single entry. That 
     <value>Google Drive backup is not available in this build.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google returned a web page instead of the profile. The sheet is probably not shared publicly (File &gt; Share &gt; Anyone with the link).</value>
+    <value>This sheet is not shared, so the app cannot read it. In Google Sheets, choose Share, then under General access pick Anyone with the link, as Viewer.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Hold to activate. The output stays on only while your input is active.</value>
@@ -3952,5 +3952,29 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Your QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>This profile changed in Google Sheets.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Review the update</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Not now</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Fewer modes: the sheet has {0}, your copy has {1}. Using the sheet removes the others.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>The sheet has errors, so it cannot be used until they are fixed in Google Sheets:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Warnings in the sheet:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Check linked sheets for changes automatically</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>For a profile that follows a Google Sheets link, the app looks at the sheet when you open the profile, when you come back to the window, and every 5 minutes while the window is in front. It only tells you. Nothing is replaced until you say yes.</value>
   </data>
 </root>

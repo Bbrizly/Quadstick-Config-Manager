@@ -6,13 +6,17 @@ profiles is sold or shared with anyone.
 
 ## What the app can send, and when
 
-Four things use the network, and each one only after you ask for it.
+These features use the network when you choose them. Core profile editing does
+not need an internet connection.
 
 **Google Sheets and Drive.** When you paste a Sheets link, the app fetches that
 sheet and nothing else. A profile saved from that link remembers it on your
-computer, and the app fetches the same sheet again only when you press "Get the
-latest from the link", never on its own. When you turn on Google Drive backup,
-it saves your profiles to your own Drive under your own account.
+computer. The app fetches the same sheet again when you press "Get the latest
+from the link", and, while "Check linked sheets for changes automatically" is on
+in Settings, when you open that profile, when you come back to the window, and
+every 5 minutes while the window is in front. The check only asks that one
+sheet; it never replaces your file without your yes. When you turn on Google
+Drive backup, it saves your profiles to your own Drive under your own account.
 
 **The community profile list.** When you open Community profiles, the app asks
 quadstick.com for the shared list of game profiles, and Refresh in that window

@@ -1193,7 +1193,7 @@ A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes
     <value>O backup do Google Drive não está disponível nesta versão.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>O Google retornou uma página da web em vez do perfil. A planilha provavelmente não está compartilhada publicamente (Arquivo &gt; Compartilhar &gt; Qualquer pessoa com o link).</value>
+    <value>Esta planilha não está compartilhada, então o aplicativo não consegue lê-la. No Planilhas Google, escolha Compartilhar e, em Acesso geral, Qualquer pessoa com o link, como Leitor.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Manter para ativar. A saída fica ativa apenas enquanto a entrada estiver ativa.</value>
@@ -3814,5 +3814,29 @@ Os jogos que não usam SDL não verão o controle. Para esses, use o modo 7. Des
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Seu QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>Este perfil mudou no Planilhas Google.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Revisar a atualização</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Agora não</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Menos modos: a planilha tem {0} e sua cópia tem {1}. Usar a planilha remove os outros.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>A planilha tem erros e não pode ser usada até que sejam corrigidos no Planilhas Google:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Avisos na planilha:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Verificar automaticamente mudanças nas planilhas vinculadas</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Para um perfil que segue um link do Planilhas Google, o aplicativo olha a planilha quando você abre o perfil, quando volta à janela e a cada 5 minutos enquanto a janela está na frente. Ele só avisa. Nada é substituído até você dizer sim.</value>
   </data>
 </root>

@@ -317,6 +317,12 @@ public sealed class DriveBackup
     public Task<string> ReadProfileAsync(string spreadsheetId, CancellationToken ct = default) =>
         Locked(() => DownloadProfileAsync(spreadsheetId, ct), ct);
 
+    /// <summary>When the sheet last changed, by Drive's clock. One small
+    /// metadata request, so a followed sheet can be checked without
+    /// downloading it.</summary>
+    public Task<string> ModifiedTimeAsync(string spreadsheetId, CancellationToken ct = default) =>
+        Locked(() => _client.GetModifiedTimeAsync(spreadsheetId, ct), ct);
+
     // The share URL for a linked profile, or null when it has no sheet yet.
     // Used by "Open in Google Sheets".
     public string? LinkedSheetUrl(string profilePath) =>

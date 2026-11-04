@@ -1193,7 +1193,7 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
     <value>Google-Drive-Sicherung ist in dieser Version nicht verfügbar.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google hat eine Webseite statt des Profils zurückgegeben. Die Tabelle ist wahrscheinlich nicht öffentlich freigegeben (Datei &gt; Freigeben &gt; Jeder mit dem Link).</value>
+    <value>Diese Tabelle ist nicht freigegeben, daher kann die App sie nicht lesen. Wählen Sie in Google Sheets Teilen, dann unter Allgemeiner Zugriff Jeder, der über den Link verfügt, als Betrachter.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Zum Aktivieren halten. Die Ausgabe bleibt nur an, solange Ihre Eingabe aktiv ist.</value>
@@ -3814,5 +3814,29 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Dein QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>Dieses Profil wurde in Google Sheets geändert.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Änderung ansehen</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Nicht jetzt</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Weniger Modi: Die Tabelle hat {0}, Ihre Kopie hat {1}. Mit der Tabelle fallen die anderen weg.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>Die Tabelle hat Fehler und kann erst verwendet werden, wenn sie in Google Sheets behoben sind:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Warnungen in der Tabelle:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Verknüpfte Tabellen automatisch auf Änderungen prüfen</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Bei einem Profil, das einem Google-Sheets-Link folgt, sieht die App in der Tabelle nach, wenn Sie das Profil öffnen, wenn Sie zum Fenster zurückkehren, und alle 5 Minuten, solange das Fenster vorne ist. Sie sagt es Ihnen nur. Ersetzt wird nichts, bevor Sie zustimmen.</value>
   </data>
 </root>

@@ -53,9 +53,11 @@ public sealed class AppSettings
     public bool ControllerBridge = false;
     public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
     // The Google Sheets link a saved profile was imported from, keyed by its
-    // file path. Only ever read when the user presses "Get the latest from
-    // the link": the app never checks it on its own.
-    public Dictionary<string, string> FollowLinks = new();
+    // file path. Read when the user presses "Get the latest from the link",
+    // and by the automatic check while FollowAutoCheck is on. The check only
+    // ever offers the update: it never replaces a file.
+    public Dictionary<string, FollowLink> Follows = new();
+    public bool FollowAutoCheck = true;
     // Profiles opened from outside the library folder, newest first. Without
     // this they leave no trace in the app: Save writes them back where they
     // came from and Home only ever lists the library.
@@ -82,6 +84,17 @@ public sealed class AppSettings
     // or the user. This is what makes "active installs" a real number instead
     // of a launch count, and what makes a deletion request findable.
     public string InstallId = "";            // "" = not yet generated
+}
+
+// What a profile follows, and what the last check of it saw.
+public sealed class FollowLink
+{
+    public string Link = "";
+    public string SheetId = "";
+    public string LastHash = "";          // SHA-256 of the last download, as profile CSV
+    public string LastModifiedTime = "";  // Drive's, for a sheet this app made
+    public bool Changed = false;          // the last download differed from the file
+    public string DismissedHash = "";     // the change the user said not now to
 }
 
 // Per-profile backup state, keyed by profile file path.
@@ -149,6 +162,8 @@ public static class Settings
 [JsonSerializable(typeof(DriveLink))]
 [JsonSerializable(typeof(Dictionary<string, DriveLink>))]
 [JsonSerializable(typeof(Dictionary<string, string>))]
+[JsonSerializable(typeof(FollowLink))]
+[JsonSerializable(typeof(Dictionary<string, FollowLink>))]
 internal partial class SettingsJsonContext : JsonSerializerContext { }
 
 public static class Theme

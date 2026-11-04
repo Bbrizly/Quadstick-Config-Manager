@@ -1193,7 +1193,7 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco mostra 
     <value>Il backup su Google Drive non è disponibile in questa build.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google ha restituito una pagina web invece del profilo. Il foglio probabilmente non è condiviso pubblicamente (File &gt; Condividi &gt; Chiunque abbia il link).</value>
+    <value>Questo foglio non è condiviso, quindi l'app non può leggerlo. In Fogli Google scegli Condividi, poi in Accesso generale Chiunque abbia il link, come Visualizzatore.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>Tenere premuto per attivare. L'uscita resta attiva solo finché l'ingresso è attivo.</value>
@@ -3814,5 +3814,29 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>Il tuo QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>Questo profilo è cambiato in Fogli Google.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>Rivedi l'aggiornamento</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>Non ora</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>Meno modalità: il foglio ne ha {0}, la tua copia ne ha {1}. Usando il foglio le altre vengono rimosse.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>Il foglio ha errori, quindi non si può usare finché non vengono corretti in Fogli Google:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>Avvisi nel foglio:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>Controlla automaticamente le modifiche ai fogli collegati</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Per un profilo che segue un link di Fogli Google, l'app guarda il foglio quando apri il profilo, quando torni alla finestra e ogni 5 minuti mentre la finestra è in primo piano. Ti avvisa soltanto. Niente viene sostituito finché non dici di sì.</value>
   </data>
 </root>

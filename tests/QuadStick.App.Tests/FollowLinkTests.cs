@@ -47,7 +47,7 @@ public class FollowLinkTests
         public string Path => System.IO.Path.Combine(Dir, "game.csv");
         public string Rescue => System.IO.Path.Combine(Dir, "rescue");
 
-        public Library(string? local, bool follow)
+        public Library(string? local, bool follow, bool autoCheck = false)
         {
             MainWindow.LibraryDir = Dir;
             CrashGuard.RescueDirOverride = Rescue;
@@ -55,8 +55,9 @@ public class FollowLinkTests
             var s = Settings.Load();
             s.TutorialSeen = true;
             s.RememberWindow = false;
-            s.FollowLinks.Clear();
-            if (follow) s.FollowLinks[Path] = Link;
+            s.Follows.Clear();
+            s.FollowAutoCheck = autoCheck; // off unless a test is about it, so no other test reaches out
+            if (follow) s.Follows[Path] = new FollowLink { Link = Link };
             Settings.Save(s);
         }
 
@@ -65,7 +66,8 @@ public class FollowLinkTests
             MainWindow.LibraryDir = _libWas;
             CrashGuard.RescueDirOverride = _rescueWas;
             var s = Settings.Load();
-            s.FollowLinks.Clear();
+            s.Follows.Clear();
+            s.FollowAutoCheck = true;
             Settings.Save(s);
             try { Directory.Delete(Dir, true); } catch (IOException) { }
         }
@@ -124,7 +126,10 @@ public class FollowLinkTests
             Assert.True(await w.SaveProfileAsync());
 
             Assert.Equal(Link, w.FollowedLink(lib.Path));
-            Assert.Equal(Link, Settings.Load().FollowLinks[lib.Path]);
+            var kept = Settings.Load().Follows[lib.Path];
+            Assert.Equal(Link, kept.Link);
+            Assert.Equal("1AbCdEfGhIjKlMnOpQrStUvWxYz012345", kept.SheetId);
+            Assert.NotEqual("", kept.LastHash); // the import's download is the first one seen
         }
         finally { Close(w); }
 
@@ -400,7 +405,7 @@ public class FollowLinkTests
 
             Assert.False(File.Exists(lib.Path));
             Assert.Null(w.FollowedLink(lib.Path));
-            Assert.False(Settings.Load().FollowLinks.ContainsKey(lib.Path));
+            Assert.False(Settings.Load().Follows.ContainsKey(lib.Path));
         }
         finally { Close(w); }
     }
@@ -415,13 +420,242 @@ public class FollowLinkTests
         {
             w.StopFollowing(lib.Path);
             Assert.Null(w.FollowedLink(lib.Path));
-            Assert.False(Settings.Load().FollowLinks.ContainsKey(lib.Path));
+            Assert.False(Settings.Load().Follows.ContainsKey(lib.Path));
             Assert.Equal(local, File.ReadAllText(lib.Path));
         }
         finally { Close(w); }
     }
 
     // ---- what changed ----
+
+    // Answers each request with the next status in line, then the sheet.
+    sealed class Flaky : HttpMessageHandler
+    {
+        readonly Queue<HttpResponseMessage> _first;
+        readonly string _csv;
+        public int Requests;
+        public Flaky(string csv, params HttpResponseMessage[] first) { _csv = csv; _first = new(first); }
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            Interlocked.Increment(ref Requests);
+            if (_first.Count > 0) return Task.FromResult(_first.Dequeue());
+            var body = request.RequestUri!.ToString().Contains("format=csv") ? _csv : "not a workbook";
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new ByteArrayContent(Encoding.UTF8.GetBytes(body)) });
+        }
+    }
+
+    static HttpResponseMessage Status(HttpStatusCode code, int? retryAfter = null)
+    {
+        var r = new HttpResponseMessage(code) { Content = new StringContent("") };
+        if (retryAfter is int s) r.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(TimeSpan.FromSeconds(s));
+        return r;
+    }
+
+    // Opening a followed profile starts a check of its own. Let it finish, so
+    // the one the test asks for is not turned away as a second at once.
+    static async Task Check(MainWindow w, HttpClient http)
+    {
+        for (int i = 0; i < 500 && w.FollowChecking; i++) { Dispatcher.UIThread.RunJobs(); await Task.Delay(10); }
+        await w.CheckFollowAsync(http);
+    }
+
+    sealed class Waits : IDisposable
+    {
+        readonly Func<TimeSpan, CancellationToken, Task> _was = MainWindow.RetryDelay;
+        public List<TimeSpan> Seen { get; } = new();
+        public Waits() => MainWindow.RetryDelay = (t, _) => { lock (Seen) Seen.Add(t); return Task.CompletedTask; };
+        public void Dispose() => MainWindow.RetryDelay = _was;
+    }
+
+    // A sheet with an error in it cannot replace the file. The error is said
+    // in the question, and the replace button is there but cannot be pressed.
+    [AvaloniaFact]
+    public async Task A_sheet_with_errors_is_shown_but_cannot_replace()
+    {
+        var local = Profile("Walking");
+        var broken = Profile("Walking") + "joystick_deflection_maximum,,abc\r\n";
+        Assert.True(ProfileFile.Load(broken).HasErrors);
+        using var lib = new Library(local, follow: true);
+        using var http = new HttpClient(new Sheet(broken));
+        var w = NewWindow();
+        try
+        {
+            var getting = w.GetLatestAsync(lib.Path, http);
+            var dialog = await DialogAsync(w);
+            Assert.Contains(Strings.Follow_HasErrors, Said(dialog));
+            var replace = dialog.GetVisualDescendants().OfType<Button>().First(b => (b.Content as string) == Strings.Follow_Replace);
+            Assert.False(replace.IsEnabled);
+            Press(dialog, Strings.Follow_Keep);
+            await getting;
+            Assert.Equal(local, File.ReadAllText(lib.Path));
+        }
+        finally { Close(w); }
+    }
+
+    // A published link can hand back one tab of a five-mode profile. Using it
+    // would delete the rest, so the question says so in its own line.
+    [AvaloniaFact]
+    public async Task A_sheet_with_fewer_modes_says_so()
+    {
+        using var lib = new Library(Profile("Walking", "Driving", "Flying"), follow: true);
+        using var http = new HttpClient(new Sheet(Profile("Walking")));
+        var w = NewWindow();
+        try
+        {
+            var getting = w.GetLatestAsync(lib.Path, http);
+            var dialog = await DialogAsync(w);
+            Assert.Contains(string.Format(Strings.Follow_FewerModes, 1, 3), Said(dialog));
+            Press(dialog, Strings.Follow_Keep);
+            await getting;
+        }
+        finally { Close(w); }
+    }
+
+    // A sheet that is not shared answers 403, or sends the request to Google's
+    // sign-in page. Either way the answer is how to share it.
+    [AvaloniaTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task A_sheet_that_is_not_shared_says_how_to_share_it(bool signInRedirect)
+    {
+        var local = Profile("Walking");
+        using var lib = new Library(local, follow: true);
+        var answer = signInRedirect
+            ? new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("<html>sign in</html>"),
+                RequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://accounts.google.com/ServiceLogin?continue=x"),
+            }
+            : Status(HttpStatusCode.Forbidden);
+        using var http = new HttpClient(new Flaky(Profile("Walking", "Driving"), answer));
+        var w = NewWindow();
+        try
+        {
+            await w.GetLatestAsync(lib.Path, http);
+            Assert.Empty(w.OwnedWindows);
+            Assert.Equal(local, File.ReadAllText(lib.Path));
+            Assert.True(ShowsStatus(w, Strings.Main_GoogleReturnedAWebPage));
+        }
+        finally { Close(w); }
+    }
+
+    // Google's "slow down" and its server errors are asked again twice, after
+    // 1 s and 3 s, or after Retry-After capped at 10 s. Then it gives up.
+    [AvaloniaFact]
+    public async Task A_busy_export_is_retried_twice_with_backoff()
+    {
+        using var waits = new Waits();
+        var ok = new Flaky("a,b\r\n", Status(HttpStatusCode.ServiceUnavailable), Status(HttpStatusCode.TooManyRequests, retryAfter: 60));
+        using (var http = new HttpClient(ok))
+            Assert.Equal("a,b\r\n", await MainWindow.GetSheetAsync(http, "https://x.test/?format=csv", (c, ct) => c.ReadAsStringAsync(ct)));
+        Assert.Equal(3, ok.Requests);
+        Assert.Equal(new[] { TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10) }, waits.Seen);
+
+        waits.Seen.Clear();
+        var down = new Flaky("", Status(HttpStatusCode.TooManyRequests, retryAfter: 2), Status(HttpStatusCode.BadGateway), Status(HttpStatusCode.BadGateway));
+        using (var http = new HttpClient(down))
+        {
+            var ex = await Assert.ThrowsAsync<HttpRequestException>(() =>
+                MainWindow.GetSheetAsync(http, "https://x.test/", (c, ct) => c.ReadAsStringAsync(ct)));
+            Assert.Equal(HttpStatusCode.BadGateway, ex.StatusCode);
+        }
+        Assert.Equal(3, down.Requests);
+        Assert.Equal(new[] { TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3) }, waits.Seen);
+    }
+
+    // With the automatic check on, a changed sheet puts up a banner and
+    // nothing else: no dialog, no replace. Not now hides it until the sheet
+    // changes again, and Review opens the same question as the button.
+    [AvaloniaFact]
+    public async Task A_changed_sheet_is_offered_never_replaced()
+    {
+        var local = Profile("Walking");
+        using var lib = new Library(local, follow: true, autoCheck: true);
+        var sheet = new Sheet(Profile("Walking", "Driving"));
+        using var http = new HttpClient(sheet);
+        var w = new MainWindow { HttpOverrideForTest = http };
+        w.ShowImportReview = (_, _) => Task.CompletedTask;
+        w.Show();
+        try
+        {
+            w.OpenPath(lib.Path);
+            await Check(w, http);
+            Assert.True(sheet.Requests > 0);
+            Assert.True(w.FollowBannerShown);
+            Assert.Empty(w.OwnedWindows);
+            Assert.Equal(local, File.ReadAllText(lib.Path));
+
+            Ui.Click(w.GetVisualDescendants().OfType<Button>().First(b => (b.Content as string) == Strings.Follow_BannerDismiss));
+            await Check(w, http);
+            Assert.False(w.FollowBannerShown); // the same change, already said no to
+
+            sheet.Csv = Profile("Walking", "Swimming");
+            await Check(w, http);
+            Assert.True(w.FollowBannerShown); // a new change is news again
+
+            Ui.Click(w.GetVisualDescendants().OfType<Button>().First(b => (b.Content as string) == Strings.Follow_BannerReview));
+            var dialog = await DialogAsync(w);
+            Press(dialog, Strings.Follow_Keep);
+            for (int i = 0; i < 50 && w.FollowBannerShown; i++) { Dispatcher.UIThread.RunJobs(); await Task.Delay(10); }
+            Assert.False(w.FollowBannerShown);
+            Assert.Equal(local, File.ReadAllText(lib.Path));
+        }
+        finally { Close(w); }
+    }
+
+    // A sheet that matches the file is not news, and with the check off the
+    // app asks for nothing at all.
+    [AvaloniaTheory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task An_unchanged_sheet_or_the_check_off_shows_nothing(bool autoCheck)
+    {
+        var local = Profile("Walking");
+        using var lib = new Library(local, follow: true, autoCheck: autoCheck);
+        var sheet = new Sheet(autoCheck ? local : Profile("Walking", "Driving"));
+        using var http = new HttpClient(sheet);
+        var w = new MainWindow { HttpOverrideForTest = http };
+        w.ShowImportReview = (_, _) => Task.CompletedTask;
+        w.Show();
+        try
+        {
+            w.OpenPath(lib.Path);
+            await Check(w, http);
+            Assert.False(w.FollowBannerShown);
+            Assert.Equal(autoCheck, sheet.Requests > 0);
+        }
+        finally { Close(w); }
+    }
+
+    // Google saying slow down to the automatic check stops it asking again
+    // until the doubled wait has passed.
+    [AvaloniaFact]
+    public async Task The_automatic_check_backs_off_when_google_is_busy()
+    {
+        using var waits = new Waits();
+        using var lib = new Library(Profile("Walking"), follow: true, autoCheck: true);
+        var busy = new Flaky("", Enumerable.Range(0, 3).Select(_ => Status(HttpStatusCode.TooManyRequests)).ToArray());
+        using var http = new HttpClient(busy);
+        var now = DateTime.UtcNow;
+        var w = new MainWindow { HttpOverrideForTest = http, FollowClock = () => now };
+        w.ShowImportReview = (_, _) => Task.CompletedTask;
+        w.Show();
+        try
+        {
+            w.OpenPath(lib.Path);
+            await Check(w, http);
+            var asked = busy.Requests;
+            Assert.Equal(3, asked);
+            now += TimeSpan.FromMinutes(9);
+            await Check(w, http);
+            Assert.Equal(asked, busy.Requests); // still inside the 10 minute wait
+            now += TimeSpan.FromMinutes(2);
+            await Check(w, http);
+            Assert.True(busy.Requests > asked);
+        }
+        finally { Close(w); }
+    }
 
     [AvaloniaFact]
     public void The_same_profile_has_no_changes_even_with_a_different_backup_id()

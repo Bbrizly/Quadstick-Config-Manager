@@ -472,7 +472,7 @@ public class SmokeTests
         await w.ImportSheetsAsync(SheetLink, http);
 
         Assert.Null(w.OpenFile);
-        Assert.Contains("not shared publicly", HomeError(w));
+        Assert.Contains(Strings.Main_GoogleReturnedAWebPage, HomeError(w));
         w.Close();
     }
 

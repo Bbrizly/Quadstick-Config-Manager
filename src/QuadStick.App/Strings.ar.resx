@@ -1193,7 +1193,7 @@
     <value>النسخ الاحتياطي عبر Google Drive غير متاح في هذا الإصدار.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>أعادت Google صفحة ويب بدلاً من الملف الشخصي. على الأرجح أن الجدول غير مشارَك للعامة (File &gt; Share &gt; Anyone with the link).</value>
+    <value>هذا الجدول غير مشارك، لذا لا يستطيع التطبيق قراءته. في جداول بيانات Google، اختر مشاركة، ثم تحت الوصول العام اختر أي شخص لديه الرابط، بصفة مشاهد.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>استمر في التفعيل لتشغيله. يبقى المخرج مفعّلاً فقط أثناء نشاط المدخل.</value>
@@ -3814,5 +3814,29 @@
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>جهاز QuadStick الخاص بك</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>تغيّر هذا الملف الشخصي في جداول بيانات Google.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>راجع التحديث</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>ليس الآن</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>أنماط أقل: في الجدول {0}، وفي نسختك {1}. استخدام الجدول يزيل الباقي.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>في الجدول أخطاء، فلا يمكن استخدامه حتى تُصلح في جداول بيانات Google:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>تحذيرات في الجدول:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>تحقق من تغييرات الجداول المرتبطة تلقائيًا</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>للملف الشخصي الذي يتبع رابط جداول بيانات Google، ينظر التطبيق في الجدول عند فتح الملف، وعند العودة إلى النافذة، وكل 5 دقائق ما دامت النافذة في المقدمة. إنه يخبرك فقط. لا يُستبدل شيء حتى توافق.</value>
   </data>
 </root>

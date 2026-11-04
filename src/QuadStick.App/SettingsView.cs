@@ -306,6 +306,7 @@ public class SettingsView : UserControl
         if (NetworkFeature.Enabled)
         {
             panel.Children.Add(BackupArea());
+            panel.Children.Add(FollowCheckArea());
             panel.Children.Add(UpdateArea());
         }
 
@@ -348,6 +349,19 @@ public class SettingsView : UserControl
         return Field(Strings.Settings_Updates, Strings.Settings_UpdatesCaption,
             new StackPanel { Spacing = 10, Children = { check, download } },
             line);
+    }
+
+    Control FollowCheckArea()
+    {
+        var check = new CheckBox
+        { Content = Strings.Settings_FollowAutoCheck, IsChecked = _owner.CurrentSettings.FollowAutoCheck, FontSize = Size("BodySize") };
+        AutomationProperties.SetName(check, Strings.Settings_FollowAutoCheck);
+        check.IsCheckedChanged += (_, _) =>
+        {
+            _owner.CurrentSettings.FollowAutoCheck = check.IsChecked == true;
+            _owner.PersistSettings();
+        };
+        return new StackPanel { Spacing = 4, Children = { check, Caption(Strings.Settings_FollowAutoCheckCaption) } };
     }
 
     Control BackupArea()

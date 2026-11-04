@@ -1193,7 +1193,7 @@
     <value>このビルドではGoogle Driveバックアップは利用できません。</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Googleがプロファイルの代わりにWebページを返しました。おそらくシートが公開共有されていません(File &gt; Share &gt; Anyone with the link)。</value>
+    <value>このシートは共有されていないため、アプリは読めません。Google スプレッドシートで「共有」を選び、「一般的なアクセス」で「リンクを知っている全員」を「閲覧者」にしてください。</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>押している間だけ有効になります。入力している間だけ出力がオンになります。</value>
@@ -3812,5 +3812,29 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>お使いの QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>このプロファイルは Google スプレッドシートで変更されました。</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>更新を確認</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>今はしない</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>モードが減ります: シートは {0} 個、あなたのコピーは {1} 個です。シートを使うと残りは消えます。</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>シートにエラーがあるため、Google スプレッドシートで直すまで使えません:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>シートの警告:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>リンクしたシートの変更を自動で確認する</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Google スプレッドシートのリンクをフォローしているプロファイルでは、プロファイルを開いたとき、ウィンドウに戻ったとき、ウィンドウが前面にある間は 5 分ごとにシートを確認します。知らせるだけで、あなたが「はい」と言うまで何も置き換えません。</value>
   </data>
 </root>

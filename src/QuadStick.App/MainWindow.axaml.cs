@@ -763,6 +763,7 @@ public partial class MainWindow : Window
         FlowDirection = Localization.Direction;
         PickDriveFolder = PickDriveFolderAsync;
         InitializeComponent();
+        StartFollowWatch();
         var v = typeof(MainWindow).Assembly.GetName().Version;
         HomeVersionText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_VVMajorVMinor, v?.Major, v?.Minor, v?.Build);
 
@@ -1599,6 +1600,7 @@ public partial class MainWindow : Window
         {
             next.OpenInEditor(_file, _savePath, ProfileSource.File, track: false);
             next._pendingFollowLink = _pendingFollowLink; // an unsaved import keeps its link
+            next._pendingFollowHash = _pendingFollowHash;
             next.SelectSheet(_sheetIndex); // same mode open as before
         }
         HandOverMainWindow(
@@ -2440,6 +2442,7 @@ public partial class MainWindow : Window
         _file = file;
         _savePath = savePath;
         _pendingFollowLink = null; // only the import that just ran sets one
+        _pendingFollowHash = "";
         LoadDrafts(savePath);
         _draftedRevision = -1; // new file: its Revision counter is unrelated to the last one's
         _sheetIndex = 0;
@@ -2459,6 +2462,7 @@ public partial class MainWindow : Window
             RememberRecent(savePath);
             FireBackupRetry(savePath, file.ToCsvText());
         }
+        FollowOpened();
     }
 
     /// <summary>Open a sheet in the editor. Everything on screen follows from
@@ -5979,6 +5983,7 @@ public partial class MainWindow : Window
             // Remembered against the file once it is saved, so "Get the latest
             // from the link" can ask the same sheet again later.
             _pendingFollowLink = pasted.Trim();
+            _pendingFollowHash = Hash(got.Text);
             var line = string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromThe, Modes(imported));
             // The download is anonymous, so a save can never reach the user's
             // sheet. Users have edited and then looked for the change in Drive.
@@ -5995,8 +6000,7 @@ public partial class MainWindow : Window
         catch (InvalidDataException)
         { HomeError(Strings.Main_CouldNotReadThatSpreadsheet); }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-        { HomeError(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotDownloadTheSheet,
-                ex is TaskCanceledException ? Strings.Main_ConnectionTimedOut : ex.Message)); }
+        { HomeError(Failure(ex)); }
     }
 
     /// <summary>Why an import found no profile, in the words of what was

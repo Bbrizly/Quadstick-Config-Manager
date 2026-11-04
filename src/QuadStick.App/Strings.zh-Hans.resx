@@ -1193,7 +1193,7 @@
     <value>此版本不支持 Google Drive 备份。</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google 返回的是一个网页，而不是配置文件。该表格可能未公开共享（文件 &gt; 共享 &gt; 知道链接的任何人）。</value>
+    <value>此表格未共享，因此应用无法读取。在 Google 表格中选择“共享”，然后在“一般访问权限”下选择“知道链接的任何人”，身份为“查看者”。</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>按住才生效。只有在输入保持时输出才打开。</value>
@@ -3814,5 +3814,29 @@
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>你的 QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>此配置文件已在 Google 表格中更改。</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>查看更新</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>暂不</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>模式变少：表格有 {0} 个，你的副本有 {1} 个。使用表格会删除其余模式。</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>表格有错误，在 Google 表格中修正之前无法使用：</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>表格中的警告：</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>自动检查已关联表格的更改</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>对于关联 Google 表格链接的配置文件，应用会在你打开配置文件时、回到窗口时，以及窗口在前台时每 5 分钟查看一次表格。它只会提醒你。在你同意之前不会替换任何内容。</value>
   </data>
 </root>

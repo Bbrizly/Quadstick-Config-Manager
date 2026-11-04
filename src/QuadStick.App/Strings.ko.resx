@@ -1193,7 +1193,7 @@
     <value>이 빌드에서는 Google Drive 백업을 사용할 수 없습니다.</value>
   </data>
   <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
-    <value>Google이 프로필 대신 웹페이지를 반환했습니다. 시트가 공개적으로 공유되지 않은 것 같습니다 (파일 &gt; 공유 &gt; 링크가 있는 모든 사용자).</value>
+    <value>이 시트는 공유되지 않아 앱이 읽을 수 없습니다. Google 스프레드시트에서 공유를 선택한 다음, 일반 액세스에서 링크가 있는 모든 사용자를 뷰어로 고르세요.</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
     <value>누르고 있는 동안 작동합니다. 입력이 유지되는 동안에만 출력이 켜집니다.</value>
@@ -3814,5 +3814,29 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   </data>
   <data name="Tour_YourQuadStick" xml:space="preserve">
     <value>내 QuadStick</value>
+  </data>
+  <data name="Follow_BannerText" xml:space="preserve">
+    <value>이 프로필이 Google 스프레드시트에서 바뀌었습니다.</value>
+  </data>
+  <data name="Follow_BannerReview" xml:space="preserve">
+    <value>업데이트 검토</value>
+  </data>
+  <data name="Follow_BannerDismiss" xml:space="preserve">
+    <value>나중에</value>
+  </data>
+  <data name="Follow_FewerModes" xml:space="preserve">
+    <value>모드가 줄어듭니다: 시트는 {0}개, 내 사본은 {1}개입니다. 시트를 쓰면 나머지가 없어집니다.</value>
+  </data>
+  <data name="Follow_HasErrors" xml:space="preserve">
+    <value>시트에 오류가 있어 Google 스프레드시트에서 고치기 전에는 쓸 수 없습니다:</value>
+  </data>
+  <data name="Follow_HasWarnings" xml:space="preserve">
+    <value>시트의 경고:</value>
+  </data>
+  <data name="Settings_FollowAutoCheck" xml:space="preserve">
+    <value>연결된 시트의 변경 사항을 자동으로 확인</value>
+  </data>
+  <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
+    <value>Google 스프레드시트 링크를 따르는 프로필은 프로필을 열 때, 창으로 돌아올 때, 창이 앞에 있는 동안 5분마다 시트를 확인합니다. 알려 주기만 합니다. 동의하기 전에는 아무것도 바뀌지 않습니다.</value>
   </data>
 </root>
