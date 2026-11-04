@@ -3872,4 +3872,85 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>Could not save the reference sheet to {0}: {1}</value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Follows a Google Sheet link</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>This profile changed while the sheet was downloading, so nothing was replaced. Save it, then get the latest again.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Could not get the latest: {0} Your copy was not changed.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>This profile no longer follows its link.</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Get the latest from the link</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Download this profile again from the Google Sheet it was imported from, and see what changed before anything is replaced</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Keep mine</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Kept your copy. Nothing was changed.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Your copy on this computer could not be read, so it cannot be compared.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>New in the sheet: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} added, {2} removed</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>No longer in the sheet: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>This profile was not imported from a Google Sheets link, so there is nothing to get.</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Other cells differ, such as preferences, names or notes.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Replace my copy</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Replaced with the latest from the link. Your old copy is in the rescue folder.</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>The Google Sheet is different from your copy. If you replace it, your copy goes to the rescue folder first.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Replace your copy with the latest?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>This profile has changes that are not saved. They are saved first, then compared with the sheet. Nothing is replaced unless you say so.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Save your changes first?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Forget the link</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Stop following the Google Sheet this profile was imported from</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Already up to date. The sheet matches your copy.</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>The QuadStick could not be reached to restart it, so the test profile may still be on it. Unplug it and plug it back in: that puts your own profile and settings back.</value>
+  </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>Your QuadStick</value>
+  </data>
 </root>

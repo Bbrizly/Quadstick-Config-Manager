@@ -3734,4 +3734,85 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>Nie udało się zapisać arkusza referencyjnego w {0}: {1}</value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Śledzi link do Arkuszy Google</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Ten profil zmienił się podczas pobierania arkusza, więc nic nie zostało zastąpione. Zapisz go, a potem pobierz najnowszą wersję ponownie.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Nie udało się pobrać najnowszej wersji: {0} Kopia lokalna nie została zmieniona.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Ten profil nie śledzi już swojego linku.</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Pobierz najnowszą wersję z linku</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Pobierz ten profil ponownie z arkusza Google, z którego został zaimportowany, i zobacz zmiany, zanim cokolwiek zostanie zastąpione</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Zachowaj moją</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Kopia została zachowana. Nic nie zmieniono.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Nie udało się odczytać kopii na tym komputerze, więc nie można jej porównać.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Nowe w arkuszu: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: dodane {1}, usunięte {2}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>Już nie ma w arkuszu: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Ten profil nie został zaimportowany z linku do Arkuszy Google, więc nie ma czego pobrać.</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Inne komórki się różnią, np. preferencje, nazwy lub notatki.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Zastąp moją kopię</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Zastąpiono najnowszą wersją z linku. Poprzednia kopia jest w folderze ratunkowym.</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Arkusz Google różni się od kopii lokalnej. Przy zastąpieniu kopia najpierw trafi do folderu ratunkowego.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Zastąpić kopię najnowszą wersją?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Ten profil ma niezapisane zmiany. Najpierw zostaną zapisane, a potem porównane z arkuszem. Nic nie zostanie zastąpione bez zgody.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Najpierw zapisać zmiany?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Zapomnij link</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Przestań śledzić arkusz Google, z którego zaimportowano ten profil</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Wszystko aktualne. Arkusz zgadza się z kopią lokalną.</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Nie udało się połączyć z QuadStickiem, by go zrestartować, więc profil testowy może nadal być na nim. Odłącz go i podłącz ponownie: to przywraca Twój profil i ustawienia.</value>
+  </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>Instalacja</value>
+  </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>Witaj</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>Twój QuadStick</value>
+  </data>
 </root>

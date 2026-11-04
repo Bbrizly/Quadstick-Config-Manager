@@ -3734,4 +3734,85 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>Impossible d'enregistrer la fiche de référence dans {0} : {1}</value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Suit un lien Google Sheets</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Ce profil a changé pendant le téléchargement de la feuille, rien n'a donc été remplacé. Enregistrez-le, puis récupérez à nouveau la dernière version.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Impossible de récupérer la dernière version : {0} Votre copie n'a pas été modifiée.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Ce profil ne suit plus son lien.</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Récupérer la dernière version depuis le lien</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Télécharger à nouveau ce profil depuis la feuille Google d'où il a été importé, et voir ce qui a changé avant tout remplacement</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Garder la mienne</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Votre copie a été conservée. Rien n'a changé.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Votre copie sur cet ordinateur n'a pas pu être lue, elle ne peut donc pas être comparée.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Nouveau dans la feuille : {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0} : {1} ajoutées, {2} retirées</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>N'est plus dans la feuille : {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Ce profil n'a pas été importé depuis un lien Google Sheets, il n'y a donc rien à récupérer.</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>D'autres cellules diffèrent, comme les préférences, les noms ou les notes.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Remplacer ma copie</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Remplacé par la dernière version du lien. Votre ancienne copie est dans le dossier de secours.</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>La feuille Google est différente de votre copie. Si vous la remplacez, votre copie va d'abord dans le dossier de secours.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Remplacer votre copie par la dernière version ?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Ce profil a des modifications non enregistrées. Elles sont d'abord enregistrées, puis comparées à la feuille. Rien n'est remplacé sans votre accord.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Enregistrer d'abord vos modifications ?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Oublier le lien</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Ne plus suivre la feuille Google d'où ce profil a été importé</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Déjà à jour. La feuille correspond à votre copie.</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Le QuadStick n'a pas pu être joint pour le redémarrer, le profil de test y est donc peut-être encore. Débranchez-le puis rebranchez-le : cela remet votre propre profil et vos réglages.</value>
+  </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>Installer</value>
+  </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>Bienvenue</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>Votre QuadStick</value>
+  </data>
 </root>

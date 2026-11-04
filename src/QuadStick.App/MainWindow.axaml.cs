@@ -93,13 +93,15 @@ public partial class MainWindow : Window
     DriveBackup? _driveBackup;
     DriveBackup? Backup()
     {
+        // Asked before the cached engine, so a host turning Drive off again
+        // stops the engine it had already built.
+        if (!NetworkFeature.DriveAllowed) return null;
         if (_driveBackup != null) return _driveBackup;
-        if (!NetworkFeature.Enabled) return null;
         if (!_settings.DriveBackup || !GoogleAuth.IsConfigured) return null;
         var store = TokenStore.Create();
         if (store.Load() is null) return null;
-        var auth = new GoogleAuth(store);
-        var client = new DriveClient(new HttpClientHandler(), auth.GetAccessTokenAsync);
+        var auth = new GoogleAuth(store, GoogleOnlyHandler.Create());
+        var client = new DriveClient(GoogleOnlyHandler.Create(), auth.GetAccessTokenAsync);
         // Buttons are fixed Yes/Cancel, so the choice lives in the body text
         // (Yes = replace with mine / recreate). The engine runs off the UI
         // thread and dialogs build only on it, so prompts marshal through it.
@@ -121,8 +123,13 @@ public partial class MainWindow : Window
     public bool DriveConnected => Backup() is not null;
 
     // Fire-and-forget the push after a save. Never awaited on the save path.
-    void FireBackupPush(string path, string text) =>
+    void FireBackupPush(string path, string text)
+    {
+        // A host that allows Drive alone picks which profiles go there, by
+        // sharing them. A save of any other profile stays on this computer.
+        if (!NetworkFeature.Enabled && !_settings.DriveLinks.ContainsKey(path)) return;
         RunBackup(path, async b => (PushResult?)await b.PushAsync(path, text));
+    }
 
     // Fire-and-forget the retry when a linked profile opens.
     // Cell C1 of the file is the sheet it is backed up to. Called before any
@@ -233,10 +240,10 @@ public partial class MainWindow : Window
     // setting and rebuilds the engine.
     public async Task<bool> ConnectGoogleAsync(CancellationToken ct = default)
     {
-        if (!NetworkFeature.Enabled || !GoogleAuth.IsConfigured) return false;
+        if (!NetworkFeature.DriveAllowed || !GoogleAuth.IsConfigured) return false;
         try
         {
-            var auth = new GoogleAuth(TokenStore.Create());
+            var auth = new GoogleAuth(TokenStore.Create(), GoogleOnlyHandler.Create());
             await auth.SignInAsync(uri => Launcher.LaunchUriAsync(uri), ct);
             _settings.DriveBackup = true;
             PersistSettings();
@@ -451,7 +458,9 @@ public partial class MainWindow : Window
         var open = new MenuItem { Header = Strings.Main_OpenInGoogleSheets };
         AutomationProperties.SetName(open, Strings.Main_OpenThisProfileSGoogle);
         open.Click += async (_, _) => await OpenInSheetsAsync(path);
-        return new MenuFlyout { Items = { copy, open } };
+        var menu = new MenuFlyout { Items = { copy, open } };
+        AddFollowItems(menu, path);
+        return menu;
     }
 
     // Sharing needs backup on and connected. When off, the actions still show,
@@ -601,6 +610,7 @@ public partial class MainWindow : Window
         get
         {
             if (!NetworkFeature.Enabled) throw new InvalidOperationException(nameof(NetworkFeature));
+            if (HttpOverrideForTest is { } fake) return fake;
             return _http ??= new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(15),
@@ -1588,6 +1598,7 @@ public partial class MainWindow : Window
         if (_file is not null)
         {
             next.OpenInEditor(_file, _savePath, ProfileSource.File, track: false);
+            next._pendingFollowLink = _pendingFollowLink; // an unsaved import keeps its link
             next.SelectSheet(_sheetIndex); // same mode open as before
         }
         HandOverMainWindow(
@@ -2277,6 +2288,8 @@ public partial class MainWindow : Window
         // tells someone their profile is safe when it is not.
         if (!onDevice && _settings.DriveLinks.TryGetValue(path, out var driveLink))
             subtitle += driveLink.BackupDirty ? Strings.Main_BackupPending : " · on Google Drive";
+        var follows = !onDevice && FollowedLink(path) is not null;
+        if (follows) subtitle += " · " + Strings.Follow_CardNote;
 
         // Stretch, so cards in one row end level. A profile whose facts wrap to
         // an extra line used to stand taller than the two beside it.
@@ -2330,6 +2343,15 @@ public partial class MainWindow : Window
             {
                 Text = Strings.Main_Edited + facts.Edited, Classes = { "cardsub" },
                 FontSize = Size("SmallSize"), Opacity = 0.75,
+            });
+        // Said on the card, because the action that uses it lives in the
+        // card's menu, and a menu nobody knows is there is not an action.
+        if (follows)
+            lines.Children.Add(new TextBlock
+            {
+                Name = "CardFollows",
+                Text = Strings.Follow_CardNote, Classes = { "cardsub" },
+                FontSize = Size("SmallSize"),
             });
 
         var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 13 };
@@ -2392,6 +2414,7 @@ public partial class MainWindow : Window
             HomeStatusText.IsVisible = true;
             return;
         }
+        ForgetFollowLink(path); // a deleted profile has nothing left to follow
         RefreshHomeCards();
         HomeStatusText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_DeletedBare, bare);
         HomeStatusText.IsVisible = true;
@@ -2416,6 +2439,7 @@ public partial class MainWindow : Window
         if (track) Telemetry.Opened(source, game);
         _file = file;
         _savePath = savePath;
+        _pendingFollowLink = null; // only the import that just ran sets one
         LoadDrafts(savePath);
         _draftedRevision = -1; // new file: its Revision counter is unrelated to the last one's
         _sheetIndex = 0;
@@ -5812,6 +5836,11 @@ public partial class MainWindow : Window
             return false;
         }
 
+        if (_savePath is null && PickSavePathForTest is { } pickForTest)
+        {
+            if (pickForTest() is not string chosen) return false;
+            _savePath = chosen;
+        }
         if (_savePath is null)
         {
             Directory.CreateDirectory(LibraryDir);
@@ -5850,6 +5879,7 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotSaveExMessage, ex.Message), StatusKind.Error); return false; }
         _file.Dirty = false;
+        RememberFollowLink(_savePath);
         RememberRecent(_savePath); // Save As invents a path that no open ever saw
         PersistDrafts();           // and gives an untitled profile's names somewhere to live
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
@@ -5931,52 +5961,14 @@ public partial class MainWindow : Window
             HomeStatusText.IsVisible = true;
         }
 
-        if (!SheetsUrl.TryGetXlsxExportUrl(pasted, out var workbookUrl)
-            || !SheetsUrl.TryGetCsvExportUrl(pasted, out var csvUrl))
+        if (!SheetsUrl.TryGetXlsxExportUrl(pasted, out _) || !SheetsUrl.TryGetCsvExportUrl(pasted, out _))
         { HomeError(Strings.Main_ThatDoesNotLookLike); return; }
         try
         {
             Progress(Strings.Main_DownloadingTheSpreadsheet);
-            // A sheet this app made is read with the app's own token. The link
-            // the user pastes is most often the one they copied from this very
-            // profile a second ago, and the anonymous export below only answers
-            // for a sheet whose link sharing is on.
-            string? ours = null;
-            if (SheetsUrl.TryGetId(pasted, out var sheetId)
-                && Backup() is DriveBackup backup && backup.Knows(sheetId))
-                try { ours = await backup.ReadProfileAsync(sheetId); }
-                catch (Exception ex) when (ex is DriveApiException or GoogleAuthRevokedException
-                    or HttpRequestException or TaskCanceledException or InvalidDataException)
-                { ours = null; } // fall through to the public export
-
-            string text;
-            bool wholeWorkbook = true;
-            IReadOnlyList<SkippedTab> skipped = Array.Empty<SkippedTab>();
-            IReadOnlyList<TabRename> renamed = Array.Empty<TabRename>();
-            string? tooLarge = null;
-            if (ours is not null) text = ours;
-            else
-            {
-                // Ask for the whole workbook first, so a profile split across
-                // mode tabs arrives whole. Published links can only give one tab
-                // as CSV; they answer with something that is not a workbook, so
-                // fall back.
-                var bytes = await client.GetByteArrayAsync(workbookUrl);
-                wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
-                if (wholeWorkbook)
-                {
-                    using var stream = new MemoryStream(bytes);
-                    var read = Xlsx.Import(stream);
-                    (text, skipped, tooLarge, renamed) = (read.Csv, read.Skipped, read.Limitation, read.Renamed);
-                }
-                else text = await client.GetStringAsync(csvUrl);
-            }
-
-            if (text.TrimStart().StartsWith('<'))
-            { HomeError(Strings.Main_GoogleReturnedAWebPage); return; }
-            var imported = ProfileFile.Load(text);
-            if (imported.Document.Sheets.Count == 0)
-            { HomeError(NoProfileTab(text, skipped)); return; }
+            var got = await FetchSheetAsync(pasted, client);
+            if (Refusal(got) is string refused) { HomeError(refused); return; }
+            var imported = got.File!;
             // Tracked here, not on entry: a bad URL, an unshared sheet, and a
             // workbook with no profile tab all return above, and counting those
             // as "used the Sheets import" would make the feature look healthy
@@ -5984,20 +5976,21 @@ public partial class MainWindow : Window
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
             HomeStatusText.IsVisible = false; // the progress line has done its job
             OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
+            // Remembered against the file once it is saved, so "Get the latest
+            // from the link" can ask the same sheet again later.
+            _pendingFollowLink = pasted.Trim();
             var line = string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromThe, Modes(imported));
             // The download is anonymous, so a save can never reach the user's
             // sheet. Users have edited and then looked for the change in Drive.
             // ponytail: an app-backed sheet is left out, since a save can relink to it.
-            Status(ours is null ? line + " " + Strings.Main_ImportIsACopy : line, StatusKind.Ready);
+            Status(got.Ours ? line : line + " " + Strings.Main_ImportIsACopy, StatusKind.Ready);
             // A published link hands back one tab and no way to ask for the
             // rest, so the review has to say that before it counts anything.
             // Without it, a profile missing four of its five modes would be
             // reported as a clean import, which is the worst thing this window
             // could ever say.
-            await ShowImportReviewAsync(imported, Strings.Main_ThisSpreadsheet, skipped,
-                wholeWorkbook ? tooLarge
-                    : Strings.Main_ThisLinkIsAPublished,
-                dialogOwner, renamed);
+            await ShowImportReviewAsync(imported, Strings.Main_ThisSpreadsheet, got.Skipped,
+                got.Limitation, dialogOwner, got.Renamed);
         }
         catch (InvalidDataException)
         { HomeError(Strings.Main_CouldNotReadThatSpreadsheet); }

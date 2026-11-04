@@ -80,4 +80,33 @@ public class TutorialTourTests
         Click(TourButton(w, "Skip the tutorial"));
         w.Close();
     }
+
+    // The step titles were English literals in every language.
+    [AvaloniaFact]
+    public void NoTourTitleIsEnglishInFrench()
+    {
+        var before = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        Localization.Apply("fr");
+        try
+        {
+            var w = Open();
+            w.StartTutorial();
+            Dispatcher.UIThread.RunJobs();
+            var english = new[] { "Welcome", "Appearance", "Your QuadStick", "Save", "Install", "Done" };
+            var next = TourButton(w, Strings.Tour_NextStep);
+            var seen = 0;
+            for (var i = 0; i < 8; i++)
+            {
+                var shown = w.GetVisualDescendants().OfType<TextBlock>()
+                    .Where(t => t.IsEffectivelyVisible).Select(t => t.Text ?? "").ToList();
+                Assert.DoesNotContain(shown, english.Contains);
+                seen++;
+                if (i < 7) Click(next);
+            }
+            Assert.Equal(8, seen);
+            Click(TourButton(w, Strings.Tour_SkipTheTutorial));
+            w.Close();
+        }
+        finally { Localization.Apply(before); }
+    }
 }

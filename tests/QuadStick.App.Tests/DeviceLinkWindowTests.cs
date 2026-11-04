@@ -84,6 +84,57 @@ public class DeviceLinkWindowTests
         finally { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
     }
 
+    // A host keeps the result against whoever it belongs to. The free app has
+    // nobody to keep it against and keeps nothing.
+    [AvaloniaFact]
+    public async Task A_finished_test_tells_the_host_puff_then_sip()
+    {
+        var (w, _, dir) = Open(puff: 0, sip: 37);
+        var heard = new List<(int, int)>();
+        DeviceLinkWindow.StrengthMeasured = (p, s) => heard.Add((p, s));
+        try
+        {
+            await w.MeasureNowAsync();
+            Assert.Equal((StrengthSweep.Lowest - 1, 37), Assert.Single(heard));
+        }
+        finally
+        {
+            DeviceLinkWindow.StrengthMeasured = null;
+            if (Directory.Exists(dir)) Directory.Delete(dir, true);
+        }
+    }
+
+    [AvaloniaFact]
+    public void The_free_app_sets_no_host_of_its_own()
+    {
+        _ = new MainWindow();
+        Assert.Null(DeviceLinkWindow.StrengthMeasured);
+    }
+
+    [AvaloniaFact]
+    public async Task A_stopped_test_tells_the_host_nothing()
+    {
+        var (w, _, dir) = Open();
+        var heard = 0;
+        DeviceLinkWindow.StrengthMeasured = (_, _) => heard++;
+        try
+        {
+            var run = w.MeasureNowAsync();
+            var give = DateTime.UtcNow.AddSeconds(10);
+            while ((w.PromptText.Length == 0 || w.PromptText.StartsWith("Hands", StringComparison.Ordinal))
+                   && DateTime.UtcNow < give)
+                await Task.Delay(5);
+            w.StopForTest();
+            await run;
+            Assert.Equal(0, heard);
+        }
+        finally
+        {
+            DeviceLinkWindow.StrengthMeasured = null;
+            if (Directory.Exists(dir)) Directory.Delete(dir, true);
+        }
+    }
+
     [AvaloniaFact]
     public async Task Stop_still_restarts_the_QuadStick()
     {
@@ -143,5 +194,51 @@ public class DeviceLinkWindowTests
         var button = w.GetVisualDescendants().OfType<Button>()
             .SingleOrDefault(b => AutomationProperties.GetName(b) == Strings.Link_PageButtonName);
         Assert.NotNull(button);
+    }
+    // Closing the window mid-test would drop the port with the test file still
+    // loaded and the thresholds moved. The close waits for the device to be
+    // put back, then happens.
+    [AvaloniaFact]
+    public async Task Closing_mid_test_puts_the_quadstick_back_before_the_window_goes()
+    {
+        var (w, device, dir) = Open();
+        var closed = false;
+        w.Closed += (_, _) => closed = true;
+        try
+        {
+            w.Show();
+            var run = w.MeasureNowAsync();
+            var give = DateTime.UtcNow.AddSeconds(10);
+            while (!w.PromptText.Contains("Puff", StringComparison.Ordinal) && DateTime.UtcNow < give)
+                await Task.Delay(5);
+            w.Close();
+            Assert.False(closed);
+            await run;
+            Assert.True(closed);
+            Assert.DoesNotContain(DeviceConsole.StrengthTestName, device.Files.Keys);
+            Assert.Equal("boot", device.Commands[^1]);
+        }
+        finally { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
+    }
+    // The link drops mid-test (Bluetooth out of range, a cable pulled). The
+    // restart cannot reach the QuadStick, so saying it was put back would be
+    // a lie: the window says so and says how to put it back by hand.
+    [AvaloniaFact]
+    public async Task A_link_that_drops_mid_test_says_the_quadstick_was_not_put_back()
+    {
+        var (w, device, dir) = Open();
+        try
+        {
+            var run = w.MeasureNowAsync();
+            var give = DateTime.UtcNow.AddSeconds(10);
+            while (!w.PromptText.Contains("Puff", StringComparison.Ordinal) && DateTime.UtcNow < give)
+                await Task.Delay(5);
+            device.Silent = true;
+            await run.WaitAsync(TimeSpan.FromSeconds(20));
+            Assert.Null(w.LastStrength);
+            Assert.Contains(Strings.Link_NotPutBack, w.StatusText);
+            Assert.DoesNotContain(Strings.Link_Cancelled, w.StatusText);
+        }
+        finally { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
     }
 }

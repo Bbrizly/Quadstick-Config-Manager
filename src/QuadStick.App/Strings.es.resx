@@ -3734,4 +3734,85 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>No se pudo guardar la hoja de referencia en {0}: {1}</value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Sigue un enlace de Google Sheets</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Este perfil cambió mientras se descargaba la hoja, así que no se reemplazó nada. Guárdelo y vuelva a obtener lo último.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>No se pudo obtener lo último: {0} Su copia no se modificó.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Este perfil ya no sigue su enlace.</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Obtener lo último del enlace</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Volver a descargar este perfil desde la hoja de Google de la que se importó y ver qué cambió antes de reemplazar nada</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Conservar la mía</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Se conservó su copia. No se cambió nada.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>No se pudo leer su copia en este equipo, así que no se puede comparar.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Nuevo en la hoja: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} añadidas, {2} quitadas</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>Ya no está en la hoja: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Este perfil no se importó desde un enlace de Google Sheets, así que no hay nada que obtener.</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Otras celdas son distintas, como preferencias, nombres o notas.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Reemplazar mi copia</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Reemplazado por lo último del enlace. Su copia anterior está en la carpeta de rescate.</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>La hoja de Google es distinta de su copia. Si la reemplaza, su copia va primero a la carpeta de rescate.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>¿Reemplazar su copia por lo último?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Este perfil tiene cambios sin guardar. Primero se guardan y luego se comparan con la hoja. No se reemplaza nada sin su permiso.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>¿Guardar primero sus cambios?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Olvidar el enlace</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Dejar de seguir la hoja de Google de la que se importó este perfil</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Ya está al día. La hoja coincide con su copia.</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>No se pudo llegar al QuadStick para reiniciarlo, así que el perfil de prueba puede seguir en él. Desconéctelo y vuelva a conectarlo: eso devuelve su propio perfil y sus ajustes.</value>
+  </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>Instalar</value>
+  </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>Bienvenido</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>Tu QuadStick</value>
+  </data>
 </root>

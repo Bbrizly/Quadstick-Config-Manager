@@ -9,8 +9,10 @@ profiles is sold or shared with anyone.
 Four things use the network, and each one only after you ask for it.
 
 **Google Sheets and Drive.** When you paste a Sheets link, the app fetches that
-sheet and nothing else. When you turn on Google Drive backup, it saves your
-profiles to your own Drive under your own account.
+sheet and nothing else. A profile saved from that link remembers it on your
+computer, and the app fetches the same sheet again only when you press "Get the
+latest from the link", never on its own. When you turn on Google Drive backup,
+it saves your profiles to your own Drive under your own account.
 
 **The community profile list.** When you open Community profiles, the app asks
 quadstick.com for the shared list of game profiles, and Refresh in that window
@@ -25,7 +27,9 @@ is opened or saved, when installing to a QuadStick is tried and whether that
 worked, and when one of the optional features is used. A successful install also
 carries how many seconds passed since that profile was opened. A profile opened
 from the online library carries its game, as the library names it (for example
-`minecraft`). A profile you made yourself carries no game. Each event carries your
+`minecraft`). A profile you made yourself carries no game. If you run the
+strength test, how hard you could sip and puff is sent, as two percentages and
+nothing else. Each event carries your
 operating system, the app version, and a random install ID. While this is on,
 those events are sent as they happen. You can turn it off any time in Settings,
 under Advanced.

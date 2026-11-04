@@ -3734,4 +3734,85 @@
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>रेफ़रेंस शीट {0} में सेव नहीं हो सकी: {1}</value>
   </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>एक Google Sheet लिंक फ़ॉलो करती है</value>
+  </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>शीट डाउनलोड होते समय यह प्रोफ़ाइल बदल गई, इसलिए कुछ नहीं बदला गया। इसे सेव करें, फिर नया वर्शन दोबारा लाएं।</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>नया वर्शन नहीं लाया जा सका: {0} आपकी कॉपी नहीं बदली गई।</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>यह प्रोफ़ाइल अब अपना लिंक फ़ॉलो नहीं करती।</value>
+  </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>लिंक से नया वर्शन लाएं</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>यह प्रोफ़ाइल उस Google Sheet से फिर से डाउनलोड करें जिससे इसे इंपोर्ट किया गया था, और कुछ भी बदलने से पहले देखें कि क्या बदला है</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>मेरी रखें</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>आपकी कॉपी रखी गई। कुछ नहीं बदला।</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>इस कंप्यूटर पर आपकी कॉपी पढ़ी नहीं जा सकी, इसलिए उसे मिलाया नहीं जा सकता।</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>शीट में नया: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} जोड़े गए, {2} हटाए गए</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>अब शीट में नहीं: {0}</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>यह प्रोफ़ाइल Google Sheets लिंक से इंपोर्ट नहीं हुई थी, इसलिए लाने के लिए कुछ नहीं है।</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>दूसरे सेल अलग हैं, जैसे प्राथमिकताएं, नाम या नोट्स।</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>मेरी कॉपी बदलें</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>लिंक के नए वर्शन से बदल दिया गया। आपकी पुरानी कॉपी rescue फोल्डर में है।</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Google Sheet आपकी कॉपी से अलग है। अगर आप बदलते हैं, तो आपकी कॉपी पहले rescue फोल्डर में जाएगी।</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>अपनी कॉपी को नए वर्शन से बदलें?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>इस प्रोफ़ाइल में बिना सेव किए बदलाव हैं। पहले उन्हें सेव किया जाएगा, फिर शीट से मिलाया जाएगा। आपकी मंज़ूरी के बिना कुछ नहीं बदला जाएगा।</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>पहले अपने बदलाव सेव करें?</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>लिंक भूल जाएं</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>जिस Google Sheet से यह प्रोफ़ाइल इंपोर्ट हुई थी, उसे फ़ॉलो करना बंद करें</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>पहले से नया है। शीट आपकी कॉपी से मेल खाती है।</value>
+  </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>QuadStick को रीस्टार्ट करने के लिए उस तक नहीं पहुंचा जा सका, इसलिए टेस्ट प्रोफ़ाइल शायद अब भी उस पर है। इसे निकालकर फिर से लगाएं: इससे आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ जाती हैं।</value>
+  </data>
+  <data name="Tour_Install" xml:space="preserve">
+    <value>इंस्टॉल करें</value>
+  </data>
+  <data name="Tour_Welcome" xml:space="preserve">
+    <value>स्वागत है</value>
+  </data>
+  <data name="Tour_YourQuadStick" xml:space="preserve">
+    <value>आपका QuadStick</value>
+  </data>
 </root>

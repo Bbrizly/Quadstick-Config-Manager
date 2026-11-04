@@ -55,6 +55,16 @@ public class DeviceLinkWindow : Window
     /// <summary>The last strength measured, puff then sip, for the test.</summary>
     internal (int Puff, int Sip)? LastStrength { get; private set; }
 
+    /// <summary>Raised when a strength test finishes, with puff then sip in
+    /// percent of the sensor's range. Below <see cref="StrengthSweep.Lowest"/>
+    /// means under the bottom of the sweep, not zero. Null in the free app,
+    /// which shows the result and keeps nothing: a host that knows whose
+    /// QuadStick this is can ask and keep it against them.</summary>
+    /// <remarks>Static because the window is opened from deep inside the
+    /// editor, where a host has no reference to it. Called on the UI thread,
+    /// after the QuadStick has been put back.</remarks>
+    public static Action<int, int>? StrengthMeasured { get; set; }
+
     public DeviceLinkWindow(MainWindow owner)
     {
         Classes.Add("dialog");
@@ -115,7 +125,25 @@ public class DeviceLinkWindow : Window
         FillPorts();
         Refresh();
         Opened += (_, _) => (_ports.ItemCount > 0 ? _connect : refresh).Focus();
+        // Closed while a send or a test is running, the port would go out
+        // from under it, and the QuadStick would be left with the test file
+        // loaded and its thresholds moved. So a close waits: it stops the
+        // test, the device is put back, then the window goes.
+        Closing += (_, e) =>
+        {
+            if (!_busy || e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown) return;
+            e.Cancel = true;
+            _stopAsked = true;
+            _closeWhenDone = true;
+        };
         Closed += (_, _) => _stream?.Dispose();
+    }
+
+    bool _closeWhenDone;
+
+    void CloseIfAsked()
+    {
+        if (_closeWhenDone && !_busy) Close();
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -186,7 +214,7 @@ public class DeviceLinkWindow : Window
             _stream?.Dispose(); _stream = null;
             _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Link_CouldNotOpen, port, ex.Message);
         }
-        finally { _busy = false; Refresh(); }
+        finally { _busy = false; Refresh(); CloseIfAsked(); }
     }
 
     // ---- sending a profile ----
@@ -230,7 +258,7 @@ public class DeviceLinkWindow : Window
                 : string.Format(CultureInfo.CurrentCulture, Strings.Link_SentNew, result.Name);
         }
         catch (Exception ex) { _status.Text = ex.Message; }
-        finally { _busy = false; Refresh(); }
+        finally { _busy = false; Refresh(); CloseIfAsked(); }
     }
 
     // ---- measuring strength ----
@@ -252,7 +280,7 @@ public class DeviceLinkWindow : Window
 
         _busy = true; _stopAsked = false; Refresh();
         int puff = StrengthSweep.Lowest - 1, sip = StrengthSweep.Lowest - 1, threshold = 0;
-        bool finished = false;
+        bool finished = false, putBack = true;
         try
         {
             var prefs = await Task.Run(() =>
@@ -285,7 +313,7 @@ public class DeviceLinkWindow : Window
             // settings back, and the test changed both. The test file goes
             // first, while the console is still there to take the command.
             try { await Task.Run(() => { console.Delete(DeviceConsole.StrengthTestName); console.Boot(); }); }
-            catch { /* unplugging does the same, and the confirm said so */ }
+            catch { putBack = false; } // the link is gone: say so below, never "back"
             _console = null;   // the restart drops the port
             _busy = false; Refresh();
         }
@@ -296,8 +324,14 @@ public class DeviceLinkWindow : Window
             Telemetry.StrengthMeasured(puff, sip);
             _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Link_Result,
                 Percent(puff), Percent(sip), Percent(threshold));
+            // Last, so the person has already been shown the result whatever
+            // the host does with it.
+            StrengthMeasured?.Invoke(puff, sip);
         }
         else if (_stopAsked) _status.Text = Strings.Link_Cancelled;
+        if (!putBack)
+            _status.Text = (finished ? _status.Text + " " : "") + Strings.Link_NotPutBack;
+        CloseIfAsked();
     }
 
     int _try;
