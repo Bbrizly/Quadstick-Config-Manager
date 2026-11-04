@@ -63,6 +63,7 @@ public sealed class ControllerBridge : IDisposable
     readonly Action<State> _onState;
     volatile bool _stopping;
     State? _last;
+    readonly ManualResetEventSlim _outputDone = new();
 
     /// <summary>Starts the bridge. <paramref name="onState"/> runs on a
     /// background thread; the caller moves it to the UI thread.</summary>
@@ -83,6 +84,7 @@ public sealed class ControllerBridge : IDisposable
         };
         _process.OutputDataReceived += (_, e) =>
         {
+            if (e.Data is null) { _outputDone.Set(); return; }
             if (Parse(e.Data) is not { } state) return;
             _last = state;
             _onState(state);
@@ -92,10 +94,11 @@ public sealed class ControllerBridge : IDisposable
         _process.ErrorDataReceived += (_, _) => { };
         _process.Exited += (_, _) =>
         {
-            // Exited can beat the last status line; this wait drains the output
-            // first, so "unsupported" is not lost to it. Bounded, because a pipe
-            // held open by anything else would otherwise park this forever.
-            _process.WaitForExit(1000);
+            // Exited can beat the last status line. Waiting for the end of its
+            // output, not for the exit (which can return with lines still
+            // queued), keeps "unsupported" from losing to it. Bounded, because a
+            // pipe held open by anything else would otherwise park this forever.
+            _outputDone.Wait(1000);
             if (!_stopping && _last != State.Unsupported) _onState(State.Stopped);
         };
         _process.Start();
