@@ -1,0 +1,21 @@
+{
+  "about": "qcm remote session v1 crypto vectors. room = first 32 hex of SHA-256(\"qcm-room-v1:\"+code). key = PBKDF2-SHA256(code, \"qcm-key-v1:\"+room, 200000, 32). frame = base64url(nonce12 || AES-256-GCM(ciphertext||tag16)), AAD = room (utf8).",
+  "vectors": [
+    {
+      "code": "K7QM4XPA9RTD",
+      "room": "fd206258c608e3132f9d4606dd47bd13",
+      "keyHex": "85f5c6ff34a623602fa4d90fd9fbd1bce5b6af2a0c278029480aca7de55ed3d3",
+      "nonceHex": "000102030405060708090a0b",
+      "plaintext": "{\"v\":1,\"seq\":1,\"type\":\"hello\",\"role\":\"patient\",\"app\":\"QCM\",\"version\":\"1.9.0\"}",
+      "frame": "AAECAwQFBgcICQoLV5rV0quPaTqtPPxjeEHCAQD2bfmCbcCr9xdiCtAeOO_06ec_r2VRMlt9ZX9MYmrmpwZELprSkd_0or6kdM03O2ePOPYyUuXvMakfpd1eHMgaOf2Yq612zEiUbqEt"
+    },
+    {
+      "code": "0123456789AB",
+      "room": "2a00b05f32230b8571cf3b04f9bad8bb",
+      "keyHex": "d78d1390b3c704c5b4bceaa388d78a580542448690ff843211dec0fdf3238ac7",
+      "nonceHex": "ffeeddccbbaa998877665544",
+      "plaintext": "{\"v\":1,\"seq\":2,\"type\":\"profile.get\",\"id\":\"a1\"}",
+      "frame": "_-7dzLuqmYh3ZlVEEfZQtxB-OIlYUljwRt339c24HFCOtzn6kaP1u9ehvPAk-YzHxcx9hs7uR2GwH64ZToZuja5wj_sXMLoAN7A"
+    }
+  ]
+}
