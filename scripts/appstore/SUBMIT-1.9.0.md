@@ -6,7 +6,8 @@ Both stores, drag and drop. Written 2026-11-04 on branch `finalize-1.9`.
 
 1.9.0 has "Share with my clinician" (editor Share menu and Home). It cannot
 connect until the relay (`clinic-remote/relay`) is deployed to
-`wss://relay.bassamkamal.dev`. A reviewer who presses it sees "Couldn't reach
+`wss://relay.bassamkamal.dev`, and the reviewer note below also needs the
+clinic page live at `https://clinic.bassamkamal.dev`. A reviewer who presses it sees "Couldn't reach
 the session service". Pick one before uploading:
 
 - **Deploy the relay first, then submit (recommended).** The button works for
