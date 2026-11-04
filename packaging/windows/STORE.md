@@ -17,8 +17,8 @@ machine; the build runs on a cloud Windows runner in GitHub Actions.
 
 ## Ship an update
 
-    scripts/store-windows.sh 1.8.0            # upload, leave it in draft
-    scripts/store-windows.sh 1.8.0 --submit   # upload and send for certification
+    scripts/store-windows.sh 1.9.0            # upload, leave it in draft
+    scripts/store-windows.sh 1.9.0 --submit   # upload and send for certification
 
 One command from the Mac. It runs the packaging workflow on a cloud Windows
 runner, pulls the `.msix` back into `dist/`, then uploads and submits from here
@@ -103,3 +103,26 @@ light one. The workflow copies `Images/` whole, so new sizes ship on their own.
 Reviewer has no QuadStick device. Say: testable without hardware via
 File > Open the sample CSV, edit, validate, Install to any folder (a USB stick
 or empty folder stands in for the device).
+
+## Privacy answers (Partner Center)
+
+The same facts as the Mac answers in `scripts/appstore/APPSTORE.md` (App
+Privacy), checked 2026-11-04 against `Telemetry.cs` and `PRIVACY.md`.
+
+- **Properties > Privacy policy**: "Does your product access, collect, or
+  transmit personal information?" **Yes** (opt-in usage data with a random
+  install ID, crash reports and feedback on Send, Google sign-in for Drive
+  backup). Privacy policy URL:
+  https://bbrizly.github.io/Quadstick-Config-Manager/privacy.html
+- **Age ratings (IARC questionnaire)**: category Utility. No violence, sex,
+  language, gambling or drugs. Users interacting or exchanging content: **No**.
+  Shares the user's physical location: **No**. Shares personal information
+  with third parties: **No** (PostHog processes usage data for us only; Drive
+  data goes to the user's own account). Unrestricted web access: **No**.
+- **Product declarations**: "This app depends on non-Microsoft drivers or NT
+  services": No. Leave "tested to meet accessibility guidelines" unticked
+  until a Narrator pass on the Store build is done.
+- Capability `runFullTrust` needs a reason in the submission: "Desktop app
+  (Avalonia/.NET). Reads and writes profile files on a USB drive the user
+  plugs in, and talks to the device over a serial port."
+

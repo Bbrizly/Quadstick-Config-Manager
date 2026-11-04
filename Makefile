@@ -1,4 +1,4 @@
-# make test | run | gallery | build | package | pseudo | release VERSION=x.y.z | clean
+# make test | run | gallery | build | package | pseudo | release VERSION=x.y.z | store-mac VERSION=x.y.z | clean
 
 SLN := QuadStick.sln
 APP := src/QuadStick.App/QuadStick.App.csproj
@@ -6,7 +6,7 @@ DIST := dist
 # The Mac this is run on: builds the bundle you can actually launch to test.
 HOSTRID := osx-$(shell uname -m | sed 's/x86_64/x64/')
 
-.PHONY: all test run gallery build package pseudo release clean
+.PHONY: all test run gallery build package pseudo release store-mac clean
 
 all: test build
 
@@ -43,6 +43,18 @@ package: build
 	rm -f $(DIST)/pub/*.pdb
 	scripts/make-macos-app.sh $(DIST)/pub 0.0.0-dev "$(DIST)/Quadstick Config Manager.app"
 	@echo "Open '$(DIST)/Quadstick Config Manager.app' to test it."
+
+# The Mac App Store upload file, signed with the identities in the keychain.
+# Drag dist/store/QuadStickConfigManager-x.y.z.pkg into Transporter.
+#   make store-mac VERSION=1.9.0
+store-mac:
+	@echo "$(VERSION)" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$$' || { echo "Set VERSION, e.g. make store-mac VERSION=1.9.0"; exit 1; }
+	scripts/appstore/package-appstore.sh "$(VERSION)" \
+		"$$(security find-identity -v -p codesigning | sed -n 's/.*"\(Apple Distribution: .*\)"/\1/p' | head -1)" \
+		"$$(security find-identity -v | sed -n 's/.*"\(3rd Party Mac Developer Installer: .*\)"/\1/p' | head -1)"
+	@mkdir -p $(DIST)/store
+	cp $(DIST)/appstore/QuadStickConfigManager.pkg $(DIST)/store/QuadStickConfigManager-$(VERSION).pkg
+	@echo "Drag $(DIST)/store/QuadStickConfigManager-$(VERSION).pkg into Transporter."
 
 # Ship a release: verify, tag, push. That is the whole process. Pushing the
 # tag triggers CI, which builds every download and publishes the release.

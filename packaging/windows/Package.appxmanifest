@@ -8,7 +8,7 @@
   <Identity
     Name="BassamKamal.QuadstickConfigManager"
     Publisher="CN=33998875-7EB9-4BFE-845E-C52096DF7C60"
-    Version="1.0.0.0" />
+    Version="1.9.0.0" />
 
   <Properties>
     <DisplayName>Quadstick: Config Manager</DisplayName>

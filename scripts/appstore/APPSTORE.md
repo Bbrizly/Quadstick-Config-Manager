@@ -65,8 +65,8 @@ App Store Connect.
 
 ## Ship an update
 
-    scripts/store-mac.sh 1.8.4 "What's new"            # build, sign, upload
-    scripts/store-mac.sh 1.8.4 "What's new" --submit   # attach and send for review
+    scripts/store-mac.sh 1.9.0 "What's new"            # build, sign, upload
+    scripts/store-mac.sh 1.9.0 "What's new" --submit   # attach and send for review
 
 The second run waits for Apple to finish processing the upload. Once approved
 it goes live on its own. One time: App Store Connect > Users and Access >
@@ -80,7 +80,7 @@ is shown above the keys list.
 - Name: `Quadstick: Config Manager` (pending Fred's OK)
 - Subtitle: `Edit QuadStick profiles safely`
 - Category: Utilities. Price: Free.
-- Privacy: Data Not Collected.
+- Privacy: NOT "Data Not Collected". See App Privacy below.
 - Description: lead with who it is for (quadriplegic gamers configuring a
   QuadStick), the safe edit/validate/install flow with automatic backups,
   free and open source, link the GitHub repo. Reuse the site copy.
@@ -96,3 +96,39 @@ This is an accessibility tool. In the review notes and description say so
 plainly; App Store editorial occasionally features accessibility apps, and
 it is the honest framing. VoiceOver-check the main window before submitting:
 Avalonia's accessibility tree is imperfect, fix what is cheap, note the rest.
+
+## App Privacy (App Store Connect > App Privacy)
+
+Checked 2026-11-04 against `src/QuadStick.App/Telemetry.cs` (the per-event
+allowlist in `Allowed`) and `PRIVACY.md`. Usage data is opt-in, but Apple's
+"optional disclosure" exception only covers data the user sends each time on a
+form, so the opt-in analytics still has to be declared. Crash reports and
+feedback are sent one at a time on Send, so they could qualify for that
+exception; declaring them anyway is the safe side.
+
+Answer "Yes, we collect data". Then, for every type below: **Linked to the
+user: No** (no account, no email, only a random install ID). **Used for
+tracking: No** (no ads, no data brokers, PostHog with `$geoip_disable`).
+
+| Apple data type | What is sent | Purpose |
+|---|---|---|
+| Identifiers > Device ID | the random install ID (`distinct_id`) | Analytics |
+| Usage Data > Product Interaction | app opened, profile opened or saved (source, library game), install tried and the failure category, setup seconds, optional feature used | Analytics |
+| Diagnostics > Crash Data | `$exception` type and stack, only when the user presses Send | App Functionality |
+| Health & Fitness > Health | the strength test result: sip and puff as two percentages | Analytics |
+| User Content > Customer Support | feedback text, only when the user presses Send | App Functionality |
+
+Not declared, and why:
+
+- Google Drive and Sheets. Profiles go to the user's own Drive under their own
+  Google account, or are fetched from a sheet link they pasted. The developer
+  never receives or can read them, so under Apple's definition (data the
+  developer or its partners can access) this is not collection.
+- Location. PostHog is told not to derive one (`$geoip_disable`).
+- Contact info, contacts, browsing, search, purchases, financial, sensitive
+  info: none of it leaves the machine.
+
+The strength result as "Health" is a judgment call: it is a breath measure from
+a disabled user, and over-declaring is never a rejection reason. If you
+disagree, "Other Data" is the alternative. Do not leave it out.
+
