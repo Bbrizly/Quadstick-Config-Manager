@@ -3839,4 +3839,157 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
     <value>Bij een profiel dat een Google Spreadsheets-link volgt, kijkt de app in het blad als je het profiel opent, als je terugkomt naar het venster, en elke 5 minuten zolang het venster vooraan staat. Het meldt het alleen. Er wordt niets vervangen voordat je ja zegt.</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>De sessiedienst is druk, probeer het later opnieuw.</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>Wat je therapeut heeft veranderd</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>De code klopt niet. Begin opnieuw en lees de nieuwe code voor aan je therapeut.</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>Je code is {0}</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>Je therapeut is verbonden</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>Verbinden...</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>Gekopieerd.</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>Code kopiëren</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>De code kopiëren om naar je therapeut te sturen</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>Link kopiëren</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>Een link kopiëren waarmee je therapeut kan meedoen</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>Beëindigen</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>Sessie beëindigd</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>De sessie met je therapeut beëindigen</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>Binnen 10 minuten deed niemand mee, dus de sessie is beëindigd. Begin opnieuw voor een nieuwe code.</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>Je therapeut ziet je opgeslagen profiel en wat je QuadStick verstuurt, en kan je een wijziging sturen. Niets wordt opgeslagen of geïnstalleerd zonder jouw klik. De sessie is end-to-end versleuteld.</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>Het nieuwe profiel is opgeslagen. Nu op je QuadStick installeren? Het bestand op het apparaat wordt eerst bewaard.</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>Het nieuwe profiel installeren?</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>Mijn versie houden</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>Mijn profiel laten zoals het is</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>{0}: nieuwe modus</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>Modus {0} ({1})</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>{0}: verwijderd</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>Geen wijzigingen.</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>Dit is geen QuadStick-profiel.</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>Alleen de volgorde van regels of lege regels is veranderd.</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>Profiel: {0}</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>Notitie van je therapeut: {0}</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>Mijn versie houden laat je profiel zoals het is. Deze gebruiken slaat de wijziging op, bewaart een kopie van het oude bestand en vraagt het voor het installeren.</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>Je therapeut heeft een wijziging gestuurd</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>Iemand anders gebruikt deze code al. Begin opnieuw voor een nieuwe code.</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>Toegevoegd: {0}</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>Verwijderd: {0}</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>De wijziging van je therapeut is opgeslagen in {0}. Je oude bestand staat in de herstelmap.</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>Je therapeut vroeg om je profiel. Sla het eerst op, daarna kan het opnieuw gevraagd worden.</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>Delen met mijn therapeut</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>Een sessie starten zodat je therapeut dit profiel ziet en wijzigingen voorstelt</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>Starten</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>Opnieuw starten</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>Een sessie starten en een code voor je therapeut krijgen</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>Sessies stoppen na 2 uur. Begin opnieuw voor een nieuwe code.</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>Kan de sessiedienst niet bereiken. Je netwerk blokkeert het misschien. Probeer een ander netwerk of deel via Google Sheets.</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>Deze gebruiken</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>De wijziging van je therapeut gebruiken en opslaan</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>Wachten op je therapeut</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>Je therapeut kijkt naar je invoer</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>Delen met mijn therapeut</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>Geef je therapeut deze code:</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>De sessiedienst heeft de sessie gesloten omdat er te veel tegelijk werd verstuurd. Begin opnieuw voor een nieuwe code.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>Andere regels in het bestand</value>
+  </data>
 </root>

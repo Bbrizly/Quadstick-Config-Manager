@@ -3839,4 +3839,157 @@
   <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
     <value>जो प्रोफ़ाइल किसी Google Sheets लिंक को फ़ॉलो करती है, उसके लिए ऐप शीट को तब देखता है जब आप प्रोफ़ाइल खोलते हैं, जब आप विंडो पर लौटते हैं, और हर 5 मिनट जब तक विंडो सामने है। यह सिर्फ़ बताता है। आपके हाँ कहने तक कुछ नहीं बदला जाता।</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>सत्र सेवा व्यस्त है, बाद में फिर कोशिश करें।</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>आपके थेरेपिस्ट ने क्या बदला</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>बंद करें</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>कोड मेल नहीं खाता। फिर से शुरू करें और नया कोड अपने थेरेपिस्ट को बताएं।</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>आपका कोड {0} है</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>आपके थेरेपिस्ट जुड़ गए हैं</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>जुड़ रहा है...</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>कॉपी हो गया।</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>कोड कॉपी करें</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>थेरेपिस्ट को भेजने के लिए कोड कॉपी करें</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>लिंक कॉपी करें</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>ऐसा लिंक कॉपी करें जिससे थेरेपिस्ट जुड़ सकें</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>समाप्त करें</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>सत्र समाप्त हुआ</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>थेरेपिस्ट के साथ सत्र समाप्त करें</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>10 मिनट में कोई नहीं जुड़ा, इसलिए सत्र समाप्त हुआ। नए कोड के लिए फिर से शुरू करें।</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>आपके थेरेपिस्ट आपकी सहेजी गई प्रोफ़ाइल और QuadStick क्या भेज रहा है, देख सकते हैं, और आपको बदलाव भेज सकते हैं। आपके क्लिक के बिना कुछ भी सहेजा या इंस्टॉल नहीं होता। सत्र एंड-टू-एंड एन्क्रिप्टेड है।</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>नई प्रोफ़ाइल सहेज ली गई। अभी QuadStick पर इंस्टॉल करें? डिवाइस की फ़ाइल का पहले बैकअप लिया जाता है।</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>नई प्रोफ़ाइल इंस्टॉल करें?</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>मेरी रखें</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>मेरी प्रोफ़ाइल जैसी है वैसी रखें</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>{0}: नया मोड</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>मोड {0} ({1})</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>{0}: हटाया गया</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>कोई बदलाव नहीं।</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>यह QuadStick प्रोफ़ाइल नहीं है।</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>सिर्फ़ पंक्तियों का क्रम या खाली पंक्तियाँ बदलीं।</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>प्रोफ़ाइल: {0}</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>आपके थेरेपिस्ट का नोट: {0}</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>मेरी रखें आपकी प्रोफ़ाइल को वैसा ही छोड़ता है। इसे इस्तेमाल करें बदलाव सहेजता है, पुरानी फ़ाइल की कॉपी रखता है, फिर इंस्टॉल से पहले पूछता है।</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>आपके थेरेपिस्ट ने बदलाव भेजा</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>कोई और यह कोड इस्तेमाल कर रहा है। नए कोड के लिए फिर से शुरू करें।</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>जोड़ा गया: {0}</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>हटाया गया: {0}</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>थेरेपिस्ट का बदलाव {0} में सहेजा गया। आपकी पुरानी फ़ाइल रेस्क्यू फ़ोल्डर में है।</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>आपके थेरेपिस्ट ने प्रोफ़ाइल माँगी। पहले इसे सहेजें, फिर वे दोबारा माँग सकते हैं।</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>मेरे थेरेपिस्ट के साथ साझा करें</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>सत्र शुरू करें ताकि थेरेपिस्ट यह प्रोफ़ाइल देखकर बदलाव सुझा सकें</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>शुरू करें</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>फिर से शुरू करें</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>सत्र शुरू करें और थेरेपिस्ट के लिए कोड पाएं</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>सत्र 2 घंटे बाद समाप्त होते हैं। नए कोड के लिए फिर से शुरू करें।</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>सत्र सेवा तक नहीं पहुँच सके। आपका नेटवर्क इसे रोक सकता है। दूसरा नेटवर्क आज़माएं, या Google Sheets से साझा करें।</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>इसे इस्तेमाल करें</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>थेरेपिस्ट का बदलाव इस्तेमाल करें और सहेजें</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>थेरेपिस्ट का इंतज़ार</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>आपके थेरेपिस्ट आपके इनपुट देख रहे हैं</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>मेरे थेरेपिस्ट के साथ साझा करें</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>यह कोड अपने थेरेपिस्ट को दें:</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>एक साथ बहुत ज़्यादा भेजा गया, इसलिए सेवा ने सत्र बंद कर दिया। नए कोड के लिए फिर से शुरू करें।</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>फ़ाइल की अन्य पंक्तियाँ</value>
+  </data>
 </root>

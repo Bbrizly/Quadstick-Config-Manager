@@ -460,6 +460,7 @@ public partial class MainWindow : Window
         open.Click += async (_, _) => await OpenInSheetsAsync(path);
         var menu = new MenuFlyout { Items = { copy, open } };
         AddFollowItems(menu, path);
+        if (path is null) menu.Items.Add(RemoteMenuItem()); // the editor's flyout only
         return menu;
     }
 
@@ -6547,9 +6548,7 @@ public partial class MainWindow : Window
     void UpdateLiveRows()
     {
         var now = new HashSet<int>();
-        if (_live is { OutputsUnderstood: true } state && CurrentSheet is { } sheet)
-            foreach (var b in sheet.Bindings)
-                if (state.Outputs.Contains(b.Output)) now.Add(b.Row);
+        foreach (var b in FiringBindings(_live, CurrentSheet)) now.Add(b.Row);
         if (now.SetEquals(_liveRows)) return;
         // Only the rows that changed, so holding a button does not repaint the
         // mode: a stick sends hundreds of reports a second.

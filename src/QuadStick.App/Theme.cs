@@ -84,6 +84,9 @@ public sealed class AppSettings
     // or the user. This is what makes "active installs" a real number instead
     // of a launch count, and what makes a deletion request findable.
     public string InstallId = "";            // "" = not yet generated
+
+    // The clinician session relay. "" = RemoteSession.DefaultRelay.
+    public string RelayUrl = "";
 }
 
 // What a profile follows, and what the last check of it saw.

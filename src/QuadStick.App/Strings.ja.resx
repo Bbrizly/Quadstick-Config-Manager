@@ -3837,4 +3837,157 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
     <value>Google スプレッドシートのリンクをフォローしているプロファイルでは、プロファイルを開いたとき、ウィンドウに戻ったとき、ウィンドウが前面にある間は 5 分ごとにシートを確認します。知らせるだけで、あなたが「はい」と言うまで何も置き換えません。</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>セッションサービスが混み合っています。後でもう一度お試しください。</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>担当者が変更した内容</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>コードが一致しません。もう一度始めて、新しいコードを担当者に伝えてください。</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>コードは {0} です</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>担当者が接続しました</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>接続しています...</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>コピーしました。</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>コードをコピー</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>担当者に送るコードをコピー</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>リンクをコピー</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>担当者が参加するためのリンクをコピー</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>セッションが終了しました</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>担当者とのセッションを終了</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>10分以内に誰も参加しなかったため、セッションを終了しました。新しいコードでもう一度始めてください。</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>担当者は保存済みのプロファイルと QuadStick が送っている内容を見て、変更を送ることができます。あなたがクリックしない限り、何も保存もインストールもされません。セッションはエンドツーエンドで暗号化されています。</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>新しいプロファイルを保存しました。今すぐ QuadStick にインストールしますか？デバイス上のファイルは先にバックアップされます。</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>新しいプロファイルをインストールしますか？</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>自分のものを残す</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>プロファイルをそのままにする</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>{0}：新しいモード</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>モード {0}（{1}）</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>{0}：削除</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>変更はありません。</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>QuadStick のプロファイルではありません。</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>行の順序または空行だけが変わりました。</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>プロファイル：{0}</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>担当者からのメモ：{0}</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>「自分のものを残す」はプロファイルをそのままにします。「これを使う」は変更を保存し、古いファイルのコピーを残してから、インストールの前に確認します。</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>担当者が変更を送りました</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>このコードは別の人が使っています。新しいコードでもう一度始めてください。</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>追加：{0}</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>削除：{0}</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>担当者の変更を {0} に保存しました。古いファイルは復旧フォルダーにあります。</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>担当者がプロファイルを求めています。先に保存すると、もう一度求めてもらえます。</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>担当者と共有</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>セッションを始めて、担当者がこのプロファイルを見て変更を提案できるようにする</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>開始</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>もう一度開始</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>セッションを始めて担当者用のコードを取得</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>セッションは2時間で終了します。新しいコードでもう一度始めてください。</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>セッションサービスに接続できません。ネットワークがブロックしている可能性があります。別のネットワークを試すか、Google スプレッドシートで共有してください。</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>これを使う</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>担当者の変更を使って保存</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>担当者を待っています</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>担当者があなたの入力を見ています</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>担当者と共有</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>このコードを担当者に伝えてください：</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>一度に送るデータが多すぎたため、セッションが閉じられました。新しいコードでもう一度始めてください。</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>ファイルのその他の行</value>
+  </data>
 </root>

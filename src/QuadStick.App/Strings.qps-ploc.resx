@@ -3977,4 +3977,157 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
     <value>[Fór á prófílé thát fóllówš á Góóglé Šhéétš líñk, thé ápp lóókš át thé šhéét whéñ ýóú ópéñ thé prófílé, whéñ ýóú çómé báçk tó thé wíñdów, áñd évérý 5 míñútéš whílé thé wíñdów íš íñ fróñt. Ít óñlý téllš ýóú. Ñóthíñg íš répláçéd úñtíl ýóú šáý ýéš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>[Šéššíóñ šérvíçé íš búšý, trý ágáíñ látér. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>[Whát ýóúr çlíñíçíáñ çháñgéd xxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>[Çódé dóéšñ't mátçh. Štárt ágáíñ áñd réád thé ñéw çódé tó ýóúr çlíñíçíáñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>[Ýóúr çódé íš {0} xxxxxx]</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>[Ýóúr çlíñíçíáñ íš çóññéçtéd xxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>[Çóññéçtíñg... xxxxx]</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>[Çópíéd. xx]</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>[Çópý çódé xxx]</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>[Çópý thé çódé tó šéñd tó ýóúr çlíñíçíáñ xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>[Çópý líñk xxx]</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>[Çópý á líñk ýóúr çlíñíçíáñ çáñ ópéñ tó jóíñ xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>[Éñd x]</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>[Šéššíóñ éñdéd xxxxx]</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>[Éñd thé šéššíóñ wíth ýóúr çlíñíçíáñ xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>[Ñó çlíñíçíáñ jóíñéd wíthíñ 10 míñútéš, šó thé šéššíóñ éñdéd. Štárt ágáíñ fór á ñéw çódé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>[Ýóúr çlíñíçíáñ çáñ šéé ýóúr šávéd prófílé áñd whát ýóúr QúádŠtíçk íš šéñdíñg, áñd çáñ šéñd ýóú á çháñgé. Ñóthíñg íš šávéd ór íñštálléd úñléšš ýóú çlíçk. Thé šéššíóñ íš éñd-tó-éñd éñçrýptéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>[Thé ñéw prófílé íš šávéd. Íñštáll ít óñ ýóúr QúádŠtíçk ñów? Thé fílé óñ thé dévíçé íš báçkéd úp fíršt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>[Íñštáll thé ñéw prófílé? xxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>[Kéép míñé xxx]</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>[Kéép mý prófílé áš ít íš xxxxxxxxx]</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>[{0}: ñéw módé xxxxx]</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>[Módé {0} ({1}) xxxxx]</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>[{0}: rémóvéd xxxx]</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>[Ñó çháñgéš. xxxx]</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>[Thíš íš ñót á QúádŠtíçk prófílé. xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>[Óñlý thé órdér óf rówš ór bláñk líñéš çháñgéd. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>[Prófílé: {0} xxxx]</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>[Ñóté fróm ýóúr çlíñíçíáñ: {0} xxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>[Kéép míñé léávéš ýóúr prófílé áš ít íš. Úšé thíš šávéš thé çháñgé, kéépš á çópý óf ýóúr óld fílé, théñ áškš béfóré íñštállíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>[Ýóúr çlíñíçíáñ šéñt á çháñgé xxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>[Šóméóñé élšé íš álréádý úšíñg thíš çódé. Štárt ágáíñ fór á ñéw çódé. xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>[Áddéd: {0} xxxx]</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>[Rémóvéd: {0} xxxx]</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>[Šávéd ýóúr çlíñíçíáñ'š çháñgé tó {0}. Ýóúr óld fílé íš íñ thé réšçúé fóldér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>[Ýóúr çlíñíçíáñ áškéd fór ýóúr prófílé. Šávé ít fíršt, théñ théý çáñ ášk ágáíñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>[Šháré wíth mý çlíñíçíáñ xxxxxxxxx]</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>[Štárt á šéššíóñ šó ýóúr çlíñíçíáñ çáñ šéé thíš prófílé áñd šúggéšt çháñgéš xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>[Štárt xx]</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>[Štárt ágáíñ xxxx]</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>[Štárt á šéššíóñ áñd gét á çódé fór ýóúr çlíñíçíáñ xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>[Šéššíóñš éñd áftér 2 hóúrš. Štárt ágáíñ fór á ñéw çódé. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>[Çóúldñ't réáçh thé šéššíóñ šérvíçé. Ýóúr ñétwórk máý blóçk ít. Trý áñóthér ñétwórk, ór úšé Góóglé Šhéétš šháríñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>[Úšé thíš xxx]</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>[Úšé ýóúr çlíñíçíáñ'š çháñgé áñd šávé ít xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>[Wáítíñg fór ýóúr çlíñíçíáñ xxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>[Ýóúr çlíñíçíáñ íš wátçhíñg ýóúr íñpútš xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>[Šháré wíth mý çlíñíçíáñ xxxxxxxxx]</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>[Gívé ýóúr çlíñíçíáñ thíš çódé: xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>[Thé šéššíóñ šérvíçé çlóšéd thé šéššíóñ fór šéñdíñg tóó múçh át óñçé. Štárt ágáíñ fór á ñéw çódé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>[Óthér líñéš íñ thé fílé xxxxxxxxx]</value>
+  </data>
 </root>

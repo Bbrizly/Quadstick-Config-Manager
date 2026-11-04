@@ -3839,4 +3839,157 @@
   <data name="Settings_FollowAutoCheckCaption" xml:space="preserve">
     <value>للملف الشخصي الذي يتبع رابط جداول بيانات Google، ينظر التطبيق في الجدول عند فتح الملف، وعند العودة إلى النافذة، وكل 5 دقائق ما دامت النافذة في المقدمة. إنه يخبرك فقط. لا يُستبدل شيء حتى توافق.</value>
   </data>
+  <data name="Remote_Busy" xml:space="preserve">
+    <value>خدمة الجلسات مشغولة، حاول لاحقًا.</value>
+  </data>
+  <data name="Remote_ChangesName" xml:space="preserve">
+    <value>ما غيّره معالجك</value>
+  </data>
+  <data name="Remote_Close" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="Remote_CodeMismatch" xml:space="preserve">
+    <value>الرمز غير مطابق. ابدأ من جديد واقرأ الرمز الجديد لمعالجك.</value>
+  </data>
+  <data name="Remote_CodeName" xml:space="preserve">
+    <value>رمزك هو {0}</value>
+  </data>
+  <data name="Remote_Connected" xml:space="preserve">
+    <value>معالجك متصل</value>
+  </data>
+  <data name="Remote_Connecting" xml:space="preserve">
+    <value>جارٍ الاتصال...</value>
+  </data>
+  <data name="Remote_Copied" xml:space="preserve">
+    <value>تم النسخ.</value>
+  </data>
+  <data name="Remote_CopyCode" xml:space="preserve">
+    <value>نسخ الرمز</value>
+  </data>
+  <data name="Remote_CopyCodeName" xml:space="preserve">
+    <value>نسخ الرمز لإرساله إلى معالجك</value>
+  </data>
+  <data name="Remote_CopyLink" xml:space="preserve">
+    <value>نسخ الرابط</value>
+  </data>
+  <data name="Remote_CopyLinkName" xml:space="preserve">
+    <value>نسخ رابط يفتحه معالجك للانضمام</value>
+  </data>
+  <data name="Remote_End" xml:space="preserve">
+    <value>إنهاء</value>
+  </data>
+  <data name="Remote_Ended" xml:space="preserve">
+    <value>انتهت الجلسة</value>
+  </data>
+  <data name="Remote_EndName" xml:space="preserve">
+    <value>إنهاء الجلسة مع معالجك</value>
+  </data>
+  <data name="Remote_Expired" xml:space="preserve">
+    <value>لم ينضم أحد خلال 10 دقائق، فانتهت الجلسة. ابدأ من جديد لرمز جديد.</value>
+  </data>
+  <data name="Remote_Explain" xml:space="preserve">
+    <value>يرى معالجك ملفك المحفوظ وما يرسله QuadStick، ويمكنه أن يرسل لك تغييرًا. لا يُحفظ أو يُثبَّت شيء إلا بنقرتك. الجلسة مشفرة من طرف إلى طرف.</value>
+  </data>
+  <data name="Remote_InstallBody" xml:space="preserve">
+    <value>تم حفظ الملف الجديد. تثبيته الآن على QuadStick؟ يُنسخ ملف الجهاز احتياطيًا أولًا.</value>
+  </data>
+  <data name="Remote_InstallTitle" xml:space="preserve">
+    <value>تثبيت الملف الجديد؟</value>
+  </data>
+  <data name="Remote_Keep" xml:space="preserve">
+    <value>الإبقاء على ملفي</value>
+  </data>
+  <data name="Remote_KeepName" xml:space="preserve">
+    <value>إبقاء ملفي كما هو</value>
+  </data>
+  <data name="Remote_ModeAdded" xml:space="preserve">
+    <value>{0}: وضع جديد</value>
+  </data>
+  <data name="Remote_ModeLabel" xml:space="preserve">
+    <value>الوضع {0} ({1})</value>
+  </data>
+  <data name="Remote_ModeRemoved" xml:space="preserve">
+    <value>{0}: محذوف</value>
+  </data>
+  <data name="Remote_NoChanges" xml:space="preserve">
+    <value>لا تغييرات.</value>
+  </data>
+  <data name="Remote_NotAProfile" xml:space="preserve">
+    <value>هذا ليس ملف QuadStick.</value>
+  </data>
+  <data name="Remote_OtherChanges" xml:space="preserve">
+    <value>تغير ترتيب الأسطر أو الأسطر الفارغة فقط.</value>
+  </data>
+  <data name="Remote_ProposalFor" xml:space="preserve">
+    <value>الملف: {0}</value>
+  </data>
+  <data name="Remote_ProposalNote" xml:space="preserve">
+    <value>ملاحظة من معالجك: {0}</value>
+  </data>
+  <data name="Remote_ProposalSafe" xml:space="preserve">
+    <value>الإبقاء على ملفي يتركه كما هو. استخدام هذا يحفظ التغيير ويحتفظ بنسخة من الملف القديم ثم يسأل قبل التثبيت.</value>
+  </data>
+  <data name="Remote_ProposalTitle" xml:space="preserve">
+    <value>أرسل معالجك تغييرًا</value>
+  </data>
+  <data name="Remote_RoomFull" xml:space="preserve">
+    <value>شخص آخر يستخدم هذا الرمز. ابدأ من جديد لرمز جديد.</value>
+  </data>
+  <data name="Remote_RowAdded" xml:space="preserve">
+    <value>أُضيف: {0}</value>
+  </data>
+  <data name="Remote_RowRemoved" xml:space="preserve">
+    <value>حُذف: {0}</value>
+  </data>
+  <data name="Remote_Saved" xml:space="preserve">
+    <value>حُفظ تغيير معالجك في {0}. ملفك القديم في مجلد الاسترداد.</value>
+  </data>
+  <data name="Remote_SaveFirst" xml:space="preserve">
+    <value>طلب معالجك ملفك. احفظه أولًا ثم يمكنه الطلب مرة أخرى.</value>
+  </data>
+  <data name="Remote_ShareWithClinician" xml:space="preserve">
+    <value>المشاركة مع معالجي</value>
+  </data>
+  <data name="Remote_ShareWithClinicianName" xml:space="preserve">
+    <value>بدء جلسة ليرى معالجك هذا الملف ويقترح تغييرات</value>
+  </data>
+  <data name="Remote_Start" xml:space="preserve">
+    <value>بدء</value>
+  </data>
+  <data name="Remote_StartAgain" xml:space="preserve">
+    <value>البدء من جديد</value>
+  </data>
+  <data name="Remote_StartName" xml:space="preserve">
+    <value>بدء جلسة والحصول على رمز لمعالجك</value>
+  </data>
+  <data name="Remote_TimeUp" xml:space="preserve">
+    <value>تنتهي الجلسات بعد ساعتين. ابدأ من جديد لرمز جديد.</value>
+  </data>
+  <data name="Remote_Unreachable" xml:space="preserve">
+    <value>تعذر الوصول إلى خدمة الجلسات. قد تحجبها شبكتك. جرّب شبكة أخرى أو شارك عبر Google Sheets.</value>
+  </data>
+  <data name="Remote_UseThis" xml:space="preserve">
+    <value>استخدام هذا</value>
+  </data>
+  <data name="Remote_UseThisName" xml:space="preserve">
+    <value>استخدام تغيير معالجك وحفظه</value>
+  </data>
+  <data name="Remote_Waiting" xml:space="preserve">
+    <value>بانتظار معالجك</value>
+  </data>
+  <data name="Remote_Watching" xml:space="preserve">
+    <value>معالجك يشاهد مدخلاتك</value>
+  </data>
+  <data name="Remote_WindowTitle" xml:space="preserve">
+    <value>المشاركة مع معالجي</value>
+  </data>
+  <data name="Remote_YourCode" xml:space="preserve">
+    <value>أعطِ معالجك هذا الرمز:</value>
+  </data>
+  <data name="Remote_TooMuch" xml:space="preserve">
+    <value>أغلقت الخدمة الجلسة لأن ما أُرسل دفعة واحدة كان كثيرًا. ابدأ من جديد لرمز جديد.</value>
+  </data>
+  <data name="Remote_OtherLines" xml:space="preserve">
+    <value>أسطر أخرى في الملف</value>
+  </data>
 </root>
