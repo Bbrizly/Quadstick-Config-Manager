@@ -3246,7 +3246,7 @@ public partial class MainWindow : Window
         return Vocab.AllInputs.Concat(SwitchJacks.RearJoystick)
             .Distinct(StringComparer.Ordinal)
             .Where(i => !used.Contains(i) && zones.Contains(ZoneOf(i)))
-            .OrderBy(GroupRank).ThenBy(x => x, StringComparer.Ordinal);
+            .OrderBy(GroupRank).ThenBy(JoystickRank).ThenBy(x => x, StringComparer.Ordinal);
     }
 
     // The pairing half of a combo token, and the only thing that tells the five
