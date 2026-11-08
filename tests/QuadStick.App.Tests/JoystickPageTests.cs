@@ -38,10 +38,10 @@ public class JoystickPageTests
 
     static void Plus(MainWindow w)
     {
-        w.GetVisualDescendants().OfType<Button>().First(b =>
-                (AutomationProperties.GetName(b) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal))
-            .RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>().First(b =>
+            (AutomationProperties.GetName(b) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal)));
         Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
     }
 
     static void Done(MainWindow w, ProfileFile file) { file.Dirty = false; w.Close(); }
@@ -89,7 +89,8 @@ public class JoystickPageTests
         Done(w, file);
     }
 
-    // Drew's own flow: press + once per direction on an empty stick.
+    // Drew's own flow: press + once per direction on an empty stick. The first
+    // press is still up, which he said is fine.
     [AvaloniaFact]
     public void Four_presses_give_the_four_directions_in_four_boxes()
     {
@@ -107,12 +108,8 @@ public class JoystickPageTests
     [AvaloniaFact]
     public void A_full_joystick_still_adds_a_row_on_up()
     {
-        string[] all =
-        {
-            "up", "down", "left", "right", "center", "any_direction",
-            "N", "NE", "E", "SE", "S", "SW", "W", "NW",
-            "N_inner", "NE_inner", "E_inner", "SE_inner", "S_inner", "SW_inner", "W_inner", "NW_inner",
-        };
+        var all = Vocab.AllInputs.Where(i => MainWindow.ZoneOf(i) == "joystick").ToArray();
+        Assert.Equal(22, all.Length); // four directions, center, any, two eight-way rings
         var file = ProfileFile.Load(Header + string.Concat(all.Select(i => $"x,normal,{i}\n")));
         var w = Open(file);
         Plus(w);
@@ -152,18 +149,6 @@ public class JoystickPageTests
         var added = rows[1].Inputs[0];
         Assert.StartsWith("mp_right_center_", added);
         Assert.NotEqual("mp_right_center_sip", added);
-        Done(w, file);
-    }
-
-    // Drew said up first is fine, so an empty joystick keeps it.
-    [AvaloniaFact]
-    public void The_plus_still_seeds_up_on_an_empty_joystick()
-    {
-        var file = ProfileFile.Load(Header);
-        var w = Open(file);
-        Plus(w);
-
-        Assert.Equal("up", file.Document.Sheets[0].Bindings.Single().Inputs[0]);
         Done(w, file);
     }
 }
