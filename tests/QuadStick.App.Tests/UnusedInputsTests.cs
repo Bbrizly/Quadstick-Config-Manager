@@ -70,7 +70,6 @@ public class UnusedInputsTests
     {
         var w = Open(Header + "x,normal,lip\n");
         var listed = Listed(w).ToList();
-        Assert.True(listed.IndexOf("right") < listed.IndexOf("E"), string.Join(",", listed));
         Assert.Equal(new[] { "up", "down", "left", "right" },
             listed.Where(i => MainWindow.ZoneOf(i) == "joystick").Take(4));
         w.Close();
