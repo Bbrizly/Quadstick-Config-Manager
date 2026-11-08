@@ -36,7 +36,8 @@ public static class OutputCatalog
             ["Controller"] = new[]
             {
                 Strings.Outputs_PlayStationButtons, Strings.Outputs_XboxButtons,
-                Strings.Outputs_OtherButtons, "D-pad", "Thumbsticks",
+                // Sticks above the D-pad: they are mapped far more often.
+                Strings.Outputs_OtherButtons, "Thumbsticks", "D-pad",
             },
             ["Keyboard"] = new[]
             {
@@ -94,13 +95,20 @@ public static class OutputCatalog
         "left_stick", "right_stick", "back", "guide", "capture",
     };
 
+    static readonly string[] StickReadingOrder =
+    {
+        "left_joy_up", "left_joy_down", "left_joy_left", "left_joy_right",
+        "right_joy_up", "right_joy_down", "right_joy_left", "right_joy_right",
+    };
+
     /// <summary>One group's tokens in the order somebody reads a controller,
-    /// for the two groups that have such an order. Everything else is left
+    /// for the groups that have such an order. Everything else is left
     /// exactly as it came.</summary>
     public static IReadOnlyList<string> InReadingOrder(IReadOnlyList<string> tokens, string? sub)
     {
         var order = sub == Strings.Outputs_PlayStationButtons ? PsReadingOrder
                   : sub == Strings.Outputs_XboxButtons ? XboxReadingOrder
+                  : sub == "Thumbsticks" ? StickReadingOrder
                   : null;
         if (order is null) return tokens;
         return tokens.OrderBy(t => Array.IndexOf(order, t) is var i && i < 0 ? int.MaxValue : i).ToList();

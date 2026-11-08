@@ -123,4 +123,23 @@ public class OutputCatalogTests
                          ordered.OrderBy(x => x, StringComparer.Ordinal));
         }
     }
+
+    // Drew: the stick directions are mapped far more than the D-pad, so they
+    // come first, and each stick reads up, down, left, right.
+    [Fact]
+    public void Thumbsticks_lead_the_d_pad_and_read_up_down_left_right()
+    {
+        var subs = OutputCatalog.SubOrder["Controller"];
+        Assert.True(Array.IndexOf(subs, "Thumbsticks") < Array.IndexOf(subs, "D-pad"));
+
+        var tokens = Vocab.AllOutputs.Where(t => OutputCatalog.Classify(t).Sub == "Thumbsticks")
+            .OrderBy(t => t, StringComparer.Ordinal).ToList();
+        var ordered = OutputCatalog.InReadingOrder(tokens, "Thumbsticks");
+        Assert.Equal(new[]
+        {
+            "left_joy_up", "left_joy_down", "left_joy_left", "left_joy_right",
+            "right_joy_up", "right_joy_down", "right_joy_left", "right_joy_right",
+        }, ordered.Take(8));
+        Assert.Equal(tokens.Count, ordered.Count);
+    }
 }
