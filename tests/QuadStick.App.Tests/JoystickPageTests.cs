@@ -89,6 +89,72 @@ public class JoystickPageTests
         Done(w, file);
     }
 
+    // Drew's own flow: press + once per direction on an empty stick.
+    [AvaloniaFact]
+    public void Four_presses_give_the_four_directions_in_four_boxes()
+    {
+        var file = ProfileFile.Load(Header);
+        var w = Open(file);
+        for (int i = 0; i < 4; i++) Plus(w);
+
+        Assert.Equal(new[] { "up", "down", "left", "right" },
+            file.Document.Sheets[0].Bindings.Select(b => b.Inputs[0]));
+        Done(w, file);
+    }
+
+    // Nothing free on the part: a second line on a used input is the only add
+    // left, and that is how the device does a combo, so the plus still adds one.
+    [AvaloniaFact]
+    public void A_full_joystick_still_adds_a_row_on_up()
+    {
+        string[] all =
+        {
+            "up", "down", "left", "right", "center", "any_direction",
+            "N", "NE", "E", "SE", "S", "SW", "W", "NW",
+            "N_inner", "NE_inner", "E_inner", "SE_inner", "S_inner", "SW_inner", "W_inner", "NW_inner",
+        };
+        var file = ProfileFile.Load(Header + string.Concat(all.Select(i => $"x,normal,{i}\n")));
+        var w = Open(file);
+        Plus(w);
+
+        var rows = file.Document.Sheets[0].Bindings;
+        Assert.Equal(all.Length + 1, rows.Count);
+        Assert.Equal("up", rows[^1].Inputs[0]);
+        Done(w, file);
+    }
+
+    // A picked hole pairing that is free is still what the plus adds.
+    [AvaloniaFact]
+    public void A_picked_free_pairing_is_what_the_plus_adds()
+    {
+        var file = ProfileFile.Load(Header);
+        var w = Open(file);
+        w.PickInputForPreview("mp_right_center_sip_soft");
+        Plus(w);
+
+        Assert.Equal("mp_right_center_sip_soft", file.Document.Sheets[0].Bindings.Single().Inputs[0]);
+        Done(w, file);
+    }
+
+    // A picked pairing whose sip is taken moves to another gesture of the same
+    // pairing, not to a different pair of holes.
+    [AvaloniaFact]
+    public void A_picked_taken_pairing_stays_on_its_own_holes()
+    {
+        var file = ProfileFile.Load(Header + "x,normal,mp_right_center_sip\n");
+        var w = Open(file);
+        w.PickInputForPreview("mp_right_center_sip");
+        Plus(w);
+
+        var rows = file.Document.Sheets[0].Bindings;
+        Assert.Equal(2, rows.Count);
+        Assert.Equal("mp_right_center_sip", rows[0].Inputs[0]);
+        var added = rows[1].Inputs[0];
+        Assert.StartsWith("mp_right_center_", added);
+        Assert.NotEqual("mp_right_center_sip", added);
+        Done(w, file);
+    }
+
     // Drew said up first is fine, so an empty joystick keeps it.
     [AvaloniaFact]
     public void The_plus_still_seeds_up_on_an_empty_joystick()
