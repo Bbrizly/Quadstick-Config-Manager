@@ -459,6 +459,40 @@ if (args.Contains("--models"))
 // The set for Drew: one shot per thing he asked for, named after his own
 // numbering, so a reply to his email can point at a picture instead of
 // describing a screen. Light theme only, since these go in an email.
+// Drew's November notes: the joystick page's free list and its plus.
+if (args.Contains("--drew4"))
+{
+    Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, DeviceCards = false, Language = lang });
+
+    // Up already mapped, then one press of the plus: a second box on down,
+    // with the four directions leading what is still free.
+    Capture("1-joystick-plus", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load("Profile Name,,Gameplay\nmygame.csv\nOutputs,Function,usb\nleft_joy_up,normal,up\n"));
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview("joystick");
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        w.GetVisualDescendants().OfType<Button>().First(b =>
+                (AutomationProperties.GetName(b) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal))
+            .RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+    });
+
+    // Nothing mapped, so the free list sits at the top of the panel.
+    Capture("2-joystick-free-list", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load("Profile Name,,Gameplay\nmygame.csv\nOutputs,Function,usb\n"));
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview("joystick");
+    });
+
+    Console.WriteLine($"Drew's fourth set written to {outDir}");
+    return;
+}
+
 // The September round of Drew Redepenning's review: less on each settings
 // group, plainer words, and a picture that follows what is picked on the left.
 if (args.Contains("--drew3"))
