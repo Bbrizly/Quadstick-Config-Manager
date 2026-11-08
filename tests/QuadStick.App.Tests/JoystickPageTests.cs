@@ -72,7 +72,7 @@ public class JoystickPageTests
         var w = Open(file);
         Plus(w);
 
-        var inputs = file.Document.Sheets[0].Bindings.Select(b => b.Inputs.Count > 0 ? b.Inputs[0] : "").ToArray();
+        var inputs = file.Document.Sheets[0].Bindings.Select(b => b.Inputs[0]).ToArray();
         Assert.Equal(new[] { "up", "down" }, inputs);
         Done(w, file);
     }
