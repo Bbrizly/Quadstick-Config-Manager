@@ -36,6 +36,14 @@ public class JoystickPageTests
         return w;
     }
 
+    static void Plus(MainWindow w)
+    {
+        w.GetVisualDescendants().OfType<Button>().First(b =>
+                (AutomationProperties.GetName(b) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal))
+            .RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+    }
+
     static void Done(MainWindow w, ProfileFile file) { file.Dirty = false; w.Close(); }
 
     // The free list sorted by raw text, so the eight-way ring (E, E_inner, N...)
@@ -52,6 +60,44 @@ public class JoystickPageTests
             .ToArray();
 
         Assert.Equal(new[] { "up", "down", "left", "right" }, free.Take(4));
+        Done(w, file);
+    }
+
+    // The plus always seeded "up", and rows sharing an input sit in one box, so
+    // with up mapped it added a line to that box instead of a new one.
+    [AvaloniaFact]
+    public void The_plus_starts_on_a_free_direction_when_up_is_taken()
+    {
+        var file = ProfileFile.Load(Header + "left_joy_up,normal,up\n");
+        var w = Open(file);
+        Plus(w);
+
+        var inputs = file.Document.Sheets[0].Bindings.Select(b => b.Inputs.Count > 0 ? b.Inputs[0] : "").ToArray();
+        Assert.Equal(new[] { "up", "down" }, inputs);
+        Done(w, file);
+    }
+
+    // A force_off row is free to the unused list but still has a box on screen.
+    [AvaloniaFact]
+    public void The_plus_skips_an_input_held_only_by_force_off()
+    {
+        var file = ProfileFile.Load(Header + "left_joy_up,force_off,up\n");
+        var w = Open(file);
+        Plus(w);
+
+        Assert.Equal("down", file.Document.Sheets[0].Bindings[^1].Inputs[0]);
+        Done(w, file);
+    }
+
+    // Drew said up first is fine, so an empty joystick keeps it.
+    [AvaloniaFact]
+    public void The_plus_still_seeds_up_on_an_empty_joystick()
+    {
+        var file = ProfileFile.Load(Header);
+        var w = Open(file);
+        Plus(w);
+
+        Assert.Equal("up", file.Document.Sheets[0].Bindings.Single().Inputs[0]);
         Done(w, file);
     }
 }

@@ -5458,9 +5458,7 @@ public partial class MainWindow : Window
             // "on this part" has to mean the part the list is narrowed to, or
             // the jacks screen offers the bottom jack under the top jack's
             // heading.
-            var freeHere = UnusedInputs(zone.Id)
-                .Where(i => ZoneOf(i) == zone.Id && (part is null || PartOf(i) == part))
-                .OrderBy(JackRank).ToList();
+            var freeHere = FreeOn(zone.Id, part);
             if (freeHere.Count > 0)
             {
                 ZoneDetailPanel.Children.Add(new TextBlock
@@ -5529,10 +5527,26 @@ public partial class MainWindow : Window
         // The part clicked on the picture, when it belongs to this zone:
         // clicking "Left + Center" and then + should add that pairing, not
         // whichever combo happens to be first in the table.
-        var seed = _pickedInput is { } picked && ZoneOf(picked) == zone.Id ? picked : zone.DefaultInput;
-        add.Click += (_, _) => AddMappingWithInput(seed);
+        //
+        // A taken input is skipped: rows sharing one input sit in one box, so
+        // seeding "up" when up was mapped grew that box instead of adding one.
+        // Read at click time, since the panel is not rebuilt on every edit.
+        add.Click += (_, _) =>
+        {
+            var picked = _pickedInput is { } p && ZoneOf(p) == zone.Id ? p : null;
+            // A force_off row counts as free to the list but still draws a box.
+            var shown = (CurrentSheet?.Bindings ?? []).SelectMany(b => b.Inputs).ToHashSet(StringComparer.Ordinal);
+            var free = FreeOn(zone.Id, picked is null ? null : PartOf(picked)).Where(i => !shown.Contains(i)).ToList();
+            var seed = picked ?? zone.DefaultInput;
+            AddMappingWithInput(free.Contains(seed) || free.Count == 0 ? seed : free[0]);
+        };
         return add;
     }
+
+    // What is still free on one part, in the order the part's list shows it.
+    List<string> FreeOn(string zoneId, string? part) => UnusedInputs(zoneId)
+        .Where(i => ZoneOf(i) == zoneId && (part is null || PartOf(i) == part))
+        .OrderBy(JackRank).ToList();
 
     // Same order as the picture: a part's gestures read soft puff, puff, sip,
     // soft sip on the diagram, and the panel beside it listed them in whatever
