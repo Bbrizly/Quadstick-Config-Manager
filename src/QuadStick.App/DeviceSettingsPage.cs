@@ -1099,10 +1099,23 @@ public partial class MainWindow
             VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(combo, name);
-        combo.SelectionChanged += (_, _) =>
+        var current = combo.SelectedItem;
+        var reverting = false;
+        combo.SelectionChanged += async (_, _) =>
         {
-            if (combo.SelectedItem is DeviceChoiceOption pick)
-                CommitDeviceValue(sheet, def, ref row, pick.Token);
+            if (reverting || combo.SelectedItem is not DeviceChoiceOption pick || ReferenceEquals(pick, current)) return;
+            // The boot mode for every profile. Asked first, and pointed at the
+            // per-profile setting, so default stays a way back (steamybiscuit 09-18).
+            if (def.Name == "enable_DS3_emulation"
+                && !await ConfirmAsync(Strings.DevicePage_EmulationAskTitle, Strings.DevicePage_EmulationAskBody))
+            {
+                reverting = true;
+                combo.SelectedItem = current;
+                reverting = false;
+                return;
+            }
+            current = pick;
+            CommitDeviceValue(sheet, def, ref row, pick.Token);
         };
         return combo;
     }

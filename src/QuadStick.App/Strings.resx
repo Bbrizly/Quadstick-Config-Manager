@@ -3908,4 +3908,10 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Install_AsCancelled" xml:space="preserve">
     <value>Install cancelled.</value>
   </data>
+  <data name="DevicePage_EmulationAskTitle" xml:space="preserve">
+    <value>Change the mode for every profile?</value>
+  </data>
+  <data name="DevicePage_EmulationAskBody" xml:space="preserve">
+    <value>This is the mode the QuadStick starts in, for every profile. To play one game on another console, set the mode in that profile's Preferences instead, so default stays a safe way back.</value>
+  </data>
 </root>

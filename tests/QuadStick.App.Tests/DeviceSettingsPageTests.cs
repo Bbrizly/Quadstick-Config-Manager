@@ -770,4 +770,44 @@ public class DeviceSettingsPageTests
         Assert.Contains(shown, t => t.Contains("(6)", StringComparison.Ordinal));
         w.Close();
     }
+    // steamybiscuit 09-18: the boot mode is every profile's, so changing it
+    // asks first and says to set it per profile. Cancel leaves the file alone.
+    static ComboBox Emulation(MainWindow w) => Body(w).OfType<ComboBox>()
+        .First(c => (AutomationProperties.GetName(c) ?? "").StartsWith("USB emulation mode", StringComparison.Ordinal));
+
+    static void Answer(MainWindow w, string button)
+    {
+        Dispatcher.UIThread.RunJobs();
+        var dialog = Assert.Single(w.OwnedWindows);
+        Assert.Equal(Strings.DevicePage_EmulationAskTitle, dialog.Title);
+        dialog.GetVisualDescendants().OfType<Button>().First(b => (b.Content as string) == button)
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+    }
+
+    [AvaloniaFact]
+    public void ChangingTheBootModeAsksAndCancelWritesNothing()
+    {
+        var prefs = Header + "enable_DS3_emulation,0\n";
+        var w = Open(prefs, "USB and compatibility");
+        var combo = Emulation(w);
+        var was = combo.SelectedItem;
+        combo.SelectedIndex = 4;
+        Answer(w, Strings.Main_Cancel);
+
+        Assert.Same(was, combo.SelectedItem);
+        Assert.Equal("0", Cell(w, "enable_DS3_emulation"));
+        Assert.Empty(w.OwnedWindows); // putting it back did not ask again
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void ChangingTheBootModeWritesItOnYes()
+    {
+        var w = Open(Header + "enable_DS3_emulation,0\n", "USB and compatibility");
+        Emulation(w).SelectedIndex = 4;
+        Answer(w, Strings.Main_YesContinue);
+        Assert.Equal("4", Cell(w, "enable_DS3_emulation"));
+        w.Close();
+    }
 }
