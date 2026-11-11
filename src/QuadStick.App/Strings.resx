@@ -3872,4 +3872,40 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Sheet_CouldNotSave" xml:space="preserve">
     <value>Could not save the reference sheet to {0}: {1}</value>
   </data>
+  <data name="Install_AsTitle" xml:space="preserve">
+    <value>Install on the QuadStick as</value>
+  </data>
+  <data name="Install_AsBody" xml:space="preserve">
+    <value>The name sets where this profile sits on the profile switch: default first, then the rest in A to Z order.</value>
+  </data>
+  <data name="Install_AsName" xml:space="preserve">
+    <value>Profile name on the QuadStick</value>
+  </data>
+  <data name="Install_AsInstall" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Install_AsTypeAName" xml:space="preserve">
+    <value>Type a name for the profile.</value>
+  </data>
+  <data name="Install_AsPosition" xml:space="preserve">
+    <value>Profile {0} of {1} on the profile switch.</value>
+  </data>
+  <data name="Install_AsReplaces" xml:space="preserve">
+    <value>Replaces {0} on the QuadStick. The old file is backed up first.</value>
+  </data>
+  <data name="Install_AsMoves" xml:space="preserve">
+    <value>Moves down one: {0}.</value>
+  </data>
+  <data name="Install_AsMove" xml:space="preserve">
+    <value>{0} ({1} to {2})</value>
+  </data>
+  <data name="Install_AsDropped" xml:space="preserve">
+    <value>The switch stops at 32 profiles, so it will no longer reach: {0}.</value>
+  </data>
+  <data name="Install_AsNotListed" xml:space="preserve">
+    <value>The profile switch will never reach this name: it stops at 32 profiles and skips any name ending in prefs. Pick another name.</value>
+  </data>
+  <data name="Install_AsCancelled" xml:space="preserve">
+    <value>Install cancelled.</value>
+  </data>
 </root>

@@ -412,6 +412,36 @@ public static class Device
         return lower.Length > 32 ? lower[..32] : lower;
     }
 
+    /// <summary>What installing <paramref name="newName"/> does to the profile
+    /// switch: its number (0 when the device will not list it), how many it
+    /// will step through, which file it replaces, and who moves down one.</summary>
+    public sealed record InstallPreviewResult(
+        int Position, int Total, string? Replaces, IReadOnlyList<(string Name, int From, int To)> Moved,
+        IReadOnlyList<string> Dropped);
+
+    public static InstallPreviewResult InstallPreview(IReadOnlyCollection<string> existing, string newName)
+    {
+        // A FAT drive is case-blind, so a name that differs only by case
+        // overwrites the file already there.
+        var replaces = existing.FirstOrDefault(n => string.Equals(n, newName, StringComparison.OrdinalIgnoreCase));
+        var before = SelectionOrder(existing);
+        var after = SelectionOrder(existing.Where(n => n != replaces).Append(newName).ToList());
+        var moved = new List<(string, int, int)>();
+        for (int i = 0; i < before.Count; i++)
+        {
+            var to = IndexOf(after, before[i]);
+            if (to >= 0 && to != i) moved.Add((before[i], i + 1, to + 1));
+        }
+        var dropped = before.Where(n => n != replaces && IndexOf(after, n) < 0).ToList();
+        return new InstallPreviewResult(IndexOf(after, newName) + 1, after.Count, replaces, moved, dropped);
+
+        static int IndexOf(IReadOnlyList<string> list, string name)
+        {
+            for (int i = 0; i < list.Count; i++) if (list[i] == name) return i;
+            return -1;
+        }
+    }
+
     // The audited QuadStick Manager Program table, copied as data. Five lights,
     // left to right, for file numbers 1 to 32. There is no rule to infer here
     // and nothing past 32 is documented, so nothing is extrapolated.

@@ -24,7 +24,7 @@ public enum ProfileSource { New, File, Library, Device, Sheets, Drive, Rescue }
 public enum InstallFailure
 {
     HasErrors, NoProfile, NotAQuadstick,
-    CancelledDevice, CancelledFolder, CancelledDefault, CancelledPreferences, IoError,
+    CancelledDevice, CancelledFolder, CancelledDefault, CancelledPreferences, IoError, CancelledName,
 }
 
 public enum AppFeature { SheetsImport, DriveBackup, DriveRestore, ShareLink }
@@ -76,6 +76,7 @@ public static partial class Telemetry
         InstallFailure.CancelledDefault     => "cancelled_default",
         InstallFailure.CancelledPreferences => "cancelled_preferences",
         InstallFailure.IoError              => "io_error",
+        InstallFailure.CancelledName        => "cancelled_name",
         _ => throw new ArgumentOutOfRangeException(nameof(f), f, "no wire name"),
     };
 

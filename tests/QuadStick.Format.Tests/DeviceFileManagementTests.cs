@@ -267,6 +267,40 @@ public class DeviceFileManagementTests
     }
 
     [Fact]
+    public void InstallPreview_says_the_number_and_who_moves_down()
+    {
+        var p = Device.InstallPreview(new[] { "default.csv", "apex.csv", "zelda.csv" }, "mario.csv");
+        Assert.Equal(3, p.Position);
+        Assert.Equal(4, p.Total);
+        Assert.Null(p.Replaces);
+        Assert.Equal(new[] { ("zelda.csv", 3, 4) }, p.Moved);
+        Assert.Empty(p.Dropped);
+    }
+
+    [Fact]
+    public void InstallPreview_replacing_a_file_moves_nobody()
+    {
+        var p = Device.InstallPreview(new[] { "default.csv", "Apex.csv", "zelda.csv" }, "apex.csv");
+        Assert.Equal(2, p.Position);
+        Assert.Equal(3, p.Total);
+        Assert.Equal("Apex.csv", p.Replaces);
+        Assert.Empty(p.Moved);
+    }
+
+    [Fact]
+    public void InstallPreview_on_a_full_drive_names_the_profile_pushed_off()
+    {
+        var full = Enumerable.Range(0, 31).Select(i => $"g{i:D2}.csv").Append("default.csv").ToList();
+        var p = Device.InstallPreview(full, "a.csv");
+        Assert.Equal(2, p.Position);
+        Assert.Equal(new[] { "g30.csv" }, p.Dropped);
+
+        var last = Device.InstallPreview(full, "zz.csv");
+        Assert.Equal(0, last.Position); // the device will not list it at all
+        Assert.Empty(last.Dropped);
+    }
+
+    [Fact]
     public void SelectionOrder_of_nothing_is_empty()
     {
         Assert.Empty(Device.SelectionOrder(Array.Empty<string>()));
