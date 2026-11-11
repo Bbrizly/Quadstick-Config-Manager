@@ -240,6 +240,32 @@ public class DeviceFileManagementTests
         Assert.Equal(new[] { "Default.csv", "game.csv" }, Device.SelectionOrder(names));
     }
 
+    // scan_files lowercases then strncmps, so "_" (0x5F) sorts before "a".
+    // Folding to upper case put it after "Z" and shifted every light after it.
+    [Fact]
+    public void SelectionOrder_compares_lowercased_like_the_firmware()
+    {
+        Assert.Equal(new[] { "default.csv", "_test.csv", "apex.csv" },
+            Device.SelectionOrder(new[] { "apex.csv", "_test.csv", "default.csv" }));
+    }
+
+    [Fact]
+    public void SelectionOrder_skips_any_name_holding_prefs_csv()
+    {
+        Assert.Equal(new[] { "default.csv", "game.csv" },
+            Device.SelectionOrder(new[] { "game.csv", "myprefs.csv", "default.csv" }));
+    }
+
+    [Fact]
+    public void SelectionOrder_stops_at_the_devices_32_files()
+    {
+        var names = Enumerable.Range(0, 40).Select(i => $"g{i:D2}.csv").Append("default.csv").ToList();
+        var order = Device.SelectionOrder(names);
+        Assert.Equal(32, order.Count);
+        Assert.Equal("default.csv", order[0]);
+        Assert.Equal("g30.csv", order[^1]);
+    }
+
     [Fact]
     public void SelectionOrder_of_nothing_is_empty()
     {

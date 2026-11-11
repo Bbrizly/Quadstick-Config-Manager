@@ -381,20 +381,35 @@ public static class Device
         && fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
         && !fileName.StartsWith('.');
 
+    // scan_files in Configuration.c (FW 2373) builds this list: it lowercases
+    // each name, skips any name containing "prefs.csv" (so "myprefs.csv" is
+    // never selectable either), puts default.csv first, sorts the rest by
+    // strncmp on 32 bytes, and keeps NUM_FILES = 32. Lowercase then compare is
+    // not OrdinalIgnoreCase, which folds to upper: "_x" and "a" swap places.
+    public const int MaxSelectableFiles = 32;
+
     public static IReadOnlyList<string> SelectionOrder(IEnumerable<string> fileNames)
     {
         var csv = fileNames
             .Where(IsProfileFileName)
-            .Where(n => !string.Equals(n, "prefs.csv", StringComparison.OrdinalIgnoreCase))
+            .Where(n => !DeviceKey(n).Contains("prefs.csv", StringComparison.Ordinal))
             .ToList();
 
         var ordered = new List<string>();
-        var first = csv.FirstOrDefault(n => string.Equals(n, "default.csv", StringComparison.OrdinalIgnoreCase));
+        var first = csv.FirstOrDefault(n => DeviceKey(n) == "default.csv");
         if (first is not null) ordered.Add(first);
         ordered.AddRange(csv
-            .Where(n => !string.Equals(n, "default.csv", StringComparison.OrdinalIgnoreCase))
-            .OrderBy(n => n, StringComparer.OrdinalIgnoreCase));
-        return ordered;
+            .Where(n => DeviceKey(n) != "default.csv")
+            .OrderBy(DeviceKey, StringComparer.Ordinal));
+        return ordered.Take(MaxSelectableFiles).ToList();
+    }
+
+    // The firmware's C tolower only touches A to Z, and strncmp stops at 32.
+    // ponytail: UTF-16 order stands in for the CP437 bytes past ASCII.
+    static string DeviceKey(string name)
+    {
+        var lower = string.Concat(name.Select(c => c is >= 'A' and <= 'Z' ? (char)(c + 32) : c));
+        return lower.Length > 32 ? lower[..32] : lower;
     }
 
     // The audited QuadStick Manager Program table, copied as data. Five lights,
