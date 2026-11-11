@@ -240,6 +240,66 @@ public class DeviceFileManagementTests
         Assert.Equal(new[] { "Default.csv", "game.csv" }, Device.SelectionOrder(names));
     }
 
+    // scan_files lowercases then strncmps, so "_" (0x5F) sorts before "a".
+    // Folding to upper case put it after "Z" and shifted every light after it.
+    [Fact]
+    public void SelectionOrder_compares_lowercased_like_the_firmware()
+    {
+        Assert.Equal(new[] { "default.csv", "_test.csv", "apex.csv" },
+            Device.SelectionOrder(new[] { "apex.csv", "_test.csv", "default.csv" }));
+    }
+
+    [Fact]
+    public void SelectionOrder_skips_any_name_holding_prefs_csv()
+    {
+        Assert.Equal(new[] { "default.csv", "game.csv" },
+            Device.SelectionOrder(new[] { "game.csv", "myprefs.csv", "default.csv" }));
+    }
+
+    [Fact]
+    public void SelectionOrder_stops_at_the_devices_32_files()
+    {
+        var names = Enumerable.Range(0, 40).Select(i => $"g{i:D2}.csv").Append("default.csv").ToList();
+        var order = Device.SelectionOrder(names);
+        Assert.Equal(32, order.Count);
+        Assert.Equal("default.csv", order[0]);
+        Assert.Equal("g30.csv", order[^1]);
+    }
+
+    [Fact]
+    public void InstallPreview_says_the_number_and_who_moves_down()
+    {
+        var p = Device.InstallPreview(new[] { "default.csv", "apex.csv", "zelda.csv" }, "mario.csv");
+        Assert.Equal(3, p.Position);
+        Assert.Equal(4, p.Total);
+        Assert.Null(p.Replaces);
+        Assert.Equal(new[] { ("zelda.csv", 3, 4) }, p.Moved);
+        Assert.Empty(p.Dropped);
+    }
+
+    [Fact]
+    public void InstallPreview_replacing_a_file_moves_nobody()
+    {
+        var p = Device.InstallPreview(new[] { "default.csv", "Apex.csv", "zelda.csv" }, "apex.csv");
+        Assert.Equal(2, p.Position);
+        Assert.Equal(3, p.Total);
+        Assert.Equal("Apex.csv", p.Replaces);
+        Assert.Empty(p.Moved);
+    }
+
+    [Fact]
+    public void InstallPreview_on_a_full_drive_names_the_profile_pushed_off()
+    {
+        var full = Enumerable.Range(0, 31).Select(i => $"g{i:D2}.csv").Append("default.csv").ToList();
+        var p = Device.InstallPreview(full, "a.csv");
+        Assert.Equal(2, p.Position);
+        Assert.Equal(new[] { "g30.csv" }, p.Dropped);
+
+        var last = Device.InstallPreview(full, "zz.csv");
+        Assert.Equal(0, last.Position); // the device will not list it at all
+        Assert.Empty(last.Dropped);
+    }
+
     [Fact]
     public void SelectionOrder_of_nothing_is_empty()
     {

@@ -24,6 +24,9 @@ public partial class MainWindow
     /// thing rather than around it.</summary>
     internal Task RunInstallFlowForTest() => RunInstallFlowAsync();
 
+    /// <summary>Test seam: a temp folder stands in for the drive scan.</summary>
+    internal static Func<List<string>>? CandidatesForTest;
+
     async Task RunInstallFlowAsync()
     {
         // Every exit below is one reason, so the funnel says where installs
@@ -46,7 +49,7 @@ public partial class MainWindow
             Status(Strings.Install_FixTheErrorsInThe, StatusKind.Error); RefreshIssues(); return;
         }
 
-        var candidates = Device.FindCandidates();
+        var candidates = (CandidatesForTest ?? Device.FindCandidates)();
         string? root;
         if (candidates.Count > 1)
         {
@@ -86,8 +89,25 @@ public partial class MainWindow
             return;
         }
 
+        // The name is the slot, so it is chosen here, against what is on this
+        // drive. prefs.csv is settings, not a slot, and keeps its own name.
+        // The gates below ask about the name chosen here, and the editor is
+        // only renamed once they have all said yes.
+        var chosen = _file.Document.CsvFileName;
+        if (!_file.Document.IsDevicePreferences)
+        {
+            chosen = await AskInstallNameAsync(root, BareName(chosen));
+            if (chosen is null)
+            {
+                Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledName);
+                Status(Strings.Install_AsCancelled); return;
+            }
+        }
+        var asDefault = string.Equals(chosen, "default.csv", StringComparison.OrdinalIgnoreCase);
+        var asPrefs = string.Equals(chosen, "prefs.csv", StringComparison.OrdinalIgnoreCase);
+
         bool confirmDefault = false;
-        if (_file.Document.IsDefaultConfig)
+        if (asDefault)
         {
             confirmDefault = await ConfirmAsync(
                 Strings.Install_OverwriteDefaultCsv,
@@ -103,7 +123,7 @@ public partial class MainWindow
         // gets its own confirmation naming the file, the drive, and the reach of
         // the change. Nothing is written until this comes back true.
         bool confirmPrefs = false;
-        if (_file.Document.IsDevicePreferences)
+        if (asPrefs)
         {
             confirmPrefs = await ConfirmAsync(
                 Strings.Install_InstallPrefsCsvToThis,
@@ -115,7 +135,84 @@ public partial class MainWindow
             }
         }
 
+        if (chosen != _file.Document.CsvFileName)
+        {
+            // The same edit as typing it in the name box: undoable, and a name
+            // the device would refuse shows up as an error before anything is written.
+            FileNameBox.Text = BareName(chosen);
+            CommitFileName();
+            _file.Reparse();
+            if (_file.HasErrors)
+            {
+                Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.HasErrors);
+                Status(Strings.Install_FixTheErrorsInThe, StatusKind.Error); RefreshIssues(); return;
+            }
+        }
+
         await RunInstallDialogAsync(_file, root, confirmDefault, confirmPrefs);
+    }
+
+    internal Task<string?> AskInstallNameForTest(string root) => AskInstallNameAsync(root, BareName(_file?.Document.CsvFileName));
+
+    // Returns the file name to write, with .csv, or null for cancel.
+    // ponytail: the preview reads the drive once; Device.Install still backs
+    // up whatever is there at write time, so a stale line costs nothing.
+    async Task<string?> AskInstallNameAsync(string root, string bare)
+    {
+        var existing = Device.ProfileFiles(root).Select(p => Path.GetFileName(p)).ToList();
+        var box = new TextBox { Text = bare, MinWidth = 320 };
+        AutomationProperties.SetName(box, Strings.Install_AsName);
+        var preview = new TextBlock { TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") };
+        AutomationProperties.SetLiveSetting(preview, AutomationLiveSetting.Polite);
+        var install = new Button { Content = Strings.Install_AsInstall, MinWidth = 140, IsDefault = true };
+        var cancel = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsCancel = true };
+
+        string Typed() => BareName((box.Text ?? "").Trim());
+        void Update()
+        {
+            var name = Typed();
+            install.IsEnabled = name.Length > 0;
+            if (name.Length == 0) { preview.Text = Strings.Install_AsTypeAName; return; }
+            var p = Device.InstallPreview(existing, name + ".csv");
+            // The switch could never reach it, so there is nothing to install it for.
+            if (p.Position == 0) { preview.Text = Strings.Install_AsNotListed; install.IsEnabled = false; return; }
+            var lines = new List<string> { Format(Strings.Install_AsPosition, p.Position, p.Total) };
+            if (p.Replaces is { } r) lines.Add(Format(Strings.Install_AsReplaces, BareName(r)));
+            if (p.Moved.Count > 0)
+                lines.Add(Format(Strings.Install_AsMoves, string.Join(", ",
+                    p.Moved.Select(m => Format(Strings.Install_AsMove, BareName(m.Name), m.From, m.To)))));
+            if (p.Dropped.Count > 0)
+                lines.Add(Format(Strings.Install_AsDropped, string.Join(", ", p.Dropped.Select(BareName))));
+            preview.Text = string.Join("\n", lines);
+        }
+        static string Format(string f, params object[] a) => string.Format(CultureInfo.CurrentCulture, f, a);
+        box.TextChanged += (_, _) => Update();
+        Update();
+
+        var dialog = new Window
+        {
+            Title = Strings.Install_AsTitle,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = ZoomWrap(new StackPanel
+            {
+                Margin = new Thickness(24), Spacing = 16, MaxWidth = 480,
+                Children =
+                {
+                    new TextBlock { Text = Strings.Install_AsTitle, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = Strings.Install_AsBody, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                    box,
+                    preview,
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { install, cancel } },
+                },
+            }, _uiScale),
+        };
+        string? result = null;
+        install.Click += (_, _) => { if (install.IsEnabled && Typed() is { Length: > 0 } n) { result = n + ".csv"; dialog.Close(); } };
+        cancel.Click += (_, _) => dialog.Close();
+        dialog.Opened += (_, _) => { box.Focus(); box.SelectAll(); };
+        await ShowDialogInShellAsync(dialog);
+        return result;
     }
 
     // Drives the modal itself: target drive -> progress -> receipt/failure.

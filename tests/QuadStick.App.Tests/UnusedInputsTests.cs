@@ -63,6 +63,18 @@ public class UnusedInputsTests
 
     const string Header = "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\n";
 
+    // The same list feeds the joystick page, where Drew asked for the four
+    // directions above the eight-way ring. This picker follows it.
+    [AvaloniaFact]
+    public void The_stick_directions_come_before_the_ring()
+    {
+        var w = Open(Header + "x,normal,lip\n");
+        var listed = Listed(w).ToList();
+        Assert.Equal(new[] { "up", "down", "left", "right" },
+            listed.Where(i => MainWindow.ZoneOf(i) == "joystick").Take(4));
+        w.Close();
+    }
+
     [AvaloniaFact]
     public void A_mapped_input_is_not_listed()
     {
