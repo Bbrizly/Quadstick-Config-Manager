@@ -156,9 +156,14 @@ describe("what stays pinned (B-126, B-127)", () => {
 });
 
 describe("where the page opens (B-124)", () => {
-  it("stays at the top while a control's height of the list shows", () => {
-    // 1024x700@100: the list starts 465 down a 613 view with a 70 bar.
-    expect(openingScroll(613, 70, 465, 588, [279, 279])).toBeNull();
+  it("stays at the top when the first row already clears the bar", () => {
+    expect(openingScroll(613, 70, 465, 540, [279, 279])).toBeNull();
+  });
+
+  it("nudges just enough when the first row runs under the bar", () => {
+    // 1024x700@100: the list starts 465 down a 613 view with a 70 bar, and
+    // its first row ended 45 under the bar's top.
+    expect(openingScroll(613, 70, 465, 588, [279, 279])).toBe(45);
   });
 
   it("scrolls to the first stop that shows the whole first row", () => {
@@ -191,8 +196,9 @@ describe("the page applies its fit", () => {
     expect(page.dataset["pinBar"]).toBe("true");
     expect(page.dataset["pinRail"]).toBe("true");
     expect(scroller.style.getPropertyValue("--qcm-save-h")).toBe("70px");
-    // 1024x700@100 keeps its layout and opens at the top.
-    expect(scroller.scrollTop).toBe(0);
+    // 1024x700@100 keeps its layout; it opens just far enough down that the
+    // first setting clears the pinned bar.
+    expect(scroller.scrollTop).toBe(45);
 
     layOut({ width: 968, innerHeight: 700, zoom: 1, view: 180, bar: 70, rail: 446 });
     resize();

@@ -47,12 +47,16 @@ export const LIST_PEEK = 48;
  * explanations come first, so at 200% they filled the view and no setting
  * showed. If less than LIST_PEEK of the list shows above the bar, open at the
  * first of `stops` (layout, band, list tops) that puts the whole first row in
- * view, else at the list. Positions are CSS pixels from the scroller's top.
+ * view, else at the list. When enough shows but the first row runs under the
+ * bar, scroll just far enough to clear it. Positions are CSS pixels from the
+ * scroller's top.
  * Returns the scrollTop, or null to stay at the top.
  */
 export function openingScroll(view: number, bar: number, listTop: number, rowBottom: number, stops: readonly number[]): number | null {
   const open = view - bar;
-  if (open <= 0 || listTop + LIST_PEEK <= open) return null;
+  if (open <= 0) return null;
+  // Enough of the list shows: nudge only so the first row clears the bar.
+  if (listTop + LIST_PEEK <= open) return rowBottom > open ? Math.round(rowBottom - open) : null;
   const stop = stops.find((top) => rowBottom - top <= open);
   return Math.round(stop ?? listTop);
 }
