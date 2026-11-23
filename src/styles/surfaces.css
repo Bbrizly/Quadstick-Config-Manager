@@ -80,11 +80,13 @@
 }
 
 /* Avalonia DevicePage: groups on the left in one list panel, the open
-   group's settings in a panel beside it, a save bar along the bottom. */
+   group's settings in a panel beside it, a save bar along the bottom. A word
+   longer than its column breaks rather than push the page sideways. */
 .device-preferences-page {
   max-width: none;
   display: grid;
   gap: 14px;
+  overflow-wrap: break-word;
 }
 
 .device-page-head {
@@ -223,12 +225,6 @@
 .device-save-actions {
   display: flex;
   gap: 10px;
-}
-
-@media (max-width: 820px) {
-  .device-preference-layout {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* DeviceLinkWindow: 600 wide, the explanation with its "?", ports and the
@@ -428,6 +424,8 @@ button.link-close {
   gap: 4px;
   max-width: 560px;
   font-size: var(--qcm-small-size);
+  /* Its own grid sizes to the longest word; break-word alone cannot shrink that. */
+  overflow-wrap: anywhere;
 }
 
 .device-band-words strong {
@@ -534,35 +532,90 @@ button.link-close {
   gap: var(--qcm-space-sm);
 }
 
-/* A short window (1024 by 700, or any window at a raised scale) left no
-   setting row in view between the header and the save bar. Below this
-   height the page scrolls as one, and the save bar stays at the foot. */
-@media (max-height: 780px) {
-  .device-preferences-page {
-    height: auto;
-  }
+/* useDeviceFit (deviceFit.ts) sets these from the page's CSS width and the
+   window's CSS height: a media query here missed Interface size, which is
+   root zoom (B-124). A short window (1024 by 700, or a raised scale) left no
+   setting row in view, and one column cannot share a window-tall page, so
+   either way the page scrolls as one. */
+.device-preferences-page[data-short],
+.device-preferences-page:not([data-fit="wide"]) {
+  height: auto;
+}
 
-  .device-preferences-page > .device-preference-layout {
-    flex: none;
-  }
+.device-preferences-page[data-short] > .device-preference-layout,
+.device-preferences-page:not([data-fit="wide"]) > .device-preference-layout {
+  flex: none;
+}
 
-  .device-preference-categories,
-  .device-preference-main {
-    max-height: none;
-    overflow: visible;
-  }
+.device-preferences-page[data-short] .device-preference-categories,
+.device-preferences-page[data-short] .device-preference-main,
+.device-preferences-page:not([data-fit="wide"]) .device-preference-categories,
+.device-preferences-page:not([data-fit="wide"]) .device-preference-main {
+  max-height: none;
+  overflow: visible;
+}
 
-  /* The groups stay in reach while the open group's settings scroll by. */
-  .device-preference-categories {
-    position: sticky;
-    top: 12px;
-  }
+/* Pinned only when all of it fits between its top and the bar; a taller
+   rail scrolled Bluetooth and the rest off screen (B-127). */
+.device-preferences-page[data-pin-rail] .device-preference-categories {
+  position: sticky;
+  top: 12px;
+}
 
-  .device-save-bar {
-    position: sticky;
-    bottom: 0;
-    z-index: 1;
-  }
+/* Pinned only when it takes a third of the view or less. Its height is
+   published on the scroller, so a focused control stops clear of it (B-126). */
+.device-preferences-page[data-pin-bar] .device-save-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+.shell-main:has(.device-preferences-page[data-pin-bar]) {
+  scroll-padding-block-end: calc(var(--qcm-save-h, 0px) + 12px);
+}
+
+/* One column: the groups wrap above the settings (B-125). */
+.device-preferences-page:not([data-fit="wide"]) .device-preference-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.device-preferences-page:not([data-fit="wide"]) .device-preference-categories {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+}
+
+.device-preferences-page:not([data-fit="wide"]) .device-page-head {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.device-preferences-page:not([data-fit="wide"]) .device-page-actions {
+  flex-wrap: wrap;
+}
+
+/* Tight: each setting stacks its name, control and words, and the slider
+   gives up width (never its 44px height) to keep the number box in view. */
+.device-preferences-page[data-fit="tight"] .device-preference-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.device-preferences-page[data-fit="tight"] .preference-number-control input[type="range"] {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  max-width: 285px;
+}
+
+.device-preferences-page[data-fit="tight"] .device-band {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.device-preferences-page[data-fit="tight"] .device-save-bar {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.device-preferences-page[data-fit="tight"] .device-save-actions {
+  flex-wrap: wrap;
 }
 
 /* Fields in the device dialogs: the global field rule has no start inset,

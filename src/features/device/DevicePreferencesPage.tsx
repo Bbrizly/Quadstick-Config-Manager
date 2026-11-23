@@ -4,6 +4,7 @@ import { Dialog } from "../../components/primitives/Dialog";
 import { ControllerRow } from "./ControllerRow";
 import { DeviceBand } from "./DeviceBand";
 import { DeviceLinkDialog } from "./DeviceLinkDialog";
+import { useDeviceFit } from "./deviceFit";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
@@ -405,8 +406,18 @@ export function DevicePreferencesPage({
   const countIn = (name: string): number =>
     catalog?.definitions.filter((definition) => definition.category === name).length ?? 0;
 
+  const { page, rail, bar, layout } = useDeviceFit(catalog !== null, snapshot !== null);
+
   return (
-    <section className="device-preferences-page" aria-labelledby="device-preferences-title">
+    <section
+      ref={page}
+      className="device-preferences-page"
+      aria-labelledby="device-preferences-title"
+      data-fit={layout.fit}
+      data-short={layout.short ? "true" : undefined}
+      data-pin-rail={layout.pinRail ? "true" : undefined}
+      data-pin-bar={layout.pinBar ? "true" : undefined}
+    >
       {/* Avalonia DevicePage: the title and where the settings live on the
           left, Reload / Manage files / Bluetooth or cable on the right. */}
       <header className="device-page-head">
@@ -454,7 +465,7 @@ export function DevicePreferencesPage({
         <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
       ) : (
         <div className="device-preference-layout">
-          <nav aria-label={t("DevicePage_GroupsOfSettings")} className="device-preference-categories">
+          <nav ref={rail} aria-label={t("DevicePage_GroupsOfSettings")} className="device-preference-categories">
             {catalog.categories.map((name) => (
               <button
                 type="button"
@@ -540,7 +551,7 @@ export function DevicePreferencesPage({
       )}
 
       {/* `DeviceSaveBar`: always here and the same size; its buttons grey out. */}
-      <div className="device-save-bar">
+      <div ref={bar} className="device-save-bar">
         <span role="status">
           {changed === 0 ? t("DevicePage_NoChangesYet") : plural("DevicePage_ChangedNotSavedYet", changed, [changed])}
         </span>
