@@ -362,6 +362,67 @@ function zoneRowsLive(zoneRows: readonly BindingCells[], liveRows: ReadonlySet<n
   return zoneRows.some((row) => liveRows.has(row.row));
 }
 
+/**
+ * True while the stage runs past the bottom of whatever scrolls it, by more
+ * than a pixel of zoom rounding. Rect values are zoomed, so the gap is divided
+ * back to CSS pixels.
+ */
+export function continuesPastView(stageBottom: number, viewBottom: number, zoom: number): boolean {
+  return (stageBottom - viewBottom) / (zoom > 0 ? zoom : 1) > 1;
+}
+
+function stickyPort(element: HTMLElement): HTMLElement | null {
+  for (let node = element.parentElement; node !== null; node = node.parentElement) {
+    const style = getComputedStyle(node);
+    if (![style.overflowX, style.overflowY].every((o) => o === "visible" || o === "clip")) return node;
+  }
+  return null;
+}
+
+/**
+ * macOS hides an idle scrollbar, so a cut-off stage looked finished (B-107).
+ * Watches every scroll in capture, since which box scrolls changes with the
+ * editor's fit, and marks the stage frame while more of it lies below.
+ */
+function useContinuesCue() {
+  const frame = useRef<HTMLDivElement>(null);
+  const [continues, setContinues] = useState(false);
+  useLayoutEffect(() => {
+    const element = frame.current;
+    if (element === null) return undefined;
+    const measure = () => {
+      const box = verticalScroller(element);
+      // Sticky pins to the nearest clipping box. When the stacked plate clips
+      // first, the cue could only sit at the stage's foot, so it stays off.
+      if (box === null || box.offsetWidth === 0 || stickyPort(element) !== box) {
+        setContinues(false);
+        return;
+      }
+      const rect = box.getBoundingClientRect();
+      const zoom = rect.width / box.offsetWidth;
+      // A problems bar pinned over the scroller's bottom is where the view ends.
+      const dock = box.querySelector<HTMLElement>(".problems-dock");
+      const covered = dock !== null && getComputedStyle(dock).position === "sticky" ? dock.offsetHeight : 0;
+      element.style.setProperty("--stage-cue-inset", `${String(covered)}px`);
+      const viewBottom = rect.top + (box.clientTop + box.clientHeight - covered) * zoom;
+      setContinues(continuesPastView(element.getBoundingClientRect().bottom, viewBottom, zoom));
+    };
+    measure();
+    document.addEventListener("scroll", measure, { capture: true, passive: true });
+    window.addEventListener("resize", measure);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(element);
+    const box = verticalScroller(element);
+    if (box !== null) observer?.observe(box);
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener("scroll", measure, { capture: true });
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+  return { frame, continues };
+}
+
 export function QuadStickVisualizer({
   client,
   rows,
@@ -384,6 +445,7 @@ export function QuadStickVisualizer({
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [liveOutputs, setLiveOutputs] = useState<ReadonlySet<string>>(new Set());
   const [focusedZone, setFocusedZone] = useState(0);
+  const { frame: stageFrame, continues: stageContinues } = useContinuesCue();
   const hotspotRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const previousOutputs = useRef<ReadonlySet<string> | null>(null);
   const diagram = diagramFor(model);
@@ -1100,45 +1162,52 @@ export function QuadStickVisualizer({
         </p>
       ) : null}
 
-      <div className="visualizer-stage-scroll">
-        {showBack ? (
-          renderBackPanel()
-        ) : (
-          <StageViewbox className="visualizer-stage" width={STAGE_W} height={stageH}>
-            <div
-              className="photo-frame"
-              aria-hidden="true"
-              style={{
-                position: "absolute",
-                overflow: "hidden",
-                left: `${String((diagram.photoX / STAGE_W) * 100)}%`,
-                top: `${String((photoY / stageH) * 100)}%`,
-                width: `${String((diagram.photoW / STAGE_W) * 100)}%`,
-                height: `${String((photoH / stageH) * 100)}%`,
-              }}
-            >
-              <img
-                className="quadstick-photo"
-                src={photoFor(model)}
-                alt=""
+      <div
+        ref={stageFrame}
+        className="visualizer-stage-frame"
+        data-continues={stageContinues ? "true" : undefined}
+      >
+        <div className="visualizer-stage-scroll">
+          {showBack ? (
+            renderBackPanel()
+          ) : (
+            <StageViewbox className="visualizer-stage" width={STAGE_W} height={stageH}>
+              <div
+                className="photo-frame"
                 aria-hidden="true"
                 style={{
                   position: "absolute",
-                  left: `${String((-source.x / source.w) * 100)}%`,
-                  top: `${String((-source.y / source.h) * 100)}%`,
-                  width: `${String(100 / source.w)}%`,
-                  height: `${String(100 / source.h)}%`,
-                  objectFit: "fill",
+                  overflow: "hidden",
+                  left: `${String((diagram.photoX / STAGE_W) * 100)}%`,
+                  top: `${String((photoY / stageH) * 100)}%`,
+                  width: `${String((diagram.photoW / STAGE_W) * 100)}%`,
+                  height: `${String((photoH / stageH) * 100)}%`,
                 }}
-              />
-            </div>
+              >
+                <img
+                  className="quadstick-photo"
+                  src={photoFor(model)}
+                  alt=""
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    left: `${String((-source.x / source.w) * 100)}%`,
+                    top: `${String((-source.y / source.h) * 100)}%`,
+                    width: `${String(100 / source.w)}%`,
+                    height: `${String(100 / source.h)}%`,
+                    objectFit: "fill",
+                  }}
+                />
+              </div>
 
-            {renderModeLights()}
-            {renderComboHighlight()}
+              {renderModeLights()}
+              {renderComboHighlight()}
 
-            {stageSpots.map((spot, index) => renderHotspot(spot, index, showCombos))}
-          </StageViewbox>
-        )}
+              {stageSpots.map((spot, index) => renderHotspot(spot, index, showCombos))}
+            </StageViewbox>
+          )}
+        </div>
+        <div className="stage-more-cue" aria-hidden="true" />
       </div>
 
       {zoneListSlot === undefined ? zoneList : zoneListSlot === null ? null : createPortal(zoneList, zoneListSlot)}
