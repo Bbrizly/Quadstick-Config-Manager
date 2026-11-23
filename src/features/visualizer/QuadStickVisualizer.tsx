@@ -116,7 +116,17 @@ function StageViewbox({
   useLayoutEffect(() => {
     const element = outer.current;
     if (element === null) return undefined;
+    // Fit the height too, as a Uniform Viewbox does: a stage sized by width
+    // alone hid the bottom callouts under a scroll with no bar on macOS. The
+    // 546px CSS floor still wins, and below it the canvas scrolls as before.
+    const canvas = element.closest<HTMLElement>(".device-canvas");
     const fit = () => {
+      if (canvas !== null) {
+        const below = Number.parseFloat(getComputedStyle(canvas).paddingBottom) || 0;
+        const top = element.getBoundingClientRect().top - canvas.getBoundingClientRect().top + canvas.scrollTop;
+        const room = canvas.clientHeight - top - below;
+        element.style.maxWidth = room > 0 ? `${String(Math.min(width, (room * width) / height))}px` : "";
+      }
       const room = element.clientWidth;
       if (room > 0) setScale(room / width);
     };
@@ -124,8 +134,9 @@ function StageViewbox({
     if (typeof ResizeObserver === "undefined") return undefined;
     const observer = new ResizeObserver(fit);
     observer.observe(element);
+    if (canvas !== null) observer.observe(canvas);
     return () => observer.disconnect();
-  }, [width]);
+  }, [width, height]);
   return (
     <div
       ref={outer}

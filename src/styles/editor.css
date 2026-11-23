@@ -132,9 +132,9 @@
   align-items: stretch;
 }
 
-/* Avalonia EditorSidebar: one ScrollViewer over a DockPanel. The view keys
-   sit at the bottom while everything fits; when the parts list makes it too
-   tall, the whole sidebar scrolls instead of squeezing a part of it. */
+/* B-090, a departure from Avalonia's one ScrollViewer: the view keys stay
+   pinned at the bottom and only modes, configuration and parts scroll, so a
+   short window never hides them below a scrollbar macOS does not draw. */
 .modes-panel {
   display: flex;
   flex-direction: column;
@@ -142,14 +142,33 @@
   background: var(--qcm-sidebar-bg);
   border-right: var(--qcm-hairline) solid var(--qcm-border);
   padding: var(--qcm-space-lg);
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
 }
 
+/* The inset keeps an outset focus ring on a full-width row inside the
+   scroller, which clips at its own edge. */
 .modes-panel-body {
   display: flex;
-  flex: 1 0 auto;
+  flex: 1 1 0;
   flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  margin: -4px;
+  padding: 4px;
+}
+
+/* Too short to show both a usable list and the pinned keys: the whole
+   sidebar scrolls again, as Avalonia's does. */
+@media (max-height: 650px) {
+  .modes-panel {
+    overflow-y: auto;
+  }
+
+  .modes-panel-body {
+    flex: 1 0 auto;
+    overflow: visible;
+  }
 }
 
 /* The heading's DockPanel keeps 8 below it; the list adds none. */
@@ -165,9 +184,9 @@
 .device-workspace {
   min-width: 0;
   display: grid;
-  /* The floor sits on the track: below 340 a mapping card's input box is
-     squeezed to nothing by its label and its buttons. */
-  grid-template-columns: minmax(0, 1.4fr) minmax(340px, 0.6fr);
+  /* B-089: the picture gets the width, so its callouts scale less. 264 is
+     the floor: below about 260 the detailed editor's row actions overflow. */
+  grid-template-columns: minmax(0, 1fr) minmax(264px, 0.25fr);
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
   min-height: 0;
@@ -181,9 +200,9 @@
   overflow: auto;
 }
 
-/* DeviceStageScroll Margin="12,28,12,12". */
+/* DeviceStageScroll Margin="12,28,12,12", with 4 at the sides (B-089). */
 .device-canvas {
-  padding: 28px 12px 12px;
+  padding: 28px 4px 12px;
 }
 
 /* MappingPanel Padding="16". */
@@ -857,7 +876,7 @@ button.issue-fix {
   justify-self: start;
 }
 
-/* The mapping track keeps its 340 floor; stack before it would overflow. */
+/* The mapping track keeps its 264 floor; stack before it would overflow. */
 @media (max-width: 720px) {
   .device-workspace {
     grid-template-columns: 1fr;
