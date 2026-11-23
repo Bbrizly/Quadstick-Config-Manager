@@ -272,20 +272,6 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
         className="settings-tabs"
         role="tablist"
         aria-label={t("Shell_Settings")}
-        // Fluent TabControl: one tab stop, the arrows move between tabs.
-        onKeyDown={(event) => {
-          const at = tabs.findIndex((entry) => entry.id === tab);
-          const next =
-            event.key === "ArrowRight" ? (at + 1) % tabs.length
-            : event.key === "ArrowLeft" ? (at - 1 + tabs.length) % tabs.length
-            : event.key === "Home" ? 0
-            : event.key === "End" ? tabs.length - 1
-            : -1;
-          if (next < 0) return;
-          event.preventDefault();
-          setTab(tabs[next]!.id);
-          document.getElementById(`settings-tab-${tabs[next]!.id}`)?.focus();
-        }}
       >
         {tabs.map((entry) => (
           <button
@@ -298,6 +284,20 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
             aria-controls="settings-tab-panel"
             tabIndex={tab === entry.id ? 0 : -1}
             onClick={() => setTab(entry.id)}
+            // Fluent TabControl: one tab stop, the arrows move between tabs.
+            onKeyDown={(event) => {
+              const at = tabs.findIndex((other) => other.id === tab);
+              const next =
+                event.key === "ArrowRight" ? (at + 1) % tabs.length
+                : event.key === "ArrowLeft" ? (at - 1 + tabs.length) % tabs.length
+                : event.key === "Home" ? 0
+                : event.key === "End" ? tabs.length - 1
+                : -1;
+              if (next < 0) return;
+              event.preventDefault();
+              setTab(tabs[next]!.id);
+              document.getElementById(`settings-tab-${tabs[next]!.id}`)?.focus();
+            }}
           >
             {entry.label}
           </button>

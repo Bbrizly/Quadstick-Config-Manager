@@ -5,11 +5,12 @@ import { I18nProvider } from "../../i18n";
 import { MockQcmClient } from "../../platform";
 import { ModesDialog } from "./ModesDialog";
 
+const noop = () => undefined;
+
 async function renderArmed(armedDelete: number | null) {
   const client = new MockQcmClient();
   const snapshot = await client.chooseAndOpenProfile();
   if (snapshot === null) throw new Error("mock open cancelled");
-  const noop = () => undefined;
   render(
     <I18nProvider initialPreference="en">
       <ModesDialog

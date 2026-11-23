@@ -87,29 +87,29 @@ describe("Dialog focus while its content is still loading", () => {
   });
 });
 
-describe("Dialog focus when its buttons change while open", () => {
-  function Swapping({ done }: { readonly done: boolean }) {
-    return (
-      <Dialog
-        open
-        title="Installing"
-        onClose={() => undefined}
-        actions={
-          done ? (
-            <button type="button" data-autofocus>Close</button>
-          ) : (
-            <>
-              <button type="button">Cancel</button>
-              <button type="button" data-autofocus>Install</button>
-            </>
-          )
-        }
-      >
-        <p>Body</p>
-      </Dialog>
-    );
-  }
+function Swapping({ done }: { readonly done: boolean }) {
+  return (
+    <Dialog
+      open
+      title="Installing"
+      onClose={() => undefined}
+      actions={
+        done ? (
+          <button type="button" data-autofocus>Close</button>
+        ) : (
+          <>
+            <button type="button">Cancel</button>
+            <button type="button" data-autofocus>Install</button>
+          </>
+        )
+      }
+    >
+      <p>Body</p>
+    </Dialog>
+  );
+}
 
+describe("Dialog focus when its buttons change while open", () => {
   it("moves focus to the new button when the focused one goes away", () => {
     const view = render(<Swapping done={false} />);
     expect(view.getByRole("button", { name: "Install" })).toHaveFocus();
@@ -125,26 +125,26 @@ describe("Dialog focus when its buttons change while open", () => {
   });
 });
 
-describe("Dialog focus after a busy spell", () => {
-  function Busy({ busy, done }: { readonly busy: boolean; readonly done: boolean }) {
-    return (
-      <Dialog
-        open
-        title="Installing"
-        onClose={() => undefined}
-        actions={
-          done ? (
-            <button type="button" data-autofocus>Close</button>
-          ) : (
-            <button type="button" data-autofocus disabled={busy}>Install</button>
-          )
-        }
-      >
-        <p>Body</p>
-      </Dialog>
-    );
-  }
+function Busy({ busy, done }: { readonly busy: boolean; readonly done: boolean }) {
+  return (
+    <Dialog
+      open
+      title="Installing"
+      onClose={() => undefined}
+      actions={
+        done ? (
+          <button type="button" data-autofocus>Close</button>
+        ) : (
+          <button type="button" data-autofocus disabled={busy}>Install</button>
+        )
+      }
+    >
+      <p>Body</p>
+    </Dialog>
+  );
+}
 
+describe("Dialog focus after a busy spell", () => {
   it("lands on the new button once nothing is busy", () => {
     const view = render(<Busy busy={false} done={false} />);
     // A browser drops focus off a button as it turns disabled; jsdom does
