@@ -154,8 +154,10 @@
 }
 
 /* An empty line keeps its height, so a message arriving does not shift
-   the list and the buttons under the pointer. */
+   the list and the buttons under the pointer. Never shrunk by the column:
+   zoomed in, a failure ran out of its own box and off the window. */
 .community-status {
+  flex: none;
   min-height: 1.4em;
   margin-top: 12px;
   font-size: var(--qcm-body-size);

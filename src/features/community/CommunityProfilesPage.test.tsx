@@ -87,6 +87,38 @@ describe("community status line", () => {
     expect(actions.compareDocumentPosition(status) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it("scrolls the line into view when it changes, still under reduced motion", async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      const { container } = renderPage();
+      await screen.findByRole("listbox");
+      scroll.mockClear();
+      fireEvent.click(screen.getByRole("button", { name: "Import the selected profile into the editor" }));
+      await vi.waitFor(() => expect(statusLine(container)).toHaveTextContent(/^Could not import/u));
+      expect(scroll.mock.contexts.at(-1)).toBe(container.querySelector(".community-status"));
+      expect(scroll).toHaveBeenLastCalledWith({ block: "nearest", behavior: "smooth" });
+
+      document.documentElement.dataset["reduceMotion"] = "true";
+      fireEvent.click(screen.getByRole("button", { name: "Open the selected profile's Google Sheet in your browser" }));
+      await vi.waitFor(() => expect(statusLine(container)).toHaveTextContent(/^Opened/u));
+      expect(scroll).toHaveBeenLastCalledWith({ block: "nearest", behavior: "auto" });
+
+      // The no-match hint leaves the search field where it is.
+      scroll.mockClear();
+      typeQuery("zzzz");
+      await vi.waitFor(() => expect(statusLine(container)).toHaveTextContent(/Nothing matches/u));
+      expect(scroll).not.toHaveBeenCalled();
+    } finally {
+      delete document.documentElement.dataset["reduceMotion"];
+      Reflect.deleteProperty(Element.prototype, "scrollIntoView");
+    }
+  });
+
+  it("is never shrunk by the page column, so a failure stays inside its box", () => {
+    expect(rule(".community-status")).toMatch(/flex:\s*none/u);
+  });
+
   it("says when opening the sheet worked", async () => {
     const { container } = renderPage();
     await screen.findByRole("listbox");

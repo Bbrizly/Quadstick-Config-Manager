@@ -66,6 +66,18 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
   // Nothing downloaded and nothing saved (`CommunityCatalogException`).
   const [unavailable, setUnavailable] = useState(false);
 
+  // Zoomed in, the line under the buttons can sit below the fold, and a
+  // failure nobody sees is a failure said to nobody. Not for the no-match
+  // hint: the search field being typed in must stay on screen.
+  const statusRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (status.text.length === 0 || status.noMatch === true) return;
+    const still =
+      document.documentElement.dataset["reduceMotion"] === "true" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+    statusRef.current?.scrollIntoView?.({ block: "nearest", behavior: still ? "auto" : "smooth" });
+  }, [status]);
+
   const say = (text: string): void => setStatus({ text, error: false });
   const fail = (text: string): void => setStatus({ text, error: true });
 
@@ -389,7 +401,7 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
 
       {/* `_status`: docked under the buttons, on screen and read out. A
           failure carries an icon and "Could not" words, never colour alone. */}
-      <div className={status.error ? "community-status is-error" : "community-status"}>
+      <div ref={statusRef} className={status.error ? "community-status is-error" : "community-status"}>
         <LiveRegion visuallyHidden={false}>
           {status.text.length === 0 ? null : (
             <>
