@@ -1,0 +1,176 @@
+/* `CommunityProfilesView`: heading 8, explain 12, search 10, summary 4,
+   count 10, then the list as a panel, the buttons 14 under it and the
+   status line 12 under those. The page fills the main area and the list
+   takes what is left, as the DockPanel does, so the status line is always
+   in view. */
+.community-page {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: calc(100% - 44px);
+  min-height: 0;
+}
+
+.community-page > .section {
+  margin-bottom: 8px;
+}
+
+.community-page p {
+  margin: 0;
+}
+
+/* The "?" follows its sentence instead of floating at a column edge. Two
+   classes: this sheet loads before app.css, whose .explain-row would win. */
+.explain-row.community-explain {
+  grid-template-columns: minmax(0, auto) auto;
+  justify-content: start;
+  margin-bottom: 12px;
+}
+
+.community-search {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.community-search input {
+  width: 100%;
+  min-height: var(--qcm-control-height);
+  padding: var(--qcm-pad-control);
+}
+
+.community-summary {
+  color: var(--qcm-text-secondary);
+}
+
+.community-page .community-count {
+  margin-top: 4px;
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-text-secondary);
+}
+
+/* Avalonia boxes the list as a surface panel, 6 in, panel corners. A
+   native select could not be used: WebKit ignores option padding, so rows
+   came out 18px tall with a selection near 1.5:1. */
+.community-list {
+  display: grid;
+  gap: 2px;
+  margin-top: 10px;
+  flex: 1 1 auto;
+  align-content: start;
+  min-height: 160px;
+  padding: 6px;
+  overflow-y: auto;
+  border: 1px solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+}
+
+/* A row is the bold name over the muted file, connection and author, as
+   `MakeRow` draws it. The mark column is kept even when empty, so the
+   text does not jump when the pick moves. */
+.community-row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 10px 6px 8px;
+  border-inline-start: 4px solid transparent;
+  border-radius: var(--qcm-radius-control);
+  color: var(--qcm-text);
+  cursor: pointer;
+}
+
+.community-row:hover {
+  background: var(--qcm-surface-subtle);
+}
+
+/* The tint alone is about 1.5:1 on the panel, so the pick is carried by
+   the accent edge (3:1 or better in both themes) and the check. */
+.community-row[aria-selected="true"] {
+  border-inline-start-color: var(--qcm-accent);
+  background: var(--qcm-selection-tint);
+}
+
+.community-row:focus {
+  outline: none;
+}
+
+.community-row:focus-visible {
+  outline: 2px solid var(--qcm-focus);
+  outline-offset: 1px;
+}
+
+.community-row-mark {
+  display: flex;
+  color: var(--qcm-accent-text);
+}
+
+.community-row-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.community-row-name {
+  font-size: var(--qcm-body-size);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.community-row-details {
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.community-detail {
+  display: grid;
+  gap: 4px;
+  margin-top: 14px;
+  max-width: 720px;
+}
+
+.community-detail h2 {
+  margin: 0;
+  font-size: var(--qcm-subhead-size);
+  font-weight: 700;
+}
+
+.community-detail-meta {
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-text-secondary);
+}
+
+.community-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.community-actions button {
+  min-width: 130px;
+}
+
+/* An empty line keeps its height, so a message arriving does not shift
+   the list and the buttons under the pointer. */
+.community-status {
+  min-height: 1.4em;
+  margin-top: 12px;
+  font-size: var(--qcm-body-size);
+}
+
+.community-status .live-region {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.community-status.is-error {
+  color: var(--qcm-error);
+}
+
+.community-status-icon {
+  flex: none;
+}

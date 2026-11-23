@@ -20,7 +20,8 @@
     "Rewrite_TourWelcome": "Welcome",
     "Rewrite_TourYourQuadStick": "Your QuadStick",
     "Rewrite_TourInstall": "Install",
-    "Rewrite_BackUpThisProfile": "Back up this profile to Google Drive"
+    "Rewrite_BackUpThisProfile": "Back up this profile to Google Drive",
+    "Rewrite_HowCommunityProfilesWork": "How do community profiles work?"
   },
   "ar": {
     "Rewrite_SkipToMainContent": "تخطي إلى المحتوى الرئيسي",
@@ -43,7 +44,8 @@
     "Rewrite_TourWelcome": "مرحبًا",
     "Rewrite_TourYourQuadStick": "جهاز QuadStick الخاص بك",
     "Rewrite_TourInstall": "التثبيت",
-    "Rewrite_BackUpThisProfile": "نسخ هذا الملف الشخصي احتياطيًا إلى Google Drive"
+    "Rewrite_BackUpThisProfile": "نسخ هذا الملف الشخصي احتياطيًا إلى Google Drive",
+    "Rewrite_HowCommunityProfilesWork": "كيف تعمل ملفات المجتمع الشخصية؟"
   },
   "de": {
     "Rewrite_SkipToMainContent": "Zum Hauptinhalt springen",
@@ -66,7 +68,8 @@
     "Rewrite_TourWelcome": "Willkommen",
     "Rewrite_TourYourQuadStick": "Dein QuadStick",
     "Rewrite_TourInstall": "Installieren",
-    "Rewrite_BackUpThisProfile": "Dieses Profil in Google Drive sichern"
+    "Rewrite_BackUpThisProfile": "Dieses Profil in Google Drive sichern",
+    "Rewrite_HowCommunityProfilesWork": "Wie funktionieren Community-Profile?"
   },
   "es": {
     "Rewrite_SkipToMainContent": "Saltar al contenido principal",
@@ -89,7 +92,8 @@
     "Rewrite_TourWelcome": "Bienvenido",
     "Rewrite_TourYourQuadStick": "Tu QuadStick",
     "Rewrite_TourInstall": "Instalar",
-    "Rewrite_BackUpThisProfile": "Hacer copia de seguridad de este perfil en Google Drive"
+    "Rewrite_BackUpThisProfile": "Hacer copia de seguridad de este perfil en Google Drive",
+    "Rewrite_HowCommunityProfilesWork": "¿Cómo funcionan los perfiles de la comunidad?"
   },
   "fr": {
     "Rewrite_SkipToMainContent": "Aller au contenu principal",
@@ -112,7 +116,8 @@
     "Rewrite_TourWelcome": "Bienvenue",
     "Rewrite_TourYourQuadStick": "Votre QuadStick",
     "Rewrite_TourInstall": "Installer",
-    "Rewrite_BackUpThisProfile": "Sauvegarder ce profil sur Google Drive"
+    "Rewrite_BackUpThisProfile": "Sauvegarder ce profil sur Google Drive",
+    "Rewrite_HowCommunityProfilesWork": "Comment fonctionnent les profils de la communauté ?"
   },
   "hi": {
     "Rewrite_SkipToMainContent": "मुख्य सामग्री पर जाएँ",
@@ -135,7 +140,8 @@
     "Rewrite_TourWelcome": "स्वागत है",
     "Rewrite_TourYourQuadStick": "आपका QuadStick",
     "Rewrite_TourInstall": "इंस्टॉल करें",
-    "Rewrite_BackUpThisProfile": "इस प्रोफ़ाइल का Google Drive पर बैकअप लें"
+    "Rewrite_BackUpThisProfile": "इस प्रोफ़ाइल का Google Drive पर बैकअप लें",
+    "Rewrite_HowCommunityProfilesWork": "समुदाय प्रोफ़ाइल कैसे काम करती हैं?"
   },
   "it": {
     "Rewrite_SkipToMainContent": "Vai al contenuto principale",
@@ -158,7 +164,8 @@
     "Rewrite_TourWelcome": "Benvenuto",
     "Rewrite_TourYourQuadStick": "Il tuo QuadStick",
     "Rewrite_TourInstall": "Installa",
-    "Rewrite_BackUpThisProfile": "Esegui il backup di questo profilo su Google Drive"
+    "Rewrite_BackUpThisProfile": "Esegui il backup di questo profilo su Google Drive",
+    "Rewrite_HowCommunityProfilesWork": "Come funzionano i profili della community?"
   },
   "ja": {
     "Rewrite_SkipToMainContent": "メインコンテンツへ移動",
@@ -181,7 +188,8 @@
     "Rewrite_TourWelcome": "ようこそ",
     "Rewrite_TourYourQuadStick": "お使いの QuadStick",
     "Rewrite_TourInstall": "インストール",
-    "Rewrite_BackUpThisProfile": "このプロファイルを Google ドライブにバックアップ"
+    "Rewrite_BackUpThisProfile": "このプロファイルを Google ドライブにバックアップ",
+    "Rewrite_HowCommunityProfilesWork": "コミュニティプロファイルの仕組みは？"
   },
   "ko": {
     "Rewrite_SkipToMainContent": "주요 콘텐츠로 이동",
@@ -204,7 +212,8 @@
     "Rewrite_TourWelcome": "환영합니다",
     "Rewrite_TourYourQuadStick": "내 QuadStick",
     "Rewrite_TourInstall": "설치",
-    "Rewrite_BackUpThisProfile": "이 프로필을 Google 드라이브에 백업"
+    "Rewrite_BackUpThisProfile": "이 프로필을 Google 드라이브에 백업",
+    "Rewrite_HowCommunityProfilesWork": "커뮤니티 프로필은 어떻게 작동하나요?"
   },
   "nl": {
     "Rewrite_SkipToMainContent": "Naar hoofdinhoud",
@@ -227,7 +236,8 @@
     "Rewrite_TourWelcome": "Welkom",
     "Rewrite_TourYourQuadStick": "Je QuadStick",
     "Rewrite_TourInstall": "Installeren",
-    "Rewrite_BackUpThisProfile": "Dit profiel back-uppen naar Google Drive"
+    "Rewrite_BackUpThisProfile": "Dit profiel back-uppen naar Google Drive",
+    "Rewrite_HowCommunityProfilesWork": "Hoe werken communityprofielen?"
   },
   "pl": {
     "Rewrite_SkipToMainContent": "Przejdź do głównej treści",
@@ -250,7 +260,8 @@
     "Rewrite_TourWelcome": "Witaj",
     "Rewrite_TourYourQuadStick": "Twój QuadStick",
     "Rewrite_TourInstall": "Instalacja",
-    "Rewrite_BackUpThisProfile": "Utwórz kopię zapasową tego profilu na Dysku Google"
+    "Rewrite_BackUpThisProfile": "Utwórz kopię zapasową tego profilu na Dysku Google",
+    "Rewrite_HowCommunityProfilesWork": "Jak działają profile społeczności?"
   },
   "pt": {
     "Rewrite_SkipToMainContent": "Ir para o conteúdo principal",
@@ -273,7 +284,8 @@
     "Rewrite_TourWelcome": "Boas-vindas",
     "Rewrite_TourYourQuadStick": "Seu QuadStick",
     "Rewrite_TourInstall": "Instalar",
-    "Rewrite_BackUpThisProfile": "Fazer backup deste perfil no Google Drive"
+    "Rewrite_BackUpThisProfile": "Fazer backup deste perfil no Google Drive",
+    "Rewrite_HowCommunityProfilesWork": "Como funcionam os perfis da comunidade?"
   },
   "zh-Hans": {
     "Rewrite_SkipToMainContent": "跳到主要内容",
@@ -296,6 +308,7 @@
     "Rewrite_TourWelcome": "欢迎",
     "Rewrite_TourYourQuadStick": "你的 QuadStick",
     "Rewrite_TourInstall": "安装",
-    "Rewrite_BackUpThisProfile": "将此配置文件备份到 Google 云端硬盘"
+    "Rewrite_BackUpThisProfile": "将此配置文件备份到 Google 云端硬盘",
+    "Rewrite_HowCommunityProfilesWork": "社区配置文件是如何工作的？"
   }
 }

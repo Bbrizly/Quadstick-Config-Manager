@@ -1238,6 +1238,7 @@
   "Rewrite_ErrorProfile": "تغير هذا الملف الشخصي أو لم يعد مفتوحًا. أعد فتحه وحاول مرة أخرى.",
   "Rewrite_ErrorRequest": "تعذر على التطبيق إكمال هذا الطلب. حاول مرة أخرى.",
   "Rewrite_ErrorStorage": "تعذر إكمال العملية على QuadStick. اتبع إجراء الاسترداد المعروض.",
+  "Rewrite_HowCommunityProfilesWork": "كيف تعمل ملفات المجتمع الشخصية؟",
   "Rewrite_MoreActionsFor": "مزيد من الإجراءات لـ {0}",
   "Rewrite_PrimaryNavigation": "التنقل الرئيسي",
   "Rewrite_ProductName": "QuadStick Config Manager",

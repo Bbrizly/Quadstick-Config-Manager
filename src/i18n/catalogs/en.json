@@ -1238,6 +1238,7 @@
   "Rewrite_ErrorProfile": "That profile changed or is no longer open. Reopen it and try again.",
   "Rewrite_ErrorRequest": "The app could not complete that request. Try again.",
   "Rewrite_ErrorStorage": "The QuadStick operation could not be completed. Follow the recovery action shown.",
+  "Rewrite_HowCommunityProfilesWork": "How do community profiles work?",
   "Rewrite_MoreActionsFor": "More actions for {0}",
   "Rewrite_PrimaryNavigation": "Primary navigation",
   "Rewrite_ProductName": "QuadStick Config Manager",

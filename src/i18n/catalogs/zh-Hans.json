@@ -1238,6 +1238,7 @@
   "Rewrite_ErrorProfile": "此配置文件已更改或不再打开。请重新打开后重试。",
   "Rewrite_ErrorRequest": "应用无法完成此请求。请重试。",
   "Rewrite_ErrorStorage": "无法完成 QuadStick 操作。请按照显示的恢复操作处理。",
+  "Rewrite_HowCommunityProfilesWork": "社区配置文件是如何工作的？",
   "Rewrite_MoreActionsFor": "{0} 的更多操作",
   "Rewrite_PrimaryNavigation": "主导航",
   "Rewrite_ProductName": "QuadStick Config Manager",

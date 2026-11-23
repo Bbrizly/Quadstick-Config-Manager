@@ -154,7 +154,8 @@ describe("community import", () => {
     render(<App client={client} />);
 
     fireEvent.click(await screen.findByRole("button", { name: "Browse community profiles" }));
-    await screen.findByText("Forza Horizon");
+    // The row and the detail heading both carry the name, so find the row.
+    await screen.findByRole("option", { name: /^Forza Horizon\b/u, selected: true });
     fireEvent.click(screen.getByRole("button", { name: /^Import/u }));
     const dialog = await screen.findByRole("dialog", { name: "Import review" });
     expect(imported).toEqual(["sheet-1/forza.csv"]);

@@ -1238,6 +1238,7 @@
   "Rewrite_ErrorProfile": "Dit profiel is gewijzigd of niet meer geopend. Open het opnieuw en probeer het nogmaals.",
   "Rewrite_ErrorRequest": "De app kon dit verzoek niet voltooien. Probeer het opnieuw.",
   "Rewrite_ErrorStorage": "De bewerking op de QuadStick kon niet worden voltooid. Volg de weergegeven herstelactie.",
+  "Rewrite_HowCommunityProfilesWork": "Hoe werken communityprofielen?",
   "Rewrite_MoreActionsFor": "Meer acties voor {0}",
   "Rewrite_PrimaryNavigation": "Hoofdnavigatie",
   "Rewrite_ProductName": "QuadStick Config Manager",
