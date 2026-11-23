@@ -16,13 +16,24 @@ const BRIDGE_TEXT: Record<BridgeState, MessageKey> = {
 
 const WARN: ReadonlySet<BridgeState> = new Set(["no_access", "no_virtual_pad", "stopped"]);
 
-/** `MainWindow.Explain`: one line, and a "?" with the long help behind it. */
-function Explain({ line, heading, help }: { readonly line: MessageKey; readonly heading: MessageKey; readonly help: MessageKey }) {
+/** `MainWindow.Explain`: one line, and a "?" with the long help behind it.
+    The "?" is named by the question it answers, not by the heading. */
+function Explain({
+  line,
+  heading,
+  ask,
+  help,
+}: {
+  readonly line: MessageKey;
+  readonly heading: MessageKey;
+  readonly ask: MessageKey;
+  readonly help: MessageKey;
+}) {
   const { t } = useI18n();
   return (
     <div className="explain-row">
       <span>{t(line)}</span>
-      <InfoButton name={t(heading)} title={t(heading)} body={t(help)} />
+      <InfoButton name={t(ask)} title={t(heading)} body={t(help)} />
     </div>
   );
 }
@@ -114,7 +125,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
     return (
       <section className="controller-row" aria-label={t("DevicePage_Bridge")}>
         <Switch checked={options.bridgeOn} disabled={busy} label={t("DevicePage_Bridge")} onChange={(on) => void toggle(on)} />
-        <Explain line="DevicePage_BridgeLine" heading="DevicePage_Bridge" help="DevicePage_BridgeHelp" />
+        <Explain line="DevicePage_BridgeLine" heading="DevicePage_Bridge" ask="Rewrite_HowDoesTheXboxBridgeWork" help="DevicePage_BridgeHelp" />
         <LiveRegion visuallyHidden={false}>
           {text === "" ? null : (
             <span className={bridgeState !== null && WARN.has(bridgeState) ? "feature-error" : undefined}>{text}</span>
@@ -152,7 +163,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
   return (
     <section className="controller-row" aria-label={t("DevicePage_MacGames")}>
       <h2 className="controller-title">{t("DevicePage_MacGames")}</h2>
-      <Explain line="DevicePage_MacGamesLine" heading="DevicePage_MacGames" help="DevicePage_MacGamesHelp" />
+      <Explain line="DevicePage_MacGamesLine" heading="DevicePage_MacGames" ask="Rewrite_HowDoGamesWorkOnAMac" help="DevicePage_MacGamesHelp" />
       {options.macSandboxed ? (
         <div className="controller-store">
           <p>{t("DevicePage_MacPadStoreLine")}</p>
@@ -168,7 +179,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
       ) : (
         <Switch checked={options.macOn} disabled={busy} label={t("DevicePage_MacPad")} onChange={(on) => void toggleMac(on)} />
       )}
-      <Explain line="DevicePage_MacPadLine" heading="DevicePage_MacPad" help="DevicePage_MacPadHelp" />
+      <Explain line="DevicePage_MacPadLine" heading="DevicePage_MacPad" ask="Rewrite_WhatDoesGamepadMode0Do" help="DevicePage_MacPadHelp" />
       <LiveRegion visuallyHidden={false}>
         {macStatus.text === "" ? null : (
           <span className={macStatus.warn ? "feature-error" : undefined}>{macStatus.text}</span>

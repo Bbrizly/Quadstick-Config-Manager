@@ -62,6 +62,16 @@ describe("controller bridge and Mac gamepad rows", () => {
     expect(calls).toEqual(["bridge:true", "disposed"]);
   });
 
+  // B-115: a "?" named only by the heading beside it says nothing new.
+  it("names each \"?\" by the question it answers", async () => {
+    const bridge = show(fake({}).controller);
+    expect(await screen.findByRole("button", { name: "How does the Xbox controller bridge work?" })).toBeInTheDocument();
+    bridge.unmount();
+    show(fake({ kind: "mac" }).controller);
+    expect(await screen.findByRole("button", { name: "How do games work on a Mac?" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "What does Gamepad in mode 0 do?" })).toBeInTheDocument();
+  });
+
   it("the Mac switch reports a change that did not take", async () => {
     const { controller, calls } = fake({ kind: "mac" }, false);
     show(controller);

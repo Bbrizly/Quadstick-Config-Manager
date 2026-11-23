@@ -299,7 +299,7 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
           <div className="explain-row device-files-explain">
             <span>{t("Device_ManageFilesOnTheQuadStick")}</span>
             <InfoButton
-              name={t("Device_FilesOnYourQuadStick")}
+              name={t("Rewrite_HowDoesManagingFilesWork")}
               title={t("Device_FilesOnYourQuadStick")}
               body={t("Device_EverythingHereReadsAndWrites")}
             />

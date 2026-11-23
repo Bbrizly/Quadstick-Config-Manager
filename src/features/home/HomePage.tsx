@@ -386,7 +386,7 @@ export function HomePage({
           </h2>
           {/* `HomeFilesHelpButton`: the gesture that opens this list on the device. */}
           <InfoButton
-            name={t("Shell_OnYourQuadStick")}
+            name={t("Rewrite_HowDoYouPickTheseFiles")}
             title={t("Shell_OnYourQuadStick")}
             body={t("Shell_EachOfTheseIsA")}
           />

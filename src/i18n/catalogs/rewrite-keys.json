@@ -10,6 +10,11 @@
   "Rewrite_ErrorRequest",
   "Rewrite_ErrorStorage",
   "Rewrite_HowCommunityProfilesWork",
+  "Rewrite_HowDoGamesWorkOnAMac",
+  "Rewrite_HowDoYouPickTheseFiles",
+  "Rewrite_HowDoesManagingFilesWork",
+  "Rewrite_HowDoesTheLinkWork",
+  "Rewrite_HowDoesTheXboxBridgeWork",
   "Rewrite_MoreActionsFor",
   "Rewrite_PrimaryNavigation",
   "Rewrite_ProductName",
@@ -22,5 +27,6 @@
   "Rewrite_TourInstall",
   "Rewrite_TourWelcome",
   "Rewrite_TourYourQuadStick",
-  "Rewrite_TurnOff"
+  "Rewrite_TurnOff",
+  "Rewrite_WhatDoesGamepadMode0Do"
 ]

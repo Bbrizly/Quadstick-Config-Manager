@@ -17,6 +17,14 @@ describe("heading outline", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
   });
 
+  // B-115: a "?" that only repeats its heading tells a heading-jumper nothing.
+  it("names the Home files \"?\" by its question", () => {
+    render(<App client={new MockQcmClient()} />);
+    expect(
+      screen.getByRole("button", { name: "How do you pick one of these files on the QuadStick?" }),
+    ).toBeInTheDocument();
+  });
+
   it("never skips a level on the device page", async () => {
     const client = new MockQcmClient();
     seedDevicePreview(client);

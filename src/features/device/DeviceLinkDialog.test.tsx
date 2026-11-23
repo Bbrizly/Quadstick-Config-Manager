@@ -298,5 +298,7 @@ describe("DeviceLinkDialog", () => {
       await screen.findByRole("button", { name: "Connect to the QuadStick over Bluetooth or a serial cable" }),
     );
     expect(await screen.findByRole("heading", { name: "QuadStick over Bluetooth or cable" })).toBeInTheDocument();
+    // B-115: the "?" asks, it does not repeat the title.
+    expect(screen.getByRole("button", { name: "How does the Bluetooth or cable link work?" })).toBeInTheDocument();
   });
 });

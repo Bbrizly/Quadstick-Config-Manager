@@ -386,7 +386,7 @@ export function DeviceLinkDialog({
       {/* `MainWindow.Explain`: the sentence, and the rest behind its "?". */}
       <div className="link-explain">
         <p>{t("Link_Explain")}</p>
-        <InfoButton name={t("Link_Title")} title={t("Link_Title")} body={t("Link_ExplainMore")} />
+        <InfoButton name={t("Rewrite_HowDoesTheLinkWork")} title={t("Link_Title")} body={t("Link_ExplainMore")} />
       </div>
       {/* Ports, Refresh and Connect on one line, as the Avalonia window has them. */}
       <div className="link-port-row">

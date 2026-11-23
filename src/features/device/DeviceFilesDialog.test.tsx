@@ -23,6 +23,8 @@ describe("files window", () => {
     );
     const { rerender } = render(view(true));
     expect(screen.getByRole("dialog", { name: "Files on your QuadStick" })).toBeInTheDocument();
+    // B-115: the "?" asks, it does not repeat the title.
+    expect(screen.getByRole("button", { name: "How does managing QuadStick files work?" })).toBeInTheDocument();
     rerender(view(false));
     const closing = document.querySelector("dialog.dialog-panel");
     expect(closing).not.toBeNull();

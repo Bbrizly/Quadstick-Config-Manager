@@ -21,7 +21,13 @@
     "Rewrite_TourYourQuadStick": "Your QuadStick",
     "Rewrite_TourInstall": "Install",
     "Rewrite_BackUpThisProfile": "Back up this profile to Google Drive",
-    "Rewrite_HowCommunityProfilesWork": "How do community profiles work?"
+    "Rewrite_HowCommunityProfilesWork": "How do community profiles work?",
+    "Rewrite_HowDoYouPickTheseFiles": "How do you pick one of these files on the QuadStick?",
+    "Rewrite_HowDoesManagingFilesWork": "How does managing QuadStick files work?",
+    "Rewrite_HowDoesTheLinkWork": "How does the Bluetooth or cable link work?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "How does the Xbox controller bridge work?",
+    "Rewrite_HowDoGamesWorkOnAMac": "How do games work on a Mac?",
+    "Rewrite_WhatDoesGamepadMode0Do": "What does Gamepad in mode 0 do?"
   },
   "ar": {
     "Rewrite_SkipToMainContent": "تخطي إلى المحتوى الرئيسي",
@@ -45,7 +51,13 @@
     "Rewrite_TourYourQuadStick": "جهاز QuadStick الخاص بك",
     "Rewrite_TourInstall": "التثبيت",
     "Rewrite_BackUpThisProfile": "نسخ هذا الملف الشخصي احتياطيًا إلى Google Drive",
-    "Rewrite_HowCommunityProfilesWork": "كيف تعمل ملفات المجتمع الشخصية؟"
+    "Rewrite_HowCommunityProfilesWork": "كيف تعمل ملفات المجتمع الشخصية؟",
+    "Rewrite_HowDoYouPickTheseFiles": "كيف تختار أحد هذه الملفات على QuadStick؟",
+    "Rewrite_HowDoesManagingFilesWork": "كيف تعمل إدارة ملفات QuadStick؟",
+    "Rewrite_HowDoesTheLinkWork": "كيف يعمل الاتصال عبر Bluetooth أو الكابل؟",
+    "Rewrite_HowDoesTheXboxBridgeWork": "كيف يعمل Xbox controller bridge؟",
+    "Rewrite_HowDoGamesWorkOnAMac": "كيف تعمل الألعاب على Mac؟",
+    "Rewrite_WhatDoesGamepadMode0Do": "ماذا يفعل خيار يد تحكم في الوضع 0؟"
   },
   "de": {
     "Rewrite_SkipToMainContent": "Zum Hauptinhalt springen",
@@ -69,7 +81,13 @@
     "Rewrite_TourYourQuadStick": "Dein QuadStick",
     "Rewrite_TourInstall": "Installieren",
     "Rewrite_BackUpThisProfile": "Dieses Profil in Google Drive sichern",
-    "Rewrite_HowCommunityProfilesWork": "Wie funktionieren Community-Profile?"
+    "Rewrite_HowCommunityProfilesWork": "Wie funktionieren Community-Profile?",
+    "Rewrite_HowDoYouPickTheseFiles": "Wie wählen Sie eine dieser Dateien am QuadStick aus?",
+    "Rewrite_HowDoesManagingFilesWork": "Wie funktioniert die Verwaltung der QuadStick-Dateien?",
+    "Rewrite_HowDoesTheLinkWork": "Wie funktioniert die Verbindung über Bluetooth oder Kabel?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Wie funktioniert die Xbox controller bridge?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Wie funktionieren Spiele auf dem Mac?",
+    "Rewrite_WhatDoesGamepadMode0Do": "Was bewirkt Gamepad in Modus 0?"
   },
   "es": {
     "Rewrite_SkipToMainContent": "Saltar al contenido principal",
@@ -93,7 +111,13 @@
     "Rewrite_TourYourQuadStick": "Tu QuadStick",
     "Rewrite_TourInstall": "Instalar",
     "Rewrite_BackUpThisProfile": "Hacer copia de seguridad de este perfil en Google Drive",
-    "Rewrite_HowCommunityProfilesWork": "¿Cómo funcionan los perfiles de la comunidad?"
+    "Rewrite_HowCommunityProfilesWork": "¿Cómo funcionan los perfiles de la comunidad?",
+    "Rewrite_HowDoYouPickTheseFiles": "¿Cómo elige uno de estos archivos en el QuadStick?",
+    "Rewrite_HowDoesManagingFilesWork": "¿Cómo funciona la gestión de archivos del QuadStick?",
+    "Rewrite_HowDoesTheLinkWork": "¿Cómo funciona la conexión por Bluetooth o cable?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "¿Cómo funciona Xbox controller bridge?",
+    "Rewrite_HowDoGamesWorkOnAMac": "¿Cómo funcionan los juegos en un Mac?",
+    "Rewrite_WhatDoesGamepadMode0Do": "¿Qué hace Mando en modo 0?"
   },
   "fr": {
     "Rewrite_SkipToMainContent": "Aller au contenu principal",
@@ -117,7 +141,13 @@
     "Rewrite_TourYourQuadStick": "Votre QuadStick",
     "Rewrite_TourInstall": "Installer",
     "Rewrite_BackUpThisProfile": "Sauvegarder ce profil sur Google Drive",
-    "Rewrite_HowCommunityProfilesWork": "Comment fonctionnent les profils de la communauté ?"
+    "Rewrite_HowCommunityProfilesWork": "Comment fonctionnent les profils de la communauté ?",
+    "Rewrite_HowDoYouPickTheseFiles": "Comment choisir l'un de ces fichiers sur le QuadStick ?",
+    "Rewrite_HowDoesManagingFilesWork": "Comment fonctionne la gestion des fichiers du QuadStick ?",
+    "Rewrite_HowDoesTheLinkWork": "Comment fonctionne la liaison Bluetooth ou par câble ?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Comment fonctionne Xbox controller bridge ?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Comment fonctionnent les jeux sur Mac ?",
+    "Rewrite_WhatDoesGamepadMode0Do": "Que fait Manette en mode 0 ?"
   },
   "hi": {
     "Rewrite_SkipToMainContent": "मुख्य सामग्री पर जाएँ",
@@ -141,7 +171,13 @@
     "Rewrite_TourYourQuadStick": "आपका QuadStick",
     "Rewrite_TourInstall": "इंस्टॉल करें",
     "Rewrite_BackUpThisProfile": "इस प्रोफ़ाइल का Google Drive पर बैकअप लें",
-    "Rewrite_HowCommunityProfilesWork": "समुदाय प्रोफ़ाइल कैसे काम करती हैं?"
+    "Rewrite_HowCommunityProfilesWork": "समुदाय प्रोफ़ाइल कैसे काम करती हैं?",
+    "Rewrite_HowDoYouPickTheseFiles": "QuadStick पर इनमें से कोई फ़ाइल कैसे चुनें?",
+    "Rewrite_HowDoesManagingFilesWork": "QuadStick फ़ाइलों का प्रबंधन कैसे काम करता है?",
+    "Rewrite_HowDoesTheLinkWork": "Bluetooth या केबल कनेक्शन कैसे काम करता है?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge कैसे काम करता है?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Mac पर गेम कैसे काम करते हैं?",
+    "Rewrite_WhatDoesGamepadMode0Do": "मोड 0 में गेमपैड क्या करता है?"
   },
   "it": {
     "Rewrite_SkipToMainContent": "Vai al contenuto principale",
@@ -165,7 +201,13 @@
     "Rewrite_TourYourQuadStick": "Il tuo QuadStick",
     "Rewrite_TourInstall": "Installa",
     "Rewrite_BackUpThisProfile": "Esegui il backup di questo profilo su Google Drive",
-    "Rewrite_HowCommunityProfilesWork": "Come funzionano i profili della community?"
+    "Rewrite_HowCommunityProfilesWork": "Come funzionano i profili della community?",
+    "Rewrite_HowDoYouPickTheseFiles": "Come sceglie uno di questi file sul QuadStick?",
+    "Rewrite_HowDoesManagingFilesWork": "Come funziona la gestione dei file del QuadStick?",
+    "Rewrite_HowDoesTheLinkWork": "Come funziona il collegamento Bluetooth o via cavo?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Come funziona Xbox controller bridge?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Come funzionano i giochi su Mac?",
+    "Rewrite_WhatDoesGamepadMode0Do": "Cosa fa Gamepad in modalità 0?"
   },
   "ja": {
     "Rewrite_SkipToMainContent": "メインコンテンツへ移動",
@@ -189,7 +231,13 @@
     "Rewrite_TourYourQuadStick": "お使いの QuadStick",
     "Rewrite_TourInstall": "インストール",
     "Rewrite_BackUpThisProfile": "このプロファイルを Google ドライブにバックアップ",
-    "Rewrite_HowCommunityProfilesWork": "コミュニティプロファイルの仕組みは？"
+    "Rewrite_HowCommunityProfilesWork": "コミュニティプロファイルの仕組みは？",
+    "Rewrite_HowDoYouPickTheseFiles": "QuadStick でこれらのファイルを選ぶには？",
+    "Rewrite_HowDoesManagingFilesWork": "QuadStick のファイル管理のしくみは？",
+    "Rewrite_HowDoesTheLinkWork": "Bluetooth またはケーブル接続のしくみは？",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge のしくみは？",
+    "Rewrite_HowDoGamesWorkOnAMac": "Mac でゲームを使うには？",
+    "Rewrite_WhatDoesGamepadMode0Do": "「モード 0 でゲームパッド」とは？"
   },
   "ko": {
     "Rewrite_SkipToMainContent": "주요 콘텐츠로 이동",
@@ -213,7 +261,13 @@
     "Rewrite_TourYourQuadStick": "내 QuadStick",
     "Rewrite_TourInstall": "설치",
     "Rewrite_BackUpThisProfile": "이 프로필을 Google 드라이브에 백업",
-    "Rewrite_HowCommunityProfilesWork": "커뮤니티 프로필은 어떻게 작동하나요?"
+    "Rewrite_HowCommunityProfilesWork": "커뮤니티 프로필은 어떻게 작동하나요?",
+    "Rewrite_HowDoYouPickTheseFiles": "QuadStick에서 이 파일 중 하나를 어떻게 고르나요?",
+    "Rewrite_HowDoesManagingFilesWork": "QuadStick 파일 관리는 어떻게 작동하나요?",
+    "Rewrite_HowDoesTheLinkWork": "Bluetooth 또는 케이블 연결은 어떻게 작동하나요?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge는 어떻게 작동하나요?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Mac에서 게임은 어떻게 작동하나요?",
+    "Rewrite_WhatDoesGamepadMode0Do": "'모드 0에서 게임패드'는 무엇을 하나요?"
   },
   "nl": {
     "Rewrite_SkipToMainContent": "Naar hoofdinhoud",
@@ -237,7 +291,13 @@
     "Rewrite_TourYourQuadStick": "Je QuadStick",
     "Rewrite_TourInstall": "Installeren",
     "Rewrite_BackUpThisProfile": "Dit profiel back-uppen naar Google Drive",
-    "Rewrite_HowCommunityProfilesWork": "Hoe werken communityprofielen?"
+    "Rewrite_HowCommunityProfilesWork": "Hoe werken communityprofielen?",
+    "Rewrite_HowDoYouPickTheseFiles": "Hoe kiest u een van deze bestanden op de QuadStick?",
+    "Rewrite_HowDoesManagingFilesWork": "Hoe werkt het beheren van QuadStick-bestanden?",
+    "Rewrite_HowDoesTheLinkWork": "Hoe werkt de verbinding via Bluetooth of kabel?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Hoe werkt Xbox controller bridge?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Hoe werken games op een Mac?",
+    "Rewrite_WhatDoesGamepadMode0Do": "Wat doet Gamepad in modus 0?"
   },
   "pl": {
     "Rewrite_SkipToMainContent": "Przejdź do głównej treści",
@@ -261,7 +321,13 @@
     "Rewrite_TourYourQuadStick": "Twój QuadStick",
     "Rewrite_TourInstall": "Instalacja",
     "Rewrite_BackUpThisProfile": "Utwórz kopię zapasową tego profilu na Dysku Google",
-    "Rewrite_HowCommunityProfilesWork": "Jak działają profile społeczności?"
+    "Rewrite_HowCommunityProfilesWork": "Jak działają profile społeczności?",
+    "Rewrite_HowDoYouPickTheseFiles": "Jak wybrać jeden z tych plików na QuadSticku?",
+    "Rewrite_HowDoesManagingFilesWork": "Jak działa zarządzanie plikami QuadSticka?",
+    "Rewrite_HowDoesTheLinkWork": "Jak działa połączenie przez Bluetooth lub kabel?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Jak działa Xbox controller bridge?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Jak działają gry na Macu?",
+    "Rewrite_WhatDoesGamepadMode0Do": "Co robi Gamepad w trybie 0?"
   },
   "pt": {
     "Rewrite_SkipToMainContent": "Ir para o conteúdo principal",
@@ -285,7 +351,13 @@
     "Rewrite_TourYourQuadStick": "Seu QuadStick",
     "Rewrite_TourInstall": "Instalar",
     "Rewrite_BackUpThisProfile": "Fazer backup deste perfil no Google Drive",
-    "Rewrite_HowCommunityProfilesWork": "Como funcionam os perfis da comunidade?"
+    "Rewrite_HowCommunityProfilesWork": "Como funcionam os perfis da comunidade?",
+    "Rewrite_HowDoYouPickTheseFiles": "Como escolher um destes arquivos no QuadStick?",
+    "Rewrite_HowDoesManagingFilesWork": "Como funciona o gerenciamento de arquivos do QuadStick?",
+    "Rewrite_HowDoesTheLinkWork": "Como funciona a conexão por Bluetooth ou cabo?",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Como funciona o Xbox controller bridge?",
+    "Rewrite_HowDoGamesWorkOnAMac": "Como funcionam os jogos no Mac?",
+    "Rewrite_WhatDoesGamepadMode0Do": "O que faz Comando em modo 0?"
   },
   "zh-Hans": {
     "Rewrite_SkipToMainContent": "跳到主要内容",
@@ -309,6 +381,12 @@
     "Rewrite_TourYourQuadStick": "你的 QuadStick",
     "Rewrite_TourInstall": "安装",
     "Rewrite_BackUpThisProfile": "将此配置文件备份到 Google 云端硬盘",
-    "Rewrite_HowCommunityProfilesWork": "社区配置文件是如何工作的？"
+    "Rewrite_HowCommunityProfilesWork": "社区配置文件是如何工作的？",
+    "Rewrite_HowDoYouPickTheseFiles": "如何在 QuadStick 上选择其中一个文件？",
+    "Rewrite_HowDoesManagingFilesWork": "QuadStick 文件管理如何运作？",
+    "Rewrite_HowDoesTheLinkWork": "蓝牙或线缆连接如何运作？",
+    "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge 如何运作？",
+    "Rewrite_HowDoGamesWorkOnAMac": "游戏在 Mac 上如何运行？",
+    "Rewrite_WhatDoesGamepadMode0Do": "模式 0 下的游戏手柄有什么作用？"
   }
 }
