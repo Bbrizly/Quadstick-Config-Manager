@@ -135,15 +135,6 @@ export function DrivePickerDialog({ client, onReview, onClose, preCheck = false 
       actions={
         <>
           <button
-            className="primary-action"
-            type="button"
-            disabled={busy || files.length === 0}
-            aria-label={t("DrivePick_ImportTheSelectedProfiles")}
-            onClick={() => void importPicked()}
-          >
-            {t("DrivePick_Import")}
-          </button>
-          <button
             type="button"
             data-autofocus
             disabled={busy}
@@ -151,6 +142,15 @@ export function DrivePickerDialog({ client, onReview, onClose, preCheck = false 
             onClick={onClose}
           >
             {t("DrivePick_Close")}
+          </button>
+          <button
+            className="primary-action"
+            type="button"
+            disabled={busy || files.length === 0}
+            aria-label={t("DrivePick_ImportTheSelectedProfiles")}
+            onClick={() => void importPicked()}
+          >
+            {t("DrivePick_Import")}
           </button>
         </>
       }

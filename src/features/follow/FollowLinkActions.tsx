@@ -249,13 +249,13 @@ export function FollowLinkActions({
         onClose={() => answerReview(false)}
         actions={
           <>
-            <button className="latest-answer" type="button" onClick={() => answerReview(true)}>
-              {t("Follow_Replace")}
-            </button>
             {/* The safe answer is the default, so a stray Enter keeps the copy.
                 Avalonia's two are plain buttons of one width; neither is accent. */}
             <button className="latest-answer" type="button" data-autofocus onClick={() => answerReview(false)}>
               {t("Follow_Keep")}
+            </button>
+            <button className="latest-answer" type="button" onClick={() => answerReview(true)}>
+              {t("Follow_Replace")}
             </button>
           </>
         }

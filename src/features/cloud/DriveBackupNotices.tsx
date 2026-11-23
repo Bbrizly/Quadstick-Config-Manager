@@ -96,11 +96,13 @@ export function DriveBackupNotices({ client, onMessage, onReview }: DriveBackupN
       onClose={() => void answer(no)}
       actions={
         <>
+          {/* A risky two-way question: two plain buttons, the safe one first
+              and focused, as the follow review asks it. */}
+          <button type="button" data-autofocus disabled={busy} onClick={() => void answer(no)}>
+            {t("Main_Cancel")}
+          </button>
           <button type="button" disabled={busy} onClick={() => void answer(conflict ? "replace_with_mine" : "recreate")}>
             {t("Main_YesContinue")}
-          </button>
-          <button className="primary" type="button" data-autofocus disabled={busy} onClick={() => void answer(no)}>
-            {t("Main_Cancel")}
           </button>
         </>
       }
