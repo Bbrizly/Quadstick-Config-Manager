@@ -32,6 +32,34 @@ export function windowIsShort(innerHeight: number, zoom: number): boolean {
   return innerHeight > 0 && innerHeight / (zoom > 0 ? zoom : 1) <= SHORT_WINDOW;
 }
 
+/**
+ * Where a one-column editor opens. Modes and the command bar come first in
+ * reading order, so at 200% in a short window they filled the view and the
+ * picture began a screen or more down. When the main view would start in the
+ * lower half of what shows above the pinned bar, open scrolled to it; the
+ * rest is one scroll or Shift+Tab up. Returns the scrollTop, or null.
+ */
+export function openingScroll(fit: EditorFit, mainTop: number, viewHeight: number, dockHeight: number): number | null {
+  if (fit === "full" || fit === "inspector-below") return null;
+  const open = viewHeight - dockHeight;
+  if (open <= 0 || mainTop <= open / 2) return null;
+  return Math.round(mainTop);
+}
+
+/** Applies `openingScroll` to the workspace; the main view is the plate's last child. */
+export function openOnMain(workspace: HTMLElement, fit: EditorFit): void {
+  const width = workspace.offsetWidth;
+  const main = workspace.querySelector(":scope > .editor-plate > :last-child");
+  const dock = workspace.querySelector<HTMLElement>(":scope > .problems-dock");
+  if (main === null || width <= 0) return;
+  // Rects are zoomed pixels under Interface size; offsets and scrollTop are not.
+  const box = workspace.getBoundingClientRect();
+  const zoom = box.width / width || 1;
+  const mainTop = (main.getBoundingClientRect().top - box.top) / zoom + workspace.scrollTop;
+  const target = openingScroll(fit, mainTop, workspace.clientHeight, dock?.offsetHeight ?? 0);
+  if (target !== null) workspace.scrollTop = target;
+}
+
 /** Watches the workspace and the window and says which layout and height apply. */
 export function useEditorFit() {
   const workspace = useRef<HTMLElement>(null);

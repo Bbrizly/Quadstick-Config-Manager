@@ -27,7 +27,7 @@ import { BindingInspector } from "./BindingInspector";
 import { comboGroups } from "./combos";
 import { CustomNamesTable, customNames, nextDraftName } from "./CustomNames";
 import { duplicateCounts } from "./duplicates";
-import { useEditorFit } from "./editorFit";
+import { editorFit, openOnMain, useEditorFit } from "./editorFit";
 import { ModesDialog } from "./ModesDialog";
 import { MoveGlyph } from "./MoveGlyph";
 import { InfoButton, Popover } from "./Popover";
@@ -402,6 +402,19 @@ export function EditorWorkspace({
       window.removeEventListener("focus", onFocus);
     };
   }, [client]);
+
+  // B-121: a one-column editor opens on its picture, once per profile. It
+  // waits for the settings, since the model picks the parts list above it,
+  // and for the measured fit; focus and the DOM order stay as they are.
+  const placed = useRef<string | null>(null);
+  useLayoutEffect(() => {
+    const element = workspace.current;
+    if (element === null || settings === null || placed.current === snapshot.sessionId) return;
+    const width = element.offsetWidth;
+    if (editorFit(width) !== fit) return;
+    placed.current = snapshot.sessionId;
+    openOnMain(element, fit);
+  }, [fit, settings, snapshot.sessionId, workspace]);
 
   const patchSettings = useCallback(
     (patch: SettingsPatch): void => {
