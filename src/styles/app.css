@@ -350,7 +350,9 @@ button.row-select[aria-pressed="true"]:focus-visible {
 }
 
 .app-shell {
-  min-height: 100vh;
+  /* 100vh resolves before the root's Interface size zoom; dividing gives
+     the window in CSS px, so pages scroll inside main, not the document. */
+  height: calc(100vh / var(--qcm-zoom, 1));
   display: grid;
   grid-template-rows: auto 1fr;
   background: var(--qcm-bg);
@@ -536,7 +538,7 @@ button.row-select[aria-pressed="true"]:focus-visible {
   position: static;
   margin: 0;
   width: min(560px, 100%);
-  max-height: calc(100vh - 2 * var(--qcm-space-xl));
+  max-height: calc(100vh / var(--qcm-zoom, 1) - 2 * var(--qcm-space-xl));
   overflow: auto;
   padding: 0;
   border: var(--qcm-hairline) solid var(--qcm-border);

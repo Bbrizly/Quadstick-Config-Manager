@@ -282,7 +282,7 @@ button.link-close {
      shell chrome (86) and the 22 above and below, the way the editor route
      sizes itself: the shell grows with its content, so nothing above gives
      a height to fill. */
-  height: calc(100vh - 86px - 44px);
+  height: calc(100vh / var(--qcm-zoom, 1) - 86px - 44px);
   margin: 22px 28px;
   padding: 0;
   display: flex;
@@ -470,7 +470,7 @@ button.link-close {
   display: flex;
   flex-direction: column;
   width: min(740px, 100%);
-  height: min(680px, calc(100vh - 2 * var(--qcm-space-xl)));
+  height: min(680px, calc(100vh / var(--qcm-zoom, 1) - 2 * var(--qcm-space-xl)));
 }
 
 .dialog-panel:has(.device-page.in-dialog) > .dialog-body {
