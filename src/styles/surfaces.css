@@ -311,8 +311,12 @@ button.link-close {
   gap: 12px;
 }
 
+/* The box is the hit area: a native slider takes a click anywhere in it, so a
+   mouth joystick gets 44px of height while the track and thumb stay slim. */
 .preference-number-control input[type="range"] {
   width: 285px;
+  height: 44px;
+  margin: 0;
   accent-color: var(--qcm-focus);
 }
 
