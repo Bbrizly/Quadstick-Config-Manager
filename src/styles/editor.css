@@ -1102,6 +1102,15 @@ button.menu-item.danger {
   margin: 0;
 }
 
+/* Focus moves into the text when it opens, so a reader reaches it and the
+   arrow keys scroll it. A keyboard or switch user must see that it moved
+   there; a mouse open does not match :focus-visible and shows no ring. */
+.info-flyout:focus-visible {
+  outline: 2px solid var(--qcm-focus);
+  outline-offset: -2px;
+  border-radius: var(--qcm-radius-field);
+}
+
 .unused-flyout {
   display: grid;
   gap: 4px;
@@ -1530,26 +1539,34 @@ button.icon.move:not(:disabled) {
 /* ---- Modes dialog ---- */
 .modes-dialog-list {
   display: grid;
-  gap: 6px;
+  gap: 12px;
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* Narrow or zoomed, the buttons wrap under the name rather than squeeze it
+   to one letter. Rows sit further apart than a wrap, so they stay grouped. */
 .modes-dialog-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 4px 8px;
 }
 
 .modes-dialog-row .mode-name-input {
+  flex: 1 1 12ch;
+  min-width: 12ch;
   min-height: 40px;
   padding: 4px 8px;
 }
 
 .modes-dialog-name {
-  grid-column: 1 / 3;
+  flex: 1 1 auto;
+}
+
+.modes-dialog-row .mode-row-actions {
+  margin-inline-start: auto;
 }
 
 .template-name {
