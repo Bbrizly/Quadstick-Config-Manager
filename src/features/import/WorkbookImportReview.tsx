@@ -64,8 +64,9 @@ export function WorkbookImportReviewDialog({
       }
     >
       <div className="workbook-review">
-        <h2>{clean ? t("Review_YourSheetCameInClean") : t("Review_WeReadYourSheet")}</h2>
-        <p>{review.name}</p>
+        {/* The dialog title is the h2; the verdict is the first thing under it. */}
+        <h3 className="workbook-review-verdict">{clean ? t("Review_YourSheetCameInClean") : t("Review_WeReadYourSheet")}</h3>
+        <p className="workbook-review-name">{review.name}</p>
 
         {singleTab ? (
           <section aria-labelledby="workbook-single-tab-heading">
@@ -101,17 +102,19 @@ export function WorkbookImportReviewDialog({
                 <li key={`${tab.index}-${tab.name}`}>
                   <strong>{tab.name}</strong>
                   {tab.preview.length > 0 ? (
-                    <table className="workbook-preview" aria-label={tab.name}>
-                      <tbody>
-                        {stableKeys(tab.preview, (row) => JSON.stringify(row)).map((keyedRow) => (
-                          <tr key={keyedRow.key}>
-                            {stableKeys(keyedRow.value, (cell) => cell).map((keyedCell) => (
-                              <td key={keyedCell.key}>{keyedCell.value}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <div className="workbook-preview-scroll">
+                      <table className="workbook-preview" aria-label={tab.name}>
+                        <tbody>
+                          {stableKeys(tab.preview, (row) => JSON.stringify(row)).map((keyedRow) => (
+                            <tr key={keyedRow.key}>
+                              {stableKeys(keyedRow.value, (cell) => cell).map((keyedCell) => (
+                                <td key={keyedCell.key}>{keyedCell.value}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   ) : null}
                   {tab.repairable ? (
                     <button
@@ -175,7 +178,7 @@ export function WorkbookImportReviewDialog({
             {review.modes.map((mode) => (
               <li key={`${mode.number}-${mode.kind}-${mode.name}`}>
                 <strong>{mode.name}</strong>
-                {" — "}
+                {" · "}
                 {plural("Count_Binding", mode.bindingCount, [mode.bindingCount])}
               </li>
             ))}

@@ -529,3 +529,177 @@ button.link-close {
   flex-wrap: wrap;
   gap: var(--qcm-space-sm);
 }
+
+/* A short window (1024 by 700, or any window at a raised scale) left no
+   setting row in view between the header and the save bar. Below this
+   height the page scrolls as one, and the save bar stays at the foot. */
+@media (max-height: 780px) {
+  .device-preferences-page {
+    height: auto;
+  }
+
+  .device-preferences-page > .device-preference-layout {
+    flex: none;
+  }
+
+  .device-preference-categories,
+  .device-preference-main {
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* The groups stay in reach while the open group's settings scroll by. */
+  .device-preference-categories {
+    position: sticky;
+    top: 12px;
+  }
+
+  .device-save-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+  }
+}
+
+/* Fields in the device dialogs: the global field rule has no start inset,
+   so a drive or port name sat flush on the left edge. */
+.link-port select,
+.device-picker-label select {
+  padding-left: 12px;
+}
+
+.device-rename-field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: var(--qcm-space-md);
+}
+
+.device-rename-field input {
+  min-height: var(--qcm-control-height);
+  padding: 0 12px;
+}
+
+/* A line that says something went wrong: bold as well as red, so it is not
+   told by colour alone. */
+.feature-error {
+  margin: 0;
+  color: var(--qcm-error);
+  font-weight: 700;
+}
+
+.device-guide h3 {
+  margin: 20px 0 8px;
+  font-size: var(--qcm-subhead-size);
+}
+
+.device-guide p {
+  margin: 0 0 10px;
+}
+
+.device-guide ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.install-dialog-body {
+  display: grid;
+  gap: 12px;
+}
+
+.install-dialog-body > p,
+.install-dialog-body > .feature-status {
+  margin: 0;
+}
+
+.confirmation-copy h3 {
+  margin: 0 0 6px;
+  font-size: var(--qcm-subhead-size);
+}
+
+.confirmation-copy p {
+  margin: 0 0 6px;
+}
+
+/* "Puff now": the one instruction while a measurement runs. */
+.link-prompt {
+  margin: 14px 0 0;
+  padding: 12px 16px;
+  border: var(--qcm-hairline) solid var(--qcm-accent);
+  border-radius: var(--qcm-radius-control);
+  background: var(--qcm-surface-subtle);
+  font-size: var(--qcm-subhead-size);
+}
+
+.dialog-panel:has(.link-port-row) .feature-status {
+  margin: 12px 0 0;
+}
+
+/* Tour: Skip on its own at the start, Back and Next together at the end. */
+.tour-skip {
+  margin-inline-end: auto;
+}
+
+.tour-step p {
+  margin: 0 0 8px;
+}
+
+.tour-count {
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+/* Import review */
+.workbook-review h3 {
+  margin: 16px 0 6px;
+  font-size: var(--qcm-subhead-size);
+}
+
+.workbook-review > .workbook-review-verdict {
+  margin-top: 0;
+}
+
+.workbook-review p {
+  margin: 0 0 8px;
+}
+
+.workbook-review-name {
+  color: var(--qcm-text-secondary);
+}
+
+.workbook-review ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.workbook-review-list > li {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin-bottom: 12px;
+}
+
+.workbook-preview-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.workbook-preview {
+  border-collapse: collapse;
+  font-size: var(--qcm-small-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.workbook-preview td {
+  padding: 3px 8px;
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  white-space: nowrap;
+}
+
+/* Drive picker: the browser's fieldset groove is not part of this world. */
+.drive-backup-list {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 var(--qcm-space-md);
+  padding: 0;
+  border: 0;
+}
