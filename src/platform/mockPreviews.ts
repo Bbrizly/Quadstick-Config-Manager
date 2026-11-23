@@ -5,6 +5,7 @@
  * first chunk, and the packaged app never loads it at all.
  */
 import preferences from "../QuadStick.Format/Data/preferences.json";
+import type { CommunityProfile } from "./communityContracts";
 import type { ConsoleClient } from "./consoleContracts";
 import type { MockQcmClient } from "./mockQcmClient";
 import type { QcmClient } from "./qcmClient";
@@ -73,6 +74,31 @@ const previewConsole: ConsoleClient = {
   consoleSetThreshold: () => Promise.resolve(),
   consoleStrengthEnd: () => Promise.resolve(),
 };
+
+/** `?community`: a downloaded catalog, so the page can be seen and audited. */
+export function seedCommunityPreview(mock: MockQcmClient): void {
+  const profiles: CommunityProfile[] = [
+    ["Rocket League", "rocket_league.csv", "PC (USB)", "Silas", "Sip left for boost, puff right for jump. Mouth joystick steers."],
+    ["Forza Horizon 5", "forza_horizon_5.csv", "Xbox", "", ""],
+    ["Minecraft Java", "minecraft_java.csv", "PC (USB)", "", "Mouse on the joystick, lip switch to place."],
+    ["Elden Ring", "elden_ring.csv", "Xbox", "Silas", ""],
+    ["Stardew Valley", "stardew_valley.csv", "PC (USB)", "", ""],
+    ["Halo Infinite", "halo_infinite.csv", "Xbox", "", ""],
+    ["Celeste", "celeste.csv", "PC (USB)", "Silas", ""],
+    ["Fortnite", "fortnite.csv", "Xbox", "", ""],
+  ].map(([name, csvName, connection, by, notes], index) => ({
+    name: name!,
+    sheetId: `preview-${String(index)}`,
+    csvName: csvName!,
+    connection: connection!,
+    notes: notes!,
+    pointer: by === "" ? "" : `by ${by!}`,
+  }));
+  const client: { -readonly [K in keyof QcmClient]: QcmClient[K] } = mock;
+  client.loadCommunityCatalog = () => Promise.resolve({ profiles, fromCache: false, skippedRows: 2 });
+  client.importCommunityProfile = () => Promise.reject(new Error("The preview has no network."));
+  client.openCommunitySheet = () => Promise.resolve();
+}
 
 export function seedDevicePreview(mock: MockQcmClient): void {
   mock.plugDevice("QUADSTICK", { "prefs.csv": SAMPLE_PREFS });

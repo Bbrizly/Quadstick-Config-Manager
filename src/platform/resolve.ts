@@ -41,6 +41,10 @@ export async function resolveQcmClient(): Promise<QcmClient> {
       const { bigProfileGrid } = await import("./mockPreviews");
       mock.willOpenGrid("big.csv", bigProfileGrid());
     }
+    if (new URLSearchParams(window.location.search).has("community")) {
+      const { seedCommunityPreview } = await import("./mockPreviews");
+      seedCommunityPreview(mock);
+    }
     if (new URLSearchParams(window.location.search).has("device")) {
       const { seedDevicePreview } = await import("./mockPreviews");
       seedDevicePreview(mock);
