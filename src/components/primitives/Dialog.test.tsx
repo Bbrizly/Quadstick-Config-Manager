@@ -86,3 +86,74 @@ describe("Dialog focus while its content is still loading", () => {
     expect(view.getByRole("button", { name: "Cancel" })).toHaveFocus();
   });
 });
+
+describe("Dialog focus when its buttons change while open", () => {
+  function Swapping({ done }: { readonly done: boolean }) {
+    return (
+      <Dialog
+        open
+        title="Installing"
+        onClose={() => undefined}
+        actions={
+          done ? (
+            <button type="button" data-autofocus>Close</button>
+          ) : (
+            <>
+              <button type="button">Cancel</button>
+              <button type="button" data-autofocus>Install</button>
+            </>
+          )
+        }
+      >
+        <p>Body</p>
+      </Dialog>
+    );
+  }
+
+  it("moves focus to the new button when the focused one goes away", () => {
+    const view = render(<Swapping done={false} />);
+    expect(view.getByRole("button", { name: "Install" })).toHaveFocus();
+    view.rerender(<Swapping done />);
+    expect(view.getByRole("button", { name: "Close" })).toHaveFocus();
+  });
+
+  it("leaves focus alone when it is still somewhere in the panel", () => {
+    const view = render(<Swapping done={false} />);
+    view.getByRole("button", { name: "Cancel" }).focus();
+    view.rerender(<Swapping done={false} />);
+    expect(view.getByRole("button", { name: "Cancel" })).toHaveFocus();
+  });
+});
+
+describe("Dialog focus after a busy spell", () => {
+  function Busy({ busy, done }: { readonly busy: boolean; readonly done: boolean }) {
+    return (
+      <Dialog
+        open
+        title="Installing"
+        onClose={() => undefined}
+        actions={
+          done ? (
+            <button type="button" data-autofocus>Close</button>
+          ) : (
+            <button type="button" data-autofocus disabled={busy}>Install</button>
+          )
+        }
+      >
+        <p>Body</p>
+      </Dialog>
+    );
+  }
+
+  it("lands on the new button once nothing is busy", () => {
+    const view = render(<Busy busy={false} done={false} />);
+    // A browser drops focus off a button as it turns disabled; jsdom does
+    // not, so drop it here first.
+    (document.activeElement as HTMLElement).blur();
+    view.rerender(<Busy busy done={false} />);
+    // Every button is off, so the panel holds focus while the install runs.
+    expect(view.getByRole("dialog")).toHaveFocus();
+    view.rerender(<Busy busy={false} done />);
+    expect(view.getByRole("button", { name: "Close" })).toHaveFocus();
+  });
+});

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, type ReactNode } from "react";
 
 import { focusFirst, restoreFocus, trapTabKey } from "./focus";
 import { usePresence } from "./presence";
@@ -58,6 +58,20 @@ export function Dialog({ open, title, onClose, children, actions, wide = false }
       restoreFocus(previous);
     };
   }, [open]);
+
+  // A dialog that swaps its buttons while open (Install's confirm, then
+  // Close; the link window's question) unmounts the focused one, and focus
+  // drops to the page behind. The panel itself holds focus only while every
+  // button is busy. Either is pulled onto a button; focus in a flyout outside
+  // the panel is where the user put it.
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    if (!open || panel === null) return;
+    const active = document.activeElement;
+    if (active !== null && active !== document.body && active !== panel) return;
+    if (panel.querySelector(".dialog-panel:not(.closing)") !== null) return;
+    focusFirst(panel);
+  });
 
   if (!mounted) {
     return null;
