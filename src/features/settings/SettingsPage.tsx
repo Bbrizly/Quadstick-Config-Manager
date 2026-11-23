@@ -268,14 +268,35 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
         <h1 className="settings-title">{t("Shell_Settings")}</h1>
       </div>
 
-      <div className="settings-tabs" role="tablist" aria-label={t("Shell_Settings")}>
+      <div
+        className="settings-tabs"
+        role="tablist"
+        aria-label={t("Shell_Settings")}
+        // Fluent TabControl: one tab stop, the arrows move between tabs.
+        onKeyDown={(event) => {
+          const at = tabs.findIndex((entry) => entry.id === tab);
+          const next =
+            event.key === "ArrowRight" ? (at + 1) % tabs.length
+            : event.key === "ArrowLeft" ? (at - 1 + tabs.length) % tabs.length
+            : event.key === "Home" ? 0
+            : event.key === "End" ? tabs.length - 1
+            : -1;
+          if (next < 0) return;
+          event.preventDefault();
+          setTab(tabs[next]!.id);
+          document.getElementById(`settings-tab-${tabs[next]!.id}`)?.focus();
+        }}
+      >
         {tabs.map((entry) => (
           <button
             key={entry.id}
+            id={`settings-tab-${entry.id}`}
             className="settings-tab"
             type="button"
             role="tab"
             aria-selected={tab === entry.id}
+            aria-controls="settings-tab-panel"
+            tabIndex={tab === entry.id ? 0 : -1}
             onClick={() => setTab(entry.id)}
           >
             {entry.label}
@@ -283,7 +304,12 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
         ))}
       </div>
 
-      <div className="settings-tab-card" role="tabpanel">
+      <div
+        className="settings-tab-card"
+        id="settings-tab-panel"
+        role="tabpanel"
+        aria-labelledby={`settings-tab-${tab}`}
+      >
         <div className="settings-fields">
           {tab === "general" ? (
             <>

@@ -95,6 +95,12 @@ button.settings-tab[aria-selected="true"] {
   gap: 4px;
 }
 
+/* A button in a field is as wide as its words, as Avalonia's are, not the
+   560 column; a grid would otherwise stretch it and centre a link. */
+.settings-field > button {
+  justify-self: start;
+}
+
 /* Fluent's CheckBox is 32 tall however small its box. */
 .settings-field label.checkbox-row {
   display: flex;

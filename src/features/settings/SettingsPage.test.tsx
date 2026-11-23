@@ -40,6 +40,24 @@ describe("GATE_SOFT settings page", () => {
     expect(after.revision).toBe(2);
   });
 
+  it("keeps one tab stop and moves between tabs with the arrows", async () => {
+    renderSettings(new MockQcmClient());
+    const tabs = await screen.findAllByRole("tab");
+    expect(tabs.filter((tab) => tab.tabIndex === 0)).toHaveLength(1);
+    const first = tabs[0]!;
+    first.focus();
+
+    fireEvent.keyDown(first, { key: "ArrowLeft" });
+    const last = tabs[tabs.length - 1]!;
+    expect(last).toHaveAttribute("aria-selected", "true");
+    expect(document.activeElement).toBe(last);
+    expect(screen.getByRole("tabpanel")).toHaveAttribute("aria-labelledby", last.id);
+
+    fireEvent.keyDown(last, { key: "Home" });
+    expect(first).toHaveAttribute("aria-selected", "true");
+    expect(first.tabIndex).toBe(0);
+  });
+
   it("refuses a scale outside the allowlist in the select", async () => {
     const client = new MockQcmClient();
     renderSettings(client);
