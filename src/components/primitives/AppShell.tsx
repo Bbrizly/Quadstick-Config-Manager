@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import type { ThemePreference } from "../../app/theme";
 import { useI18n, type MessageKey } from "../../i18n";
+import { handleDocumentTab, rememberTabStart } from "./focus";
 import { Icon, type IconName } from "./icons";
 
 export type ShellDestination = "home" | "device" | "community";
@@ -40,6 +41,16 @@ export function AppShell({
   children,
 }: AppShellProps) {
   const { t } = useI18n();
+  useEffect(() => {
+    document.addEventListener("keydown", handleDocumentTab);
+    document.addEventListener("pointerdown", rememberTabStart, true);
+    document.addEventListener("focusin", rememberTabStart);
+    return () => {
+      document.removeEventListener("keydown", handleDocumentTab);
+      document.removeEventListener("pointerdown", rememberTabStart, true);
+      document.removeEventListener("focusin", rememberTabStart);
+    };
+  }, []);
   return (
     <div className="app-shell">
       <a className="skip-link" href="#qcm-main">
