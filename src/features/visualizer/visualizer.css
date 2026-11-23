@@ -115,7 +115,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: opacity 140ms ease;
+  transition: opacity var(--qcm-dur-instant) ease;
 }
 
 .hotspot-group.faded {
@@ -127,7 +127,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  animation: combo-in 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: combo-in var(--qcm-dur-fast) var(--qcm-ease-out);
 }
 
 @keyframes combo-in {
@@ -228,7 +228,7 @@
   background: var(--qcm-input-tint);
   color: var(--qcm-text);
   font-size: var(--qcm-small-size);
-  animation: card-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: qcm-fade var(--qcm-dur-fast) var(--qcm-ease-out) backwards;
 }
 
 .off-model-card {
@@ -330,9 +330,8 @@
   box-shadow: none;
   transform: none !important;
   transition:
-    background 80ms ease,
-    border-color 80ms ease,
-    border-width 80ms ease;
+    background-color var(--qcm-dur-instant) ease,
+    border-color var(--qcm-dur-instant) ease;
 }
 
 .zone-callout:hover,
@@ -358,10 +357,10 @@
 .zone.selected,
 .zone-rail-row.selected,
 .row-chip.selected {
-  border-width: 3px;
+  /* Avalonia's 3px edge, drawn inside so the box never changes size. */
   border-color: var(--qcm-accent);
   background: var(--qcm-input-tint);
-  box-shadow: none;
+  box-shadow: inset 0 0 0 1px var(--qcm-accent);
 }
 
 .zone-callout.selected:hover,
@@ -452,19 +451,8 @@
   height: 6px;
   border-radius: 50%;
   background: var(--qcm-accent);
-  animation: pip-pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes pip-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.25);
-    opacity: 0.85;
-  }
+  /* Arrives once, then holds still: it shows while a gamer plays. */
+  animation: qcm-fade var(--qcm-dur-fast) ease-out backwards;
 }
 
 .gesture-action {
@@ -655,18 +643,7 @@
 .visualizer-extra-zones .zone {
   position: static;
   min-height: 34px !important;
-  animation: card-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes card-enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: qcm-fade var(--qcm-dur-fast) var(--qcm-ease-out) backwards;
 }
 
 .practice-status {
@@ -691,7 +668,7 @@
   border-radius: var(--qcm-radius-control);
   background: var(--qcm-surface);
   text-align: start;
-  transition: background 80ms ease;
+  transition: background-color var(--qcm-dur-instant) ease;
 }
 
 .zone-rail-row:hover {
@@ -720,7 +697,7 @@
   border-radius: var(--qcm-radius-control);
   background: var(--qcm-surface);
   text-align: start;
-  animation: card-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: qcm-fade var(--qcm-dur-fast) var(--qcm-ease-out) backwards;
 }
 
 .pill {
