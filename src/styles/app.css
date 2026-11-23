@@ -239,6 +239,29 @@ textarea:focus-visible {
   color: var(--qcm-on-accent);
 }
 
+/* The focus blue on an accent fill is 1.7:1. A surface band inside the ring
+   puts surface on both sides of it, and it stays inset so nothing clips it. */
+.primary:focus-visible,
+.primary-action:focus-visible,
+.skip-link:focus-visible,
+button.row-select[aria-pressed="true"]:focus-visible {
+  outline: 2px solid var(--qcm-focus);
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 4px var(--qcm-surface);
+}
+
+/* WebKit's default placeholder grey is 2.09:1 on a light field. */
+::placeholder {
+  color: var(--qcm-text-secondary);
+  opacity: 1;
+}
+
+@media (forced-colors: active) {
+  ::placeholder {
+    color: GrayText;
+  }
+}
+
 /* Avalonia Button.quiet only drops the fill: the hairline edge stays. */
 .quiet {
   background: transparent;

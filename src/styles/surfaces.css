@@ -371,12 +371,12 @@ button.link-close {
 }
 
 .band-led-halo {
-  fill: #3b82f6;
+  fill: var(--qcm-led-halo);
   opacity: 0.35;
 }
 
 .band-led {
-  fill: #60a5fa;
+  fill: var(--qcm-led);
 }
 
 .band-stick-home {
