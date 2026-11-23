@@ -1,6 +1,8 @@
 import { Dialog } from "../../components/primitives/Dialog";
+import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import type { EditorOp, EditorSnapshot, Mode } from "../../platform";
+import { MoveGlyph } from "./MoveGlyph";
 
 export interface ModesDialogProps {
   readonly open: boolean;
@@ -58,7 +60,7 @@ export function ModesDialog({
                   aria-label={t("Modes_MoveNameUp", [mode.name])}
                   onClick={() => onMove(mode, -1)}
                 >
-                  ↑
+                  <MoveGlyph up />
                 </button>
                 <button
                   type="button"
@@ -66,7 +68,7 @@ export function ModesDialog({
                   aria-label={t("Modes_MoveNameDown", [mode.name])}
                   onClick={() => onMove(mode, 1)}
                 >
-                  ↓
+                  <MoveGlyph up={false} />
                 </button>
               </>
             );
@@ -76,14 +78,22 @@ export function ModesDialog({
                   <span className="modes-dialog-name">{t("Modes_PreferencesDeviceSettings")}</span>
                   <span className="mode-row-actions">
                     {moveButtons}
-                    <button
-                      type="button"
-                      disabled={busy}
-                      aria-label={armedDelete === mode.index ? t("Modes_ReallyDelete") : t("Shell_Delete")}
-                      onClick={() => onDelete(mode)}
-                    >
-                      ×
-                    </button>
+                    <span className="mode-delete-slot">
+                      <span className="mode-delete-sizer" aria-hidden="true">
+                        <Icon name="delete" size={18} />
+                        <span>{t("Modes_ReallyDelete")}</span>
+                      </span>
+                      <button
+                        type="button"
+                        className={armedDelete === mode.index ? "mode-delete armed" : "mode-delete"}
+                        disabled={busy}
+                        aria-label={armedDelete === mode.index ? t("Modes_ReallyDelete") : t("Shell_Delete")}
+                        onClick={() => onDelete(mode)}
+                      >
+                        <Icon name="delete" size={18} />
+                        {armedDelete === mode.index ? <span aria-hidden="true">{t("Modes_ReallyDelete")}</span> : null}
+                      </button>
+                    </span>
                   </span>
                 </li>
               );
@@ -119,16 +129,24 @@ export function ModesDialog({
                       })
                     }
                   >
-                    ＋
+                    <Icon name="template" size={18} />
                   </button>
-                  <button
-                    type="button"
-                    disabled={busy || profileModes.length <= 1}
-                    aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Modes_DeleteName", [mode.name])}
-                    onClick={() => onDelete(mode)}
-                  >
-                    ×
-                  </button>
+                  <span className="mode-delete-slot">
+                    <span className="mode-delete-sizer" aria-hidden="true">
+                      <Icon name="delete" size={18} />
+                      <span>{t("Modes_ReallyDelete")}</span>
+                    </span>
+                    <button
+                      type="button"
+                      className={armedDelete === mode.index ? "mode-delete armed" : "mode-delete"}
+                      disabled={busy || profileModes.length <= 1}
+                      aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Modes_DeleteName", [mode.name])}
+                      onClick={() => onDelete(mode)}
+                    >
+                      <Icon name="delete" size={18} />
+                      {armedDelete === mode.index ? <span aria-hidden="true">{t("Modes_ReallyDelete")}</span> : null}
+                    </button>
+                  </span>
                 </span>
               </li>
             );

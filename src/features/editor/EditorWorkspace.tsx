@@ -28,6 +28,7 @@ import { comboGroups } from "./combos";
 import { CustomNamesTable, customNames, nextDraftName } from "./CustomNames";
 import { duplicateCounts } from "./duplicates";
 import { ModesDialog } from "./ModesDialog";
+import { MoveGlyph } from "./MoveGlyph";
 import { InfoButton, Popover } from "./Popover";
 import { ProblemsDock, StatusChip, useValidationStatus, type EditorStatus } from "./ProblemsDock";
 import { RowsGrid, type LabelStyle } from "./RowsGrid";
@@ -204,6 +205,20 @@ function FileNameBox({
  * a drive that is mounted, or a stick the live reader hears. Asked on open and
  * again only when the device list says it changed; nothing polls.
  */
+/** The inspector before a part is picked: the catalog's first paragraph leads. */
+function EmptyInspector({ text }: { readonly text: string }) {
+  const split = text.indexOf("\n\n");
+  const lead = split < 0 ? "" : text.slice(0, split);
+  const body = split < 0 ? text : text.slice(split + 2);
+  return (
+    <div className="mapping-empty">
+      <Icon name="viewDevice" size={40} />
+      {lead === "" ? null : <p className="mapping-empty-title">{lead}</p>}
+      <p className="empty-copy">{body}</p>
+    </div>
+  );
+}
+
 function useStickConnected(client: QcmClient, liveHeard: boolean): boolean {
   const [drives, setDrives] = useState(false);
   useEffect(() => {
@@ -1108,7 +1123,7 @@ export function EditorWorkspace({
               type="button"
               aria-pressed={settings?.compactCards === true}
               disabled={settings === null}
-              aria-label={settings?.compactCards === true ? t("Main_MappingsAreOnOneLine") : t("Main_MappingsReadAsAFull")}
+              aria-label={t("Main_FitEachMappingOnOne")}
               title={t("Main_FitEachMappingOnOne")}
               onClick={() => patchSettings({ compactCards: settings?.compactCards !== true })}
             >
@@ -1154,10 +1169,11 @@ export function EditorWorkspace({
       tabIndex={-1}
     >
       <div className="row-actions">
-        <button type="button" disabled={locked || rows[0]?.row === lead.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: lead.row, to: lead.row - 1 }], () => setSelectedRow(lead.row - 1))}>↑</button>
-        <button type="button" disabled={locked || rows.at(-1)?.row === lead.row} aria-label={t("Review_MoveItLater")} onClick={() => void apply([{ op: "move_row", from: lead.row, to: lead.row + 1 }], () => setSelectedRow(lead.row + 1))}>↓</button>
+        <button type="button" disabled={locked || rows[0]?.row === lead.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: lead.row, to: lead.row - 1 }], () => setSelectedRow(lead.row - 1))}><MoveGlyph up /></button>
+        <button type="button" disabled={locked || rows.at(-1)?.row === lead.row} aria-label={t("Review_MoveItLater")} onClick={() => void apply([{ op: "move_row", from: lead.row, to: lead.row + 1 }], () => setSelectedRow(lead.row + 1))}><MoveGlyph up={false} /></button>
         <button
           type="button"
+          className="row-delete"
           disabled={locked}
           onClick={() => {
             // The card holds every output on these inputs, so its trash takes
@@ -1169,7 +1185,8 @@ export function EditorWorkspace({
             void apply([op], () => setSelectedRow(null));
           }}
         >
-          {t("Shell_Delete")}
+          <Icon name="delete" size={18} />
+          <span>{t("Shell_Delete")}</span>
         </button>
       </div>
       <BindingInspector
@@ -1284,7 +1301,7 @@ export function EditorWorkspace({
           {selectedZone === null ? (
             <>
               <h2 id="mapping-title" className="visually-hidden">{t("Shell_Configuration")}</h2>
-              <p className="empty-copy">{t("Main_NothingSelectedNNPickA")}</p>
+              <EmptyInspector text={t("Main_NothingSelectedNNPickA")} />
             </>
           ) : (
             <>
@@ -1310,7 +1327,8 @@ export function EditorWorkspace({
                       )
                     }
                   >
-                    {t("Shell_AddRow")}
+                    <Icon name="add" size={16} />
+                    <span>{t("Shell_AddRow").replace(/^\+ /u, "")}</span>
                   </button>
                 ) : null}
               </div>

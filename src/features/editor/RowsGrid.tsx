@@ -7,6 +7,7 @@ import { tokenLabel } from "../visualizer/deviceSummary";
 import { inputLabel, type LabelStyle } from "./labels";
 import { OutputPrompt, promptSrc } from "../visualizer/OutputPrompt";
 import { DuplicateMark } from "./DuplicateMark";
+import { MoveGlyph } from "./MoveGlyph";
 import { NO_DUPLICATES, type DuplicateCounts } from "./duplicates";
 
 /** Column K (`ProfileFile.NoteColumn`). */
@@ -326,9 +327,7 @@ export function RowsGrid({
                       if (target !== undefined) onApply([{ op: "move_row", from: row, to: target.row }]);
                     }}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <path fill="currentColor" d={delta < 0 ? "M7.4 15.4 12 10.8l4.6 4.6L18 14l-6-6-6 6z" : "M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6z"} />
-                    </svg>
+                    <MoveGlyph up={delta < 0} />
                   </button>
                 </span>
               );

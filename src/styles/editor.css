@@ -143,6 +143,7 @@
   border-right: var(--qcm-hairline) solid var(--qcm-border);
   padding: var(--qcm-space-lg);
   overflow-y: auto;
+  position: relative;
 }
 
 .modes-panel-body {
@@ -172,8 +173,10 @@
   min-height: 0;
 }
 
+/* Relative so a visually hidden label inside clips here, not past the page. */
 .device-canvas,
 .mapping-panel {
+  position: relative;
   min-width: 0;
   overflow: auto;
 }
@@ -239,7 +242,7 @@
   grid-template-columns: 12px 1fr;
   gap: 8px;
   align-items: start;
-  animation: sentence-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: sentence-enter var(--qcm-dur-fast) var(--qcm-ease-out);
 }
 
 @keyframes sentence-enter {
@@ -274,17 +277,8 @@
 
 .sentence-live-pip {
   background: var(--qcm-accent);
-  animation: sentence-pip 1.2s ease-in-out infinite;
-}
-
-@keyframes sentence-pip {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
+  /* Arrives once, then holds still: it shows while a gamer plays. */
+  animation: qcm-fade var(--qcm-dur-fast) ease-out backwards;
 }
 
 .sentence-live-pip-slot {
@@ -413,6 +407,7 @@
 
 .mapping-count {
   font-size: var(--qcm-small-size);
+  font-variant-numeric: tabular-nums;
 }
 
 .mapping-count.accent {
@@ -421,8 +416,11 @@
 }
 
 .mapping-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   min-height: var(--qcm-control-height);
-  padding: 6px 12px;
+  padding: 6px 14px 6px 12px;
 }
 
 /* One small muted TextBlock, no margin of its own. */
@@ -430,6 +428,34 @@
   margin: 0;
   white-space: pre-line;
   font-size: var(--qcm-small-size);
+}
+
+/* Nothing picked yet: the panel says what it is for, centred in its column. */
+.mapping-empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  max-width: 30ch;
+  margin: 18vh auto 0;
+  color: var(--qcm-text-secondary);
+  text-align: center;
+}
+
+.mapping-empty svg {
+  margin-bottom: 4px;
+  opacity: 0.7;
+}
+
+.mapping-empty .mapping-empty-title {
+  margin: 0;
+  color: var(--qcm-text);
+  font-size: var(--qcm-subhead-size);
+  font-weight: 700;
+}
+
+.mapping-panel .mapping-empty .empty-copy {
+  white-space: normal;
+  text-wrap: pretty;
 }
 
 .panel-heading-row h2,
@@ -455,7 +481,7 @@
   border: 2px solid var(--qcm-border);
   border-radius: var(--qcm-radius-field);
   background: var(--qcm-surface);
-  transition: background 100ms ease, border-color 100ms ease;
+  transition: background-color var(--qcm-dur-instant) ease, border-color var(--qcm-dur-instant) ease;
 }
 
 .mode-row:hover {
@@ -496,6 +522,10 @@ button.mode-select:disabled {
   padding: 1px 8px;
 }
 
+.mode-number {
+  font-variant-numeric: tabular-nums;
+}
+
 .mode-number::after {
   content: ":\00a0";
 }
@@ -509,9 +539,59 @@ button.mode-select:disabled {
 
 .mode-row-actions button,
 .row-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-width: var(--qcm-icon-button);
   min-height: var(--qcm-icon-button);
   padding: 0;
+}
+
+.row-actions {
+  margin-bottom: 4px;
+}
+
+/* The words sit beside the bin, so the button grows to hold them. */
+.row-actions button.row-delete,
+.mode-row-actions button.mode-delete.armed {
+  padding: 0 12px;
+}
+
+.row-actions button.row-delete svg,
+.mode-row-actions button.mode-delete svg {
+  color: var(--qcm-error);
+}
+
+/* The slot is always as wide as the armed button (an invisible copy sizes it),
+   so arming never squeezes the name field or breaks row alignment. */
+.mode-delete-slot {
+  display: grid;
+}
+
+.mode-delete-slot > * {
+  grid-area: 1 / 1;
+}
+
+.mode-delete-slot > button {
+  justify-self: end;
+}
+
+.mode-row-actions .mode-delete-sizer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  visibility: hidden;
+}
+
+/* Armed: the second click deletes, so the button says so in words. */
+.mode-row-actions button.mode-delete.armed {
+  border-color: var(--qcm-error);
+  color: var(--qcm-error);
+  font-weight: 700;
 }
 
 .binding-header {
@@ -548,9 +628,12 @@ button.mode-select:disabled {
 .editor-field {
   display: grid;
   gap: 4px;
+  min-width: 0;
 }
 
 .editor-field input {
+  width: 100%;
+  min-width: 0;
   min-height: var(--qcm-control-height);
   padding: var(--qcm-pad-control);
   border: var(--qcm-hairline) solid var(--qcm-border);
@@ -605,11 +688,24 @@ button.mode-select:disabled {
   background: var(--qcm-surface);
 }
 
+/* The problem, then its one-click fix on the same line. */
 .problems-item {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   justify-items: start;
-  gap: 2px;
+  gap: 2px 8px;
   padding: 2px 0;
+}
+
+.problems-item > .issue-link:only-child {
+  grid-column: 1 / -1;
+}
+
+button.issue-fix {
+  min-height: 36px;
+  padding: 4px 12px;
+  font-size: var(--qcm-small-size);
 }
 
 .problems-none {
@@ -1070,6 +1166,7 @@ button.mode-help h2 {
 }
 
 .zone-list .accent-count {
+  font-variant-numeric: tabular-nums;
   color: var(--qcm-accent-text);
   /* `MainControlsRow`'s count is a plain small TextBlock. */
   font-weight: 400;
@@ -1107,12 +1204,12 @@ button.sidebar-toggle {
 button.sidebar-toggle.format {
   display: grid;
   place-items: center;
-  border: 0;
-  background: transparent;
   color: var(--qcm-accent-text);
 }
 
+/* On: the accent edge of a picked mode, not the tint alone. */
 button.sidebar-toggle.format.active {
+  border: 2px solid var(--qcm-accent);
   background: var(--qcm-input-tint);
 }
 
@@ -1122,6 +1219,7 @@ button.sidebar-toggle.format.active {
 
 /* ---- Rows view (RowsPanel) ---- */
 .rows-canvas {
+  position: relative;
   min-width: 0;
   padding: 12px;
   overflow: auto;
@@ -1171,6 +1269,7 @@ button.sidebar-toggle.format.active {
   padding-right: 4px;
   color: var(--qcm-text-secondary);
   font-size: var(--qcm-small-size);
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
@@ -1324,7 +1423,7 @@ button.icon.move:not(:disabled) {
 .modes-dialog-list {
   display: grid;
   gap: 6px;
-  margin: 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
