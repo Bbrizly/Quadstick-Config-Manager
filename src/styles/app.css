@@ -107,6 +107,12 @@ input[type="number"],
   text-align: start;
 }
 
+/* A list box (size above one) has no popup, so no chevron either. */
+:where(select[multiple], select[size]:not([size="1"])) {
+  padding: 6px;
+  background-image: none;
+}
+
 @media (forced-colors: active) {
   :where(select) {
     appearance: auto;
@@ -452,7 +458,7 @@ textarea:focus-visible {
   overflow: auto;
 }
 
-.shell-main:not(:has(.home-view)):not(:has(.editor-route)):not(:has(.settings-page)):not(:has(.device-preferences-page)) {
+.shell-main:not(:has(.home-view)):not(:has(.editor-route)):not(:has(.settings-page)):not(:has(.device-preferences-page)):not(:has(.community-page)) {
   max-width: 1180px;
   margin-inline: auto;
   padding: var(--qcm-space-xl) var(--qcm-space-2xl) var(--qcm-space-2xl);
@@ -802,4 +808,94 @@ input.qcm-switch:focus-visible {
   input.qcm-switch:checked::before {
     background: HighlightText;
   }
+}
+
+/* `CommunityProfilesView`: heading 8, explain 12, search 10, summary 4,
+   count 10, then the list as a panel and the buttons 14 under it. */
+.community-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.community-page > .section {
+  margin-bottom: 8px;
+}
+
+.community-page p {
+  margin: 0;
+}
+
+/* The "?" follows its sentence instead of floating at a column edge. */
+.community-explain {
+  grid-template-columns: minmax(0, auto) auto;
+  justify-content: start;
+  margin-bottom: 12px;
+}
+
+.community-search {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.community-search input {
+  width: 100%;
+  min-height: var(--qcm-control-height);
+  padding: var(--qcm-pad-control);
+}
+
+.community-summary {
+  color: var(--qcm-text-secondary);
+}
+
+.community-page .community-count {
+  margin-top: 4px;
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-text-secondary);
+}
+
+/* Avalonia boxes the list as a surface panel, 6 in, panel corners. */
+select.community-list {
+  width: 100%;
+  margin-top: 10px;
+  border-color: var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background-color: var(--qcm-surface);
+}
+
+select.community-list option {
+  padding: 6px 8px;
+  border-radius: var(--qcm-radius-control);
+}
+
+.community-detail {
+  display: grid;
+  gap: 4px;
+  margin-top: 14px;
+  max-width: 720px;
+}
+
+.community-detail h2 {
+  margin: 0;
+  font-size: var(--qcm-subhead-size);
+  font-weight: 700;
+}
+
+.community-detail-meta {
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-text-secondary);
+}
+
+.community-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.community-actions button {
+  min-width: 130px;
+}
+
+.community-page .community-nomatch {
+  margin-top: 12px;
 }

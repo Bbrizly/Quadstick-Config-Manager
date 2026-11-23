@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
+import { InfoButton } from "../editor/Popover";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
@@ -165,12 +166,18 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
 
   return (
     <section className="community-page" aria-labelledby="community-title">
-      <header>
-        <h1 id="community-title">{t("Community_CommunityProfiles")}</h1>
-        <p>{t("Community_GameProfilesOtherQuadStickPlayers")}</p>
-      </header>
+      <h1 className="section" id="community-title">{t("Community_CommunityProfiles")}</h1>
+      {/* `MainWindow.Explain`: the one line, the rest behind its "?". */}
+      <div className="explain-row community-explain">
+        <span>{t("Community_SharedGoogleSheetsForGame")}</span>
+        <InfoButton
+          name={t("Community_CommunityProfiles")}
+          title={t("Community_CommunityProfiles")}
+          body={t("Community_GameProfilesOtherQuadStickPlayers")}
+        />
+      </div>
 
-      <label>
+      <label className="community-search">
         <span className="visually-hidden">{t("Community_SearchTheCommunityProfiles")}</span>
         <input
           type="search"
@@ -190,10 +197,11 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
         />
       </label>
 
-      <p aria-live="polite">{summary}</p>
-      {countText.length === 0 ? null : <p>{countText}</p>}
+      <p className="community-summary" aria-live="polite">{summary}</p>
+      {countText.length === 0 ? null : <p className="community-count">{countText}</p>}
 
       <select
+        className="community-list"
         ref={listRef}
         size={Math.min(Math.max(filtered.length, 4), 14)}
         aria-label={t("Community_CommunityProfilesUseTheArrow")}
@@ -216,9 +224,9 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
       </select>
 
       {selected === null ? null : (
-        <section aria-label={selected.name}>
+        <section className="community-detail" aria-label={selected.name}>
           <h2>{selected.name}</h2>
-          <p>{[selected.csvName, selected.connection, selected.pointer].filter(Boolean).join(" · ")}</p>
+          <p className="community-detail-meta">{[selected.csvName, selected.connection, selected.pointer].filter(Boolean).join(" · ")}</p>
           {selected.notes.trim().length === 0 ? null : <p>{selected.notes}</p>}
         </section>
       )}
@@ -227,6 +235,7 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
         <button
           className="primary-action"
           type="button"
+          aria-label={t("Community_ImportTheSelectedProfileInto")}
           disabled={selected === null || importing}
           onClick={() => void importSelected()}
         >
@@ -248,7 +257,7 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
       </div>
 
       {filtered.length === 0 && catalog !== null && catalog.profiles.length > 0 ? (
-        <p>{t("Community_NothingMatchesThatSearchClear")}</p>
+        <p className="community-summary community-nomatch">{t("Community_NothingMatchesThatSearchClear")}</p>
       ) : null}
       <LiveRegion>{status}</LiveRegion>
     </section>
