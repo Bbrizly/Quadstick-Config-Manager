@@ -50,6 +50,13 @@ describe("focus ring", () => {
     expect(focused.some((rule) => ringSeparated(rule.body))).toBe(true);
   });
 
+  // B-116: the "?" text takes focus when it opens and showed the browser's
+  // own ring, not the app's.
+  it("rings the info flyout from the focus token", () => {
+    const flyout = rules(editorCss).find((rule) => rule.selector === ".info-flyout:focus-visible");
+    expect(flyout?.body).toMatch(/outline:\s*2px solid var\(--qcm-focus\)/u);
+  });
+
   it("draws an outline on every focused control by default", () => {
     const base = rules(appCss).find((rule) => rule.selector.startsWith("button:focus-visible"));
     expect(base?.body).toMatch(/outline:\s*2px solid var\(--qcm-focus\)/u);

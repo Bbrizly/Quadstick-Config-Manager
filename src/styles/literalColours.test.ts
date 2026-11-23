@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import homePage from "../features/home/HomePage.tsx?raw";
-import editorCss from "./editor.css?raw";
-import homeCss from "./home.css?raw";
 import tokenCss from "./tokens.css?raw";
 
 // B-106: a colour written into a rule skips the theme and forced-colours
 // blocks. The card initials and the grid cell hover were the last two.
+// B-117: every sheet is scanned, not two. tokens.css is where colours live.
+const sheets = Object.fromEntries(
+  Object.entries({
+    ...import.meta.glob<string>("./*.css", { query: "?raw", import: "default", eager: true }),
+    ...import.meta.glob<string>("../features/**/*.css", { query: "?raw", import: "default", eager: true }),
+  }).filter(([path]) => !path.endsWith("/tokens.css")),
+);
 
 const strip = (css: string) => css.replace(/\/\*[\s\S]*?\*\//gu, "");
 
@@ -34,17 +39,30 @@ function lum(hex: string): number {
 }
 
 describe("literal colours", () => {
-  it("reads the stylesheets", () => {
-    expect(homeCss.length).toBeGreaterThan(1000);
-    expect(editorCss.length).toBeGreaterThan(1000);
+  it("reads every stylesheet", () => {
+    expect(Object.keys(sheets).toSorted()).toEqual([
+      "../features/community/community.css",
+      "../features/visualizer/visualizer.css",
+      "./app.css",
+      "./editor.css",
+      "./home.css",
+      "./motion.css",
+      "./settings.css",
+      "./surfaces.css",
+    ]);
+    for (const css of Object.values(sheets)) expect(css.length).toBeGreaterThan(500);
     expect(tokenCss.length).toBeGreaterThan(1000);
   });
 
-  it("leaves none in home.css or editor.css outside a shadow", () => {
-    const offenders = [...declarations(homeCss), ...declarations(editorCss)].filter(
+  it.each(Object.keys(sheets))("leaves none in %s outside a shadow", (path) => {
+    const offenders = declarations(sheets[path]!).filter(
       (decl) => LITERAL.test(decl) && !decl.startsWith("box-shadow"),
     );
     expect(offenders).toEqual([]);
+  });
+
+  it("gives the dialog scrim a light, dark, system dark and forced value", () => {
+    expect(tokenBlocks("scrim")).toHaveLength(4);
   });
 
   it("gives both new tokens a light, dark, system dark and forced value", () => {

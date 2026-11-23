@@ -216,14 +216,14 @@
 .combo-ring.ring-halo {
   width: 46px;
   height: 46px;
-  border: 10px solid var(--qcm-surface, #fff);
+  border: 10px solid var(--qcm-surface);
   opacity: 0.95;
 }
 
 .combo-ring.ring-focus {
   width: 38px;
   height: 38px;
-  border: 7px solid var(--qcm-focus, #fff);
+  border: 7px solid var(--qcm-focus);
 }
 
 .combo-ring.ring-accent {
@@ -343,7 +343,7 @@
 
 .hotspot-marker[data-active="true"] {
   border-color: var(--qcm-accent);
-  background: var(--qcm-success, #2f9e44);
+  background: var(--qcm-success);
   box-shadow: 0 0 0 3px var(--qcm-surface);
 }
 
@@ -670,7 +670,7 @@
 .live-stick-dot.core {
   width: 13px;
   height: 13px;
-  background: var(--qcm-success, #2f9e44);
+  background: var(--qcm-success);
 }
 
 .visualizer-extra-zones {

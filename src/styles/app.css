@@ -539,7 +539,7 @@ button.row-select[aria-pressed="true"]:focus-visible {
   display: grid;
   place-items: center;
   padding: var(--qcm-space-xl);
-  background: rgb(0 0 0 / 45%);
+  background: var(--qcm-scrim);
 }
 
 .dialog-panel.wide {

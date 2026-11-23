@@ -23,6 +23,8 @@
   --qcm-on-tile: #ffffff;
   /* Hover on a tinted grid cell: a white wash over the tint. */
   --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
+  /* Behind an open dialog. */
+  --qcm-scrim: rgb(0 0 0 / 45%);
   --qcm-error: #a6291f;
   --qcm-success: #0f6b34;
   --qcm-warning: #7a4b00;
@@ -101,6 +103,7 @@
   --qcm-on-accent: #06121f;
   --qcm-on-tile: #ffffff;
   --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
+  --qcm-scrim: rgb(0 0 0 / 45%);
   --qcm-error: #f2b4b0;
   --qcm-success: #7fde9b;
   --qcm-warning: #e8c36a;
@@ -135,6 +138,7 @@
     --qcm-on-accent: #06121f;
     --qcm-on-tile: #ffffff;
     --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
+    --qcm-scrim: rgb(0 0 0 / 45%);
     --qcm-error: #f2b4b0;
     --qcm-success: #7fde9b;
     --qcm-warning: #e8c36a;
@@ -171,6 +175,8 @@
     /* Forced colours repaint the swatch as Canvas. */
     --qcm-on-tile: CanvasText;
     --qcm-cell-hover-wash: transparent;
+    /* Forced colours repaint it as Canvas and keep the alpha. */
+    --qcm-scrim: rgb(0 0 0 / 45%);
     --qcm-error: CanvasText;
     --qcm-success: CanvasText;
     --qcm-warning: CanvasText;
