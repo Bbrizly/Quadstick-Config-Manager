@@ -118,6 +118,14 @@ function PreferenceValue({
 }) {
   const { t } = useI18n();
   const [draft, setDraft] = useState(value);
+  // B-123: the control stays mounted across commits, so a held or repeated
+  // arrow keeps focus. A stored value that changes elsewhere (undo, a reload)
+  // replaces the draft; a commit lands on the value the draft already shows.
+  const [stored, setStored] = useState(value);
+  if (stored !== value) {
+    setStored(value);
+    setDraft(value);
+  }
   const typed = definition !== null && canUseTypedControl(definition, value);
   const commitDraft = (): void => {
     if (draft !== value) onCommit(row, draft);
@@ -490,7 +498,7 @@ export function DevicePreferencesPage({
                         </button>
                       ) : (
                         <PreferenceValue
-                          key={`${String(snapshot?.revision ?? 0)}-${definition.name}-${row.value}`}
+                          key={definition.name}
                           definition={definition}
                           row={row.row}
                           value={row.value}
@@ -513,7 +521,7 @@ export function DevicePreferencesPage({
                   <h3>{row.name}</h3>
                   <div className="device-preference-control">
                     <PreferenceValue
-                      key={`${String(snapshot?.revision ?? 0)}-unknown-${String(row.row)}-${row.value}`}
+                      key={`unknown-${String(row.row)}-${row.name}`}
                       definition={null}
                       row={row.row}
                       value={row.value}
