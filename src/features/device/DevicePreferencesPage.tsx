@@ -612,10 +612,12 @@ export function DevicePreferencesPage({
         }}
         actions={
           <>
-            <button type="button" disabled={busy} onClick={() => setPlan(null)}>
+            {/* This overwrites prefs.csv on the stick, and Save to your
+                QuadStick sat where Save is: two Enters wrote it. */}
+            <button type="button" data-autofocus disabled={busy} onClick={() => setPlan(null)}>
               {t("Device_Cancel")}
             </button>
-            <button className="primary-action" type="button" data-autofocus disabled={busy} onClick={() => void commitSave()}>
+            <button type="button" disabled={busy} onClick={() => void commitSave()}>
               {t("Main_Save")}
             </button>
           </>

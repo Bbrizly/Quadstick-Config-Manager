@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { App } from "../../app/App";
@@ -65,5 +65,32 @@ describe("device nav (ShowDevicePageAsync)", () => {
     fireEvent.click(add);
     expect(await screen.findByText(/1 setting changed/u)).toBeInTheDocument();
     expect(screen.getByText("Save to your QuadStick").closest("button")).toBeEnabled();
+  });
+});
+
+describe("device settings save question", () => {
+  // It overwrites prefs.csv, and Save sat where Save to your QuadStick was,
+  // so two Enters wrote the stick. It opens on Cancel and nothing is accent.
+  it("opens on Cancel, with Cancel left and a plain Save right", async () => {
+    const client = new MockQcmClient();
+    client.plugDevice("QUADSTICK", {});
+    const definition: PreferenceDefinition = {
+      name: "mouse_speed", label: "Mouse speed", category: "Mouse", editor: "integer", default: "100",
+      minimum: 0, maximum: 200, unit: "", description: "", options: [], modeOverride: false, risk: "",
+      source: "", firmwareMayAddMore: false, alsoCalled: "", advanced: false,
+    };
+    const writable: { -readonly [K in keyof QcmClient]: QcmClient[K] } = client;
+    writable.getPreferenceCatalog = () => Promise.resolve({ categories: ["Mouse"], definitions: [definition] });
+    render(<App client={client} />);
+    fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
+    fireEvent.click((await screen.findAllByRole("button", { name: /^Add /u }))[0]!);
+    await screen.findByText(/1 setting changed/u);
+    fireEvent.click(screen.getByText("Save to your QuadStick").closest("button")!);
+
+    const ask = await screen.findByRole("dialog", { name: "Device settings" });
+    const buttons = within(ask).getAllByRole("button");
+    expect(buttons.map((b) => b.textContent)).toEqual(["Cancel", "Save"]);
+    await waitFor(() => expect(buttons[0]).toHaveFocus());
+    expect(buttons[1]).not.toHaveClass("primary-action");
   });
 });
