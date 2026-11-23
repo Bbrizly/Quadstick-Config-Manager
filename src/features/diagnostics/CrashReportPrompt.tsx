@@ -63,17 +63,6 @@ export function CrashReportPrompt({
       actions={
         <>
           <button
-            className="primary-action"
-            type="button"
-            disabled={busy}
-            aria-label={t("Main_SendThisCrashReport")}
-            onClick={() => {
-              void choose("send");
-            }}
-          >
-            {t("Main_SendReport")}
-          </button>
-          <button
             type="button"
             data-autofocus
             disabled={busy}
@@ -93,6 +82,17 @@ export function CrashReportPrompt({
             }}
           >
             {t("Main_StopAsking")}
+          </button>
+          <button
+            className="primary-action"
+            type="button"
+            disabled={busy}
+            aria-label={t("Main_SendThisCrashReport")}
+            onClick={() => {
+              void choose("send");
+            }}
+          >
+            {t("Main_SendReport")}
           </button>
         </>
       }

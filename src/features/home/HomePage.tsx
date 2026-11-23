@@ -586,11 +586,11 @@ export function HomePage({
         onClose={() => setTemplates(null)}
         actions={
           <>
-            <button className="primary" type="button" disabled={pickedTemplate === null} onClick={() => void openTemplate()}>
-              {t("Main_UseTemplate")}
-            </button>
             <button type="button" onClick={() => setTemplates(null)}>
               {t("Main_Cancel")}
+            </button>
+            <button className="primary" type="button" disabled={pickedTemplate === null} onClick={() => void openTemplate()}>
+              {t("Main_UseTemplate")}
             </button>
           </>
         }
@@ -652,11 +652,11 @@ export function HomePage({
         onClose={() => setRenamingTemplate(null)}
         actions={
           <>
-            <button className="primary" type="button" onClick={() => void renameTemplate()}>
-              {t("Main_Rename")}
-            </button>
             <button type="button" onClick={() => setRenamingTemplate(null)}>
               {t("Main_Cancel")}
+            </button>
+            <button className="primary" type="button" onClick={() => void renameTemplate()}>
+              {t("Main_Rename")}
             </button>
           </>
         }

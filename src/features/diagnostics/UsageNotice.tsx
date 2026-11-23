@@ -52,16 +52,6 @@ export function UsageNotice({ client, onAnswered }: UsageNoticeProps) {
       actions={
         <>
           <button
-            type="button"
-            disabled={busy}
-            aria-label={t("Main_YesShareAnonymousUsageData")}
-            onClick={() => {
-              void answer(true);
-            }}
-          >
-            {t("Main_YesShareUsageData")}
-          </button>
-          <button
             className="primary-action"
             type="button"
             data-autofocus
@@ -72,6 +62,16 @@ export function UsageNotice({ client, onAnswered }: UsageNoticeProps) {
             }}
           >
             {t("Main_NoThanks")}
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            aria-label={t("Main_YesShareAnonymousUsageData")}
+            onClick={() => {
+              void answer(true);
+            }}
+          >
+            {t("Main_YesShareUsageData")}
           </button>
         </>
       }

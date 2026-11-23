@@ -251,7 +251,13 @@ describe("DeviceLinkDialog", () => {
     await connect();
     fireEvent.click(screen.getByRole("button", { name: "Send a profile…" }));
     await screen.findByText("Overwrite default.csv?");
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    // Cancel left and focused; Yes right and plain, never the accent.
+    const cancel = screen.getByRole("button", { name: "Cancel" });
+    const yes = screen.getByRole("button", { name: "Yes, continue" });
+    expect(cancel.compareDocumentPosition(yes) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await waitFor(() => expect(cancel).toHaveFocus());
+    expect(yes).not.toHaveClass("primary-action");
+    fireEvent.click(cancel);
     await screen.findByRole("button", { name: "Send a profile…" });
     expect(device.commands).toEqual(["build"]);
 

@@ -33,7 +33,9 @@ describe("install over default.csv", () => {
     await waitFor(() => expect(install).toBeEnabled());
     fireEvent.click(install);
 
-    await screen.findByRole("button", { name: "Yes, continue" });
+    const yes = await screen.findByRole("button", { name: "Yes, continue" });
     await waitFor(() => expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus());
+    // The risky answer is plain, so the accent does not point at it.
+    expect(yes).not.toHaveClass("primary-action");
   });
 });

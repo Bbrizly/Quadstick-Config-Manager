@@ -359,7 +359,9 @@ export function DeviceLinkDialog({
             <button type="button" data-autofocus onClick={() => answer(false)}>
               {t("Main_Cancel")}
             </button>
-            <button className="primary-action" type="button" onClick={() => answer(true)}>
+            {/* Every question here overwrites a file or restarts the stick:
+                plain, so the accent never sits on the risk. */}
+            <button type="button" onClick={() => answer(true)}>
               {t("Main_YesContinue")}
             </button>
           </>

@@ -21,8 +21,14 @@ describe("first-run usage notice (notice 2)", () => {
     client.enableUsageData();
     client.queuePendingCrashReport({ reportId: "crash-1.json", details: '{"chain":[{"type":"panic"}]}' });
     render(<App client={client} />);
-    await screen.findByRole("dialog", { name: NOTICE });
+    const notice = await screen.findByRole("dialog", { name: NOTICE });
     expect(screen.queryByRole("dialog", { name: "Send a crash report?" })).toBeNull();
+    // No sits left like every other dismiss, and keeps the accent and focus.
+    const no = screen.getByRole("button", { name: "No thanks, do not share usage data" });
+    const row = notice.querySelector(".dialog-actions");
+    expect(row?.firstElementChild).toBe(no);
+    expect(no).toHaveClass("primary-action");
+    await waitFor(() => expect(no).toHaveFocus());
 
     fireEvent.click(screen.getByRole("button", { name: "Read the privacy policy, opens in your browser" }));
     expect(client.privacyPolicyOpened).toBe(1);

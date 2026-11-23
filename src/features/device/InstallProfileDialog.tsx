@@ -184,12 +184,8 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
                 {t("Shell_InstallToQuadStick")}
               </button>
             ) : (
-              <button
-                className="primary-action"
-                type="button"
-                disabled={busy}
-                onClick={() => void confirmInstall()}
-              >
+              // An overwrite question: plain, so the accent never sits on the risk.
+              <button type="button" disabled={busy} onClick={() => void confirmInstall()}>
                 {t("Main_YesContinue")}
               </button>
             )}

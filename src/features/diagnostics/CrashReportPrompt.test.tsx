@@ -45,6 +45,17 @@ describe("GATE_SOFT crash report prompt", () => {
       screen.getByRole("button", { name: "Stop asking about crash reports" }),
     ).toBeInTheDocument();
 
+    // Not now is the default and opens focused; Send sits last, on the right.
+    const row = screen.getByRole("dialog", { name: "Send a crash report?" }).querySelector(".dialog-actions");
+    expect([...(row?.children ?? [])].map((b) => b.getAttribute("aria-label"))).toEqual([
+      "Not now, keep the report and ask again later",
+      "Stop asking about crash reports",
+      "Send this crash report",
+    ]);
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Not now, keep the report and ask again later" })).toHaveFocus(),
+    );
+
     const details = screen.getByLabelText("Crash details used to build the report");
     expect(details.tagName).toBe("TEXTAREA");
     expect(details).toHaveValue(DETAILS);
