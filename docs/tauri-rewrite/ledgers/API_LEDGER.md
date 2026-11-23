@@ -74,6 +74,7 @@ than as a framework string the UI cannot switch on.
 | take_launch_profile_link | command | low | argv `qcm://profile/<id>` validated natively, handed out once | REGISTERED |
 | record_install_cancelled | command | low | one of four `cancelled_*` reasons, else out of range; telemetry only | REGISTERED |
 | open_privacy_policy | command | low | opens the one fixed policy URL; no URL from the window | REGISTERED |
+| open_contact_link | command | low | `{ link }` is one of `report_bug`, `website`, `linkedin`, `email`, else malformed; opens that fixed address; no URL from the window | REGISTERED |
 | subscribe_profile_links / unsubscribe_profile_links | channel | low | one window listener, generation-checked unsubscribe; sends validated profile ids only | REGISTERED |
 | subscribe_drive_backups / unsubscribe_drive_backups | channel | low | pushes outcomes of the background backup after a save, replace, or open (pushed, pending, conflict or missing with an opaque resolution id) | REGISTERED |
 | get_controller_options / set_controller_bridge / set_mac_gamepad | command | process | bridge runs only the fixed sibling `qs-bridge --json`; Mac runs only the two fixed commands; nothing from the window reaches a shell | REGISTERED |
