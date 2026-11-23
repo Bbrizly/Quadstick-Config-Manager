@@ -478,7 +478,14 @@ export function DevicePreferencesPage({
                     <h3 id={`pref-${definition.name}`} title={definition.name}>{definition.label}</h3>
                     <div className="device-preference-control">
                       {row === undefined ? (
-                        <button type="button" disabled={busy || snapshot === null} onClick={() => addMissing(definition)}>
+                        <button
+                          type="button"
+                          id={`pref-${definition.name}-add`}
+                          // "Add" alone, read out, does not say which setting.
+                          aria-labelledby={`pref-${definition.name}-add pref-${definition.name}`}
+                          disabled={busy || snapshot === null}
+                          onClick={() => addMissing(definition)}
+                        >
                           {t("Main_Add")}
                         </button>
                       ) : (

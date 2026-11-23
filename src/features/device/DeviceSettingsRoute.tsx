@@ -124,6 +124,15 @@ export function DeviceSettingsRoute({ client, snapshot, onSnapshot, onManageFile
         actions={
           <>
             <button
+              type="button"
+              onClick={() => {
+                setChoices(null);
+                setStatus(t("DevicePage_NoQuadStickIsPluggedIn"));
+              }}
+            >
+              {t("Device_Cancel")}
+            </button>
+            <button
               className="primary"
               type="button"
               onClick={() => {
@@ -133,15 +142,6 @@ export function DeviceSettingsRoute({ client, snapshot, onSnapshot, onManageFile
               }}
             >
               {t("Shell_Open")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setChoices(null);
-                setStatus(t("DevicePage_NoQuadStickIsPluggedIn"));
-              }}
-            >
-              {t("Device_Cancel")}
             </button>
           </>
         }

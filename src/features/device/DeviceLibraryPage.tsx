@@ -393,10 +393,10 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
                 ) : (
                   <>
                     <ul className="device-file-list">
-                      {selectedLibrary.files.map((file) => (
+                      {selectedLibrary.files.map((file, index) => (
                         <li key={file.name} className="device-file-row">
                           <div className="device-file-copy">
-                            <strong>
+                            <strong id={`device-file-${String(index)}`}>
                               {t("Device_EntryNumberEntryFileName", [file.fileNumber, file.name])}
                             </strong>
                             {file.protected ? (
@@ -418,6 +418,9 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
                             {client.renameDeviceProfile === undefined ? null : (
                               <button
                                 type="button"
+                                id={`device-file-${String(index)}-rename`}
+                                // Rename alone says nothing of which file.
+                                aria-labelledby={`device-file-${String(index)}-rename device-file-${String(index)}`}
                                 disabled={busy || file.protected}
                                 onClick={() => startRename(file.name)}
                               >
@@ -448,8 +451,8 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
                           <li key={`guide-${file.name}`}>
                             <strong>{file.name}</strong>
                             {file.lights.length === 0
-                              ? ` — ${t("Device_NoLightPatternIsDocumented")}`
-                              : ` — ${file.lights.join(", ")}`}
+                              ? `: ${t("Device_NoLightPatternIsDocumented")}`
+                              : `: ${file.lights.join(", ")}`}
                           </li>
                         ))}
                       </ol>
@@ -496,13 +499,16 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
           </>
         }
       >
-        <label>
+        <label className="device-rename-field">
           <span>{t("Shell_ProfileNameEditToRename")}</span>
           <input
             data-autofocus
             value={renameTo}
             disabled={busy}
             onChange={(event) => setRenameTo(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && renameTo.trim() !== "") void commitRename();
+            }}
           />
         </label>
         <p>{t("Device_PushingTheProfileSwitchSteps")}</p>
@@ -523,8 +529,11 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
         }}
         actions={
           <>
+            {/* The safe answer is the default, as Home's delete and
+                Avalonia's ConfirmAsync: a stray Enter keeps the file. */}
             <button
               type="button"
+              data-autofocus
               disabled={busy}
               onClick={() => {
                 setDeletePlan(null);
@@ -534,9 +543,8 @@ export function DeviceLibraryPage({ client, onOpenProfile, inDialog = false, onC
               {t("Device_Cancel")}
             </button>
             <button
-              className="primary-action"
+              className="danger"
               type="button"
-              data-autofocus
               disabled={busy}
               onClick={() => void commitDelete()}
             >

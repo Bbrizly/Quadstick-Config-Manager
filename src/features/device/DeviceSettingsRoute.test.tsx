@@ -60,7 +60,7 @@ describe("device nav (ShowDevicePageAsync)", () => {
     render(<App client={client} />);
     fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
     expect(await screen.findByText(/It has no settings file yet/u)).toBeInTheDocument();
-    const add = (await screen.findAllByRole("button", { name: "Add" }))[0]!;
+    const add = (await screen.findAllByRole("button", { name: /^Add /u }))[0]!;
     expect(add).toBeEnabled();
     fireEvent.click(add);
     expect(await screen.findByText(/1 setting changed/u)).toBeInTheDocument();
