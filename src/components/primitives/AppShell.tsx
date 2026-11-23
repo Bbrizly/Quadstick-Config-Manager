@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 import type { ThemePreference } from "../../app/theme";
 import { useI18n, type MessageKey } from "../../i18n";
@@ -30,6 +30,36 @@ const DESTINATIONS: readonly {
   { id: "community", labelKey: "Shell_BrowseCommunityProfiles", icon: "community" },
 ];
 
+/** At or under this many CSS pixels the header drops the caption and picker. */
+export const NARROW_SHELL = 820;
+
+export function shellIsNarrow(width: number): boolean {
+  return width > 0 && width <= NARROW_SHELL;
+}
+
+/**
+ * Interface size is root `zoom`, which media queries never see (B-096), so
+ * the shell measures its own CSS width. offsetWidth is CSS pixels under zoom.
+ */
+function useShellNarrow() {
+  const shell = useRef<HTMLDivElement>(null);
+  const [narrow, setNarrow] = useState(false);
+  useLayoutEffect(() => {
+    const element = shell.current;
+    if (element === null) return undefined;
+    const measure = () => setNarrow(shellIsNarrow(element.offsetWidth));
+    measure();
+    window.addEventListener("resize", measure);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(element);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+  return { shell, narrow };
+}
+
 export function AppShell({
   activeDestination,
   onNavigate,
@@ -41,6 +71,7 @@ export function AppShell({
   children,
 }: AppShellProps) {
   const { t } = useI18n();
+  const { shell, narrow } = useShellNarrow();
   useEffect(() => {
     document.addEventListener("keydown", handleDocumentTab);
     document.addEventListener("pointerdown", rememberTabStart, true);
@@ -52,7 +83,7 @@ export function AppShell({
     };
   }, []);
   return (
-    <div className="app-shell">
+    <div className="app-shell" ref={shell} data-narrow={narrow ? "true" : undefined}>
       <a className="skip-link" href="#qcm-main">
         {t("Rewrite_SkipToMainContent")}
       </a>

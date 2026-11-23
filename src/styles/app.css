@@ -373,6 +373,8 @@ button.row-select[aria-pressed="true"]:focus-visible {
 .shell-brand,
 .shellbrandbutton {
   justify-self: start;
+  min-width: 0;
+  max-width: 100%;
   min-height: var(--qcm-control-height);
   display: inline-flex;
   align-items: center;
@@ -398,9 +400,19 @@ button.row-select[aria-pressed="true"]:focus-visible {
   display: block;
 }
 
+/* Clips rather than paints over the nav when the header runs out of room. */
 .shell-brand-copy {
+  min-width: 0;
+  overflow: hidden;
   display: grid;
   line-height: 1.15;
+}
+
+.shell-brand-name,
+.shell-brand-caption {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .shell-brand-name {
@@ -633,17 +645,17 @@ button.row-select[aria-pressed="true"]:focus-visible {
   box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
 }
 
-@media (max-width: 820px) {
-  .shell-header {
-    grid-template-columns: auto 1fr auto;
-    gap: var(--qcm-space-sm);
-    padding-inline: var(--qcm-space-md);
-  }
+/* AppShell sets data-narrow from its CSS width: a media query here would
+   miss Interface size, which is root zoom (B-096, B-105). */
+.app-shell[data-narrow] .shell-header {
+  grid-template-columns: auto 1fr auto;
+  gap: var(--qcm-space-sm);
+  padding-inline: var(--qcm-space-md);
+}
 
-  .shell-brand-caption,
-  .appearance-picker {
-    display: none;
-  }
+.app-shell[data-narrow] .shell-brand-caption,
+.app-shell[data-narrow] .appearance-picker {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -835,92 +847,4 @@ input.qcm-switch:focus-visible {
   }
 }
 
-/* `CommunityProfilesView`: heading 8, explain 12, search 10, summary 4,
-   count 10, then the list as a panel and the buttons 14 under it. */
-.community-page {
-  display: flex;
-  flex-direction: column;
-}
-
-.community-page > .section {
-  margin-bottom: 8px;
-}
-
-.community-page p {
-  margin: 0;
-}
-
-/* The "?" follows its sentence instead of floating at a column edge. */
-.community-explain {
-  grid-template-columns: minmax(0, auto) auto;
-  justify-content: start;
-  margin-bottom: 12px;
-}
-
-.community-search {
-  display: block;
-  margin-bottom: 10px;
-}
-
-.community-search input {
-  width: 100%;
-  min-height: var(--qcm-control-height);
-  padding: var(--qcm-pad-control);
-}
-
-.community-summary {
-  color: var(--qcm-text-secondary);
-}
-
-.community-page .community-count {
-  margin-top: 4px;
-  font-size: var(--qcm-small-size);
-  color: var(--qcm-text-secondary);
-}
-
-/* Avalonia boxes the list as a surface panel, 6 in, panel corners. */
-select.community-list {
-  width: 100%;
-  margin-top: 10px;
-  border-color: var(--qcm-border);
-  border-radius: var(--qcm-radius-panel);
-  background-color: var(--qcm-surface);
-}
-
-select.community-list option {
-  padding: 6px 8px;
-  border-radius: var(--qcm-radius-control);
-}
-
-.community-detail {
-  display: grid;
-  gap: 4px;
-  margin-top: 14px;
-  max-width: 720px;
-}
-
-.community-detail h2 {
-  margin: 0;
-  font-size: var(--qcm-subhead-size);
-  font-weight: 700;
-}
-
-.community-detail-meta {
-  font-size: var(--qcm-small-size);
-  color: var(--qcm-text-secondary);
-}
-
-.community-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.community-actions button {
-  min-width: 130px;
-}
-
-.community-page .community-nomatch {
-  margin-top: 12px;
-}
+/* The Community page's rules live in features/community/community.css. */
