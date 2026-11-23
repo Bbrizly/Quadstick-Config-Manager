@@ -1246,6 +1246,8 @@
   "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge는 어떻게 작동하나요?",
   "Rewrite_MoreActionsFor": "{0}의 추가 작업",
   "Rewrite_PrimaryNavigation": "기본 탐색",
+  "Rewrite_ProblemFixBelow": "해결: 목록 아래의 메모로 이동",
+  "Rewrite_ProblemsListName": "검증 문제 목록입니다. 화살표로 이동하고, Enter를 누르면 복사한 뒤 해당 셀로 이동합니다.",
   "Rewrite_ProductName": "QuadStick Config Manager",
   "Rewrite_PseudoLocaleName": "Pseudo (finds missed text)",
   "Rewrite_SaveFromThePageFirst": "먼저 이 페이지의 저장을 사용하거나, QuadStick에 쓰지 않고 나가려면 저장 안 함을 선택하세요.",

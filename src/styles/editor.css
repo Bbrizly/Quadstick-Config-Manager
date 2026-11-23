@@ -711,24 +711,80 @@ button.mode-select:disabled {
   background: var(--qcm-surface);
 }
 
-/* The problem, then its one-click fix on the same line. */
+/* One option per problem, 36px or taller, so a sip and puff pointer can land
+   on it. The pick has an accent frame and a check, not the tint alone. */
 .problems-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 20px minmax(0, 1fr);
   align-items: center;
-  justify-items: start;
-  gap: 2px 8px;
-  padding: 2px 0;
+  gap: 6px;
+  min-height: 36px;
+  padding: 2px 6px 2px 4px;
+  border: 2px solid transparent;
+  border-radius: var(--qcm-radius-control);
+  cursor: pointer;
 }
 
-.problems-item > .issue-link:only-child {
-  grid-column: 1 / -1;
+.problems-item:hover {
+  background: var(--qcm-surface-subtle);
+}
+
+.problems-item[aria-selected="true"] {
+  border-color: var(--qcm-accent);
+  background: var(--qcm-selection-tint);
+}
+
+.problems-item:focus {
+  outline: none;
+}
+
+/* Inset, inside the pick's frame, so the scrolling list does not clip it. */
+.problems-item:focus-visible {
+  outline: 2px solid var(--qcm-focus);
+  outline-offset: -5px;
+}
+
+.problems-item-mark {
+  display: flex;
+  color: var(--qcm-accent-text);
+}
+
+/* Hidden, not removed: a glyph added or dropped relaid out the whole list. */
+.problems-item:not([aria-selected="true"]) .problems-item-mark {
+  visibility: hidden;
+}
+
+.problems-item-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.problems-item-hint {
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+.problems-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 button.issue-fix {
   min-height: 36px;
   padding: 4px 12px;
   font-size: var(--qcm-small-size);
+}
+
+/* Stays focusable on a row it cannot fix, so the bar does not jump. */
+button.issue-fix[aria-disabled="true"],
+button.issue-fix[aria-disabled="true"]:hover {
+  border-color: transparent;
+  background: var(--qcm-disabled-bg);
+  color: var(--qcm-disabled-text);
+  cursor: default;
 }
 
 .problems-none {
@@ -738,21 +794,15 @@ button.issue-fix {
 }
 
 .issue-link {
-  min-height: 0;
-  padding: 4px 6px;
-  border: 0;
-  background: transparent;
   font-size: var(--qcm-small-size);
-  font-weight: 400;
-  text-align: start;
-  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
-.issue-link.issue-warning {
+.issue-warning .issue-link {
   color: var(--qcm-warning);
 }
 
-.issue-link.issue-error {
+.issue-error .issue-link {
   color: var(--qcm-error);
 }
 

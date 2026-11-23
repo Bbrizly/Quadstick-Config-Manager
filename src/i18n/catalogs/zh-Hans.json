@@ -1246,6 +1246,8 @@
   "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge 如何运作？",
   "Rewrite_MoreActionsFor": "{0} 的更多操作",
   "Rewrite_PrimaryNavigation": "主导航",
+  "Rewrite_ProblemFixBelow": "修复：列表下方的“移动到备注”",
+  "Rewrite_ProblemsListName": "验证问题列表。用方向键移动；按 Enter 复制一项并转到其单元格。",
   "Rewrite_ProductName": "QuadStick Config Manager",
   "Rewrite_PseudoLocaleName": "Pseudo (finds missed text)",
   "Rewrite_SaveFromThePageFirst": "请先使用本页的保存，或选择不保存以在不写入 QuadStick 的情况下离开。",

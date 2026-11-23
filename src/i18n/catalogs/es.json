@@ -1246,6 +1246,8 @@
   "Rewrite_HowDoesTheXboxBridgeWork": "¿Cómo funciona Xbox controller bridge?",
   "Rewrite_MoreActionsFor": "Más acciones para {0}",
   "Rewrite_PrimaryNavigation": "Navegación principal",
+  "Rewrite_ProblemFixBelow": "Solución: Mover a notas, debajo de la lista",
+  "Rewrite_ProblemsListName": "Lista de problemas de validación. Las flechas la recorren; Intro copia uno y va a su celda.",
   "Rewrite_ProductName": "QuadStick Config Manager",
   "Rewrite_PseudoLocaleName": "Pseudo (finds missed text)",
   "Rewrite_SaveFromThePageFirst": "Usa primero Guardar en esta página, o elige No guardar para salir sin escribir en el QuadStick.",

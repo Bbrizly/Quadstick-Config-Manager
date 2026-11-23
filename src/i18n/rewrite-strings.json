@@ -27,7 +27,9 @@
     "Rewrite_HowDoesTheLinkWork": "How does the Bluetooth or cable link work?",
     "Rewrite_HowDoesTheXboxBridgeWork": "How does the Xbox controller bridge work?",
     "Rewrite_HowDoGamesWorkOnAMac": "How do games work on a Mac?",
-    "Rewrite_WhatDoesGamepadMode0Do": "What does Gamepad in mode 0 do?"
+    "Rewrite_WhatDoesGamepadMode0Do": "What does Gamepad in mode 0 do?",
+    "Rewrite_ProblemFixBelow": "Fix: Move to notes, below the list",
+    "Rewrite_ProblemsListName": "List of validation problems. The arrows move through it; Enter copies one and goes to its cell."
   },
   "ar": {
     "Rewrite_SkipToMainContent": "تخطي إلى المحتوى الرئيسي",
@@ -57,7 +59,9 @@
     "Rewrite_HowDoesTheLinkWork": "كيف يعمل الاتصال عبر Bluetooth أو الكابل؟",
     "Rewrite_HowDoesTheXboxBridgeWork": "كيف يعمل Xbox controller bridge؟",
     "Rewrite_HowDoGamesWorkOnAMac": "كيف تعمل الألعاب على Mac؟",
-    "Rewrite_WhatDoesGamepadMode0Do": "ماذا يفعل خيار يد تحكم في الوضع 0؟"
+    "Rewrite_WhatDoesGamepadMode0Do": "ماذا يفعل خيار يد تحكم في الوضع 0؟",
+    "Rewrite_ProblemFixBelow": "الإصلاح: نقل إلى الملاحظات، أسفل القائمة",
+    "Rewrite_ProblemsListName": "قائمة مشاكل التحقق. تتنقل الأسهم فيها؛ ينسخ Enter مشكلة وينتقل إلى خليتها."
   },
   "de": {
     "Rewrite_SkipToMainContent": "Zum Hauptinhalt springen",
@@ -87,7 +91,9 @@
     "Rewrite_HowDoesTheLinkWork": "Wie funktioniert die Verbindung über Bluetooth oder Kabel?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Wie funktioniert die Xbox controller bridge?",
     "Rewrite_HowDoGamesWorkOnAMac": "Wie funktionieren Spiele auf dem Mac?",
-    "Rewrite_WhatDoesGamepadMode0Do": "Was bewirkt Gamepad in Modus 0?"
+    "Rewrite_WhatDoesGamepadMode0Do": "Was bewirkt Gamepad in Modus 0?",
+    "Rewrite_ProblemFixBelow": "Lösung: In Notizen verschieben, unter der Liste",
+    "Rewrite_ProblemsListName": "Liste der Validierungsprobleme. Die Pfeiltasten bewegen sich darin; Enter kopiert eines und springt zu seiner Zelle."
   },
   "es": {
     "Rewrite_SkipToMainContent": "Saltar al contenido principal",
@@ -117,7 +123,9 @@
     "Rewrite_HowDoesTheLinkWork": "¿Cómo funciona la conexión por Bluetooth o cable?",
     "Rewrite_HowDoesTheXboxBridgeWork": "¿Cómo funciona Xbox controller bridge?",
     "Rewrite_HowDoGamesWorkOnAMac": "¿Cómo funcionan los juegos en un Mac?",
-    "Rewrite_WhatDoesGamepadMode0Do": "¿Qué hace Mando en modo 0?"
+    "Rewrite_WhatDoesGamepadMode0Do": "¿Qué hace Mando en modo 0?",
+    "Rewrite_ProblemFixBelow": "Solución: Mover a notas, debajo de la lista",
+    "Rewrite_ProblemsListName": "Lista de problemas de validación. Las flechas la recorren; Intro copia uno y va a su celda."
   },
   "fr": {
     "Rewrite_SkipToMainContent": "Aller au contenu principal",
@@ -147,7 +155,9 @@
     "Rewrite_HowDoesTheLinkWork": "Comment fonctionne la liaison Bluetooth ou par câble ?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Comment fonctionne Xbox controller bridge ?",
     "Rewrite_HowDoGamesWorkOnAMac": "Comment fonctionnent les jeux sur Mac ?",
-    "Rewrite_WhatDoesGamepadMode0Do": "Que fait Manette en mode 0 ?"
+    "Rewrite_WhatDoesGamepadMode0Do": "Que fait Manette en mode 0 ?",
+    "Rewrite_ProblemFixBelow": "Correction : Déplacer vers les notes, sous la liste",
+    "Rewrite_ProblemsListName": "Liste des problèmes de validation. Les flèches la parcourent ; Entrée en copie un et va à sa cellule."
   },
   "hi": {
     "Rewrite_SkipToMainContent": "मुख्य सामग्री पर जाएँ",
@@ -177,7 +187,9 @@
     "Rewrite_HowDoesTheLinkWork": "Bluetooth या केबल कनेक्शन कैसे काम करता है?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge कैसे काम करता है?",
     "Rewrite_HowDoGamesWorkOnAMac": "Mac पर गेम कैसे काम करते हैं?",
-    "Rewrite_WhatDoesGamepadMode0Do": "मोड 0 में गेमपैड क्या करता है?"
+    "Rewrite_WhatDoesGamepadMode0Do": "मोड 0 में गेमपैड क्या करता है?",
+    "Rewrite_ProblemFixBelow": "सुधार: नोट्स में ले जाएं, सूची के नीचे",
+    "Rewrite_ProblemsListName": "सत्यापन समस्याओं की सूची। तीर कुंजियाँ इसमें चलती हैं; Enter एक को कॉपी करके उसके सेल पर ले जाता है।"
   },
   "it": {
     "Rewrite_SkipToMainContent": "Vai al contenuto principale",
@@ -207,7 +219,9 @@
     "Rewrite_HowDoesTheLinkWork": "Come funziona il collegamento Bluetooth o via cavo?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Come funziona Xbox controller bridge?",
     "Rewrite_HowDoGamesWorkOnAMac": "Come funzionano i giochi su Mac?",
-    "Rewrite_WhatDoesGamepadMode0Do": "Cosa fa Gamepad in modalità 0?"
+    "Rewrite_WhatDoesGamepadMode0Do": "Cosa fa Gamepad in modalità 0?",
+    "Rewrite_ProblemFixBelow": "Correzione: Sposta nelle note, sotto l’elenco",
+    "Rewrite_ProblemsListName": "Elenco dei problemi di convalida. Le frecce lo scorrono; Invio ne copia uno e va alla sua cella."
   },
   "ja": {
     "Rewrite_SkipToMainContent": "メインコンテンツへ移動",
@@ -237,7 +251,9 @@
     "Rewrite_HowDoesTheLinkWork": "Bluetooth またはケーブル接続のしくみは？",
     "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge のしくみは？",
     "Rewrite_HowDoGamesWorkOnAMac": "Mac でゲームを使うには？",
-    "Rewrite_WhatDoesGamepadMode0Do": "「モード 0 でゲームパッド」とは？"
+    "Rewrite_WhatDoesGamepadMode0Do": "「モード 0 でゲームパッド」とは？",
+    "Rewrite_ProblemFixBelow": "修正: リストの下の「メモに移動」",
+    "Rewrite_ProblemsListName": "検証エラーの一覧です。矢印キーで移動し、Enter でコピーしてそのセルに移動します。"
   },
   "ko": {
     "Rewrite_SkipToMainContent": "주요 콘텐츠로 이동",
@@ -267,7 +283,9 @@
     "Rewrite_HowDoesTheLinkWork": "Bluetooth 또는 케이블 연결은 어떻게 작동하나요?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge는 어떻게 작동하나요?",
     "Rewrite_HowDoGamesWorkOnAMac": "Mac에서 게임은 어떻게 작동하나요?",
-    "Rewrite_WhatDoesGamepadMode0Do": "'모드 0에서 게임패드'는 무엇을 하나요?"
+    "Rewrite_WhatDoesGamepadMode0Do": "'모드 0에서 게임패드'는 무엇을 하나요?",
+    "Rewrite_ProblemFixBelow": "해결: 목록 아래의 메모로 이동",
+    "Rewrite_ProblemsListName": "검증 문제 목록입니다. 화살표로 이동하고, Enter를 누르면 복사한 뒤 해당 셀로 이동합니다."
   },
   "nl": {
     "Rewrite_SkipToMainContent": "Naar hoofdinhoud",
@@ -297,7 +315,9 @@
     "Rewrite_HowDoesTheLinkWork": "Hoe werkt de verbinding via Bluetooth of kabel?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Hoe werkt Xbox controller bridge?",
     "Rewrite_HowDoGamesWorkOnAMac": "Hoe werken games op een Mac?",
-    "Rewrite_WhatDoesGamepadMode0Do": "Wat doet Gamepad in modus 0?"
+    "Rewrite_WhatDoesGamepadMode0Do": "Wat doet Gamepad in modus 0?",
+    "Rewrite_ProblemFixBelow": "Oplossing: Verplaatsen naar notities, onder de lijst",
+    "Rewrite_ProblemsListName": "Lijst met validatieproblemen. De pijltjestoetsen gaan erdoor; Enter kopieert er een en gaat naar de cel."
   },
   "pl": {
     "Rewrite_SkipToMainContent": "Przejdź do głównej treści",
@@ -327,7 +347,9 @@
     "Rewrite_HowDoesTheLinkWork": "Jak działa połączenie przez Bluetooth lub kabel?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Jak działa Xbox controller bridge?",
     "Rewrite_HowDoGamesWorkOnAMac": "Jak działają gry na Macu?",
-    "Rewrite_WhatDoesGamepadMode0Do": "Co robi Gamepad w trybie 0?"
+    "Rewrite_WhatDoesGamepadMode0Do": "Co robi Gamepad w trybie 0?",
+    "Rewrite_ProblemFixBelow": "Poprawka: Przenieś do notatek, pod listą",
+    "Rewrite_ProblemsListName": "Lista problemów walidacji. Strzałki przechodzą po niej; Enter kopiuje problem i przechodzi do jego komórki."
   },
   "pt": {
     "Rewrite_SkipToMainContent": "Ir para o conteúdo principal",
@@ -357,7 +379,9 @@
     "Rewrite_HowDoesTheLinkWork": "Como funciona a conexão por Bluetooth ou cabo?",
     "Rewrite_HowDoesTheXboxBridgeWork": "Como funciona o Xbox controller bridge?",
     "Rewrite_HowDoGamesWorkOnAMac": "Como funcionam os jogos no Mac?",
-    "Rewrite_WhatDoesGamepadMode0Do": "O que faz Comando em modo 0?"
+    "Rewrite_WhatDoesGamepadMode0Do": "O que faz Comando em modo 0?",
+    "Rewrite_ProblemFixBelow": "Correção: Mover para notas, abaixo da lista",
+    "Rewrite_ProblemsListName": "Lista de problemas de validação. As setas percorrem-na; Enter copia um e vai para a sua célula."
   },
   "zh-Hans": {
     "Rewrite_SkipToMainContent": "跳到主要内容",
@@ -387,6 +411,8 @@
     "Rewrite_HowDoesTheLinkWork": "蓝牙或线缆连接如何运作？",
     "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge 如何运作？",
     "Rewrite_HowDoGamesWorkOnAMac": "游戏在 Mac 上如何运行？",
-    "Rewrite_WhatDoesGamepadMode0Do": "模式 0 下的游戏手柄有什么作用？"
+    "Rewrite_WhatDoesGamepadMode0Do": "模式 0 下的游戏手柄有什么作用？",
+    "Rewrite_ProblemFixBelow": "修复：列表下方的“移动到备注”",
+    "Rewrite_ProblemsListName": "验证问题列表。用方向键移动；按 Enter 复制一项并转到其单元格。"
   }
 }

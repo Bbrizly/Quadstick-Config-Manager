@@ -1246,6 +1246,8 @@
   "Rewrite_HowDoesTheXboxBridgeWork": "Xbox controller bridge のしくみは？",
   "Rewrite_MoreActionsFor": "{0} のその他の操作",
   "Rewrite_PrimaryNavigation": "メインナビゲーション",
+  "Rewrite_ProblemFixBelow": "修正: リストの下の「メモに移動」",
+  "Rewrite_ProblemsListName": "検証エラーの一覧です。矢印キーで移動し、Enter でコピーしてそのセルに移動します。",
   "Rewrite_ProductName": "QuadStick Config Manager",
   "Rewrite_PseudoLocaleName": "Pseudo (finds missed text)",
   "Rewrite_SaveFromThePageFirst": "先にこのページの保存を使うか、QuadStick に書き込まずに離れるには保存しないを選んでください。",

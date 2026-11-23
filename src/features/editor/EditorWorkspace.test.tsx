@@ -131,7 +131,7 @@ describe("TASK-038 editor workspace", () => {
 
     // Avalonia's bar: one line with the count, the list only on demand.
     fireEvent.click(screen.getByRole("button", { name: /1 error.*Shows the list of problems/u }));
-    fireEvent.click(screen.getByRole("button", { name: /Unknown output/u }));
+    fireEvent.click(screen.getByRole("option", { name: /Unknown output/u }));
     await waitFor(() => expect(screen.getByTestId("binding-row-4")).toHaveFocus());
   });
 
@@ -143,7 +143,7 @@ describe("TASK-038 editor workspace", () => {
     expect(screen.getByRole("button", { name: /^4 warnings\s+\(click to view\)\. Shows/u })).toBeInTheDocument();
     expect(screen.getByText("4 warnings. The device skips those rows, so this still installs.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /4 warnings/u }));
-    expect(screen.getAllByRole("listitem").filter((item) => item.closest(".problems-list"))).toHaveLength(4);
+    expect(within(screen.getByRole("listbox")).getAllByRole("option")).toHaveLength(4);
   });
 
   it("writes a row's note and its function through set_cell", async () => {
