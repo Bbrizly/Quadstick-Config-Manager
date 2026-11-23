@@ -29,6 +29,15 @@ describe("TutorialTour", () => {
     expect(onDone).toHaveBeenCalledTimes(1);
   });
 
+  it("opens on Next, so a stray Enter does not skip the tour", () => {
+    render(
+      <I18nProvider initialPreference="en">
+        <TutorialTour open onDone={vi.fn()} />
+      </I18nProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Next step" })).toHaveFocus();
+  });
+
   it("walks steps then finishes", () => {
     const onDone = vi.fn();
     render(

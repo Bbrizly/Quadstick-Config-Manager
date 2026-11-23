@@ -35,35 +35,48 @@ export function TutorialTour({ open, onDone }: TutorialTourProps) {
   };
 
   return (
-    <Dialog open={open} title={title} onClose={finish}>
-      <p aria-live="polite">{t("Tour_StepTourIndex1OfTourSteps", [index + 1, STEPS.length])}</p>
-      <p>{t(step.body)}</p>
-      <div className="home-start-actions">
-        <button
-          type="button"
-          disabled={index === 0}
-          aria-label={t("Tour_BackToThePreviousStep")}
-          onClick={() => {
-            if (open) setIndex((value) => Math.max(0, value - 1));
-          }}
-        >
-          {t("Tour_Back")}
-        </button>
-        <button type="button" aria-label={t("Tour_SkipTheTutorial")} onClick={finish}>
-          {t("Tour_Skip")}
-        </button>
-        <button
-          type="button"
-          className="primary-action"
-          aria-label={t("Tour_NextStep")}
-          onClick={() => {
-            if (!open) return;
-            if (last) onDone();
-            else setIndex((value) => value + 1);
-          }}
-        >
-          {t("Tour_Next")}
-        </button>
+    <Dialog
+      open={open}
+      title={title}
+      onClose={finish}
+      // Skip apart at the start, Back and Next together at the end. Next
+      // takes focus: on step one Back is off, and a stray Enter on Skip
+      // would end the tour before it began.
+      actions={
+        <>
+          <button type="button" className="tour-skip" aria-label={t("Tour_SkipTheTutorial")} onClick={finish}>
+            {t("Tour_Skip")}
+          </button>
+          <button
+            type="button"
+            disabled={index === 0}
+            aria-label={t("Tour_BackToThePreviousStep")}
+            onClick={() => {
+              if (open) setIndex((value) => Math.max(0, value - 1));
+            }}
+          >
+            {t("Tour_Back")}
+          </button>
+          <button
+            type="button"
+            className="primary-action"
+            data-autofocus
+            aria-label={t("Tour_NextStep")}
+            onClick={() => {
+              if (!open) return;
+              if (last) onDone();
+              else setIndex((value) => value + 1);
+            }}
+          >
+            {t("Tour_Next")}
+          </button>
+        </>
+      }
+    >
+      {/* The step and its words are read out together when Next is pressed. */}
+      <div className="tour-step" aria-live="polite">
+        <p className="tour-count">{t("Tour_StepTourIndex1OfTourSteps", [index + 1, STEPS.length])}</p>
+        <p>{t(step.body)}</p>
       </div>
     </Dialog>
   );
