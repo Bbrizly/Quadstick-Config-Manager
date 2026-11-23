@@ -68,6 +68,10 @@
 }
 
 .visualizer-stage {
+  /* Stage type is two units over the app's: the stage is drawn at 910 and
+     scaled to fit, so 16 here reads about 11px at 1280x860 (B-089). */
+  --qcm-small-size: 16px;
+  --qcm-body-size: 17px;
   position: relative;
   width: 100%;
   max-width: 910px;
