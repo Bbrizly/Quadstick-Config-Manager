@@ -347,6 +347,35 @@ async function walk(): Promise<void> {
     await idle("Home");
   });
 
+  // macOS WebKit only Tabs to fields unless Keyboard navigation is on, so
+  // focus.ts moves Tab itself (B-094). This walks it in the real WebView.
+  await step("Tab reaches every button", async () => {
+    // WebKit draws no focus ring in a window that is not the key window, and
+    // anyone pressing Tab has it focused; order is checked either way.
+    const unseen = await makeVisible(5000);
+    const rings = document.hasFocus();
+    (document.activeElement as HTMLElement | null)?.blur();
+    const seen: string[] = [];
+    for (let index = 0; index < 14; index += 1) {
+      key("Tab");
+      await sleep(30);
+      const focused = document.activeElement;
+      if (!(focused instanceof HTMLElement) || focused === document.body) throw new Error(`Tab ${String(index + 1)} left focus on the page`);
+      if (rings && !focused.matches(":focus-visible")) throw new Error(`Tab ${String(index + 1)} focused ${nameOf(focused)} with no ring`);
+      seen.push(nameOf(focused));
+    }
+    const buttons = seen.filter((_, index) => seen.indexOf(seen[index]!) === index);
+    if (buttons.length < 10) throw new Error(`Tab visited only ${String(buttons.length)} stops: ${buttons.join(" | ")}`);
+    const last = document.activeElement;
+    key("Tab", { shift: true });
+    await sleep(30);
+    if (document.activeElement === last || nameOf(document.activeElement!) !== seen[seen.length - 2]) {
+      throw new Error("Shift+Tab did not step back");
+    }
+    const ringNote = rings ? "every stop showed its ring" : `rings not checked, window not focused (${unseen || "not the key window"})`;
+    return `${String(buttons.length)} stops, ${ringNote}: ${buttons.slice(0, 6).join(" | ")} ...`;
+  });
+
   await step("create a new profile", async () => {
     click(await waitButton(/^Create a new profile/u));
     await waitFor("editor", editorTitle);
@@ -406,8 +435,19 @@ async function walk(): Promise<void> {
   await step("dialog opens and closes", async () => {
     click(await waitButton(/^Save this profile as a reusable template/u));
     const panel = await waitFor("template dialog", () => dialog("Save as template"));
+    // Tab stays inside the open dialog and shows its ring.
+    const unseen = await makeVisible(5000);
+    const rings = document.hasFocus();
+    for (let index = 0; index < 8; index += 1) {
+      key("Tab");
+      await sleep(30);
+      const focused = document.activeElement;
+      if (focused === null || !panel.contains(focused)) throw new Error(`Tab ${String(index + 1)} left the dialog for ${focused === null ? "nothing" : nameOf(focused)}`);
+      if (rings && !focused.matches(":focus-visible")) throw new Error(`Tab ${String(index + 1)} in the dialog showed no ring`);
+    }
     const backdrop = panel.closest<HTMLElement>(".dialog-backdrop") ?? panel;
-    return watchExit(backdrop, () => key("Escape"));
+    const ringNote = rings ? "with its ring" : `rings not checked, window not focused (${unseen || "not the key window"})`;
+    return `Tab stayed in the dialog ${ringNote}; ${await watchExit(backdrop, () => key("Escape"))}`;
   });
 
   await step("leaving with unsaved changes asks first", async () => {
