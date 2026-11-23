@@ -19,6 +19,10 @@
   --qcm-accent: #0b4f8a;
   --qcm-accent-text: #084a80;
   --qcm-on-accent: #ffffff;
+  /* Text on the home card swatches, which are dark in both themes. */
+  --qcm-on-tile: #ffffff;
+  /* Hover on a tinted grid cell: a white wash over the tint. */
+  --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
   --qcm-error: #a6291f;
   --qcm-success: #0f6b34;
   --qcm-warning: #7a4b00;
@@ -95,6 +99,8 @@
   --qcm-accent: #6ea8ff;
   --qcm-accent-text: #8fbeff;
   --qcm-on-accent: #06121f;
+  --qcm-on-tile: #ffffff;
+  --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
   --qcm-error: #f2b4b0;
   --qcm-success: #7fde9b;
   --qcm-warning: #e8c36a;
@@ -127,6 +133,8 @@
     --qcm-accent: #6ea8ff;
     --qcm-accent-text: #8fbeff;
     --qcm-on-accent: #06121f;
+    --qcm-on-tile: #ffffff;
+    --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
     --qcm-error: #f2b4b0;
     --qcm-success: #7fde9b;
     --qcm-warning: #e8c36a;
@@ -160,6 +168,9 @@
     --qcm-accent: Highlight;
     --qcm-accent-text: LinkText;
     --qcm-on-accent: HighlightText;
+    /* Forced colours repaint the swatch as Canvas. */
+    --qcm-on-tile: CanvasText;
+    --qcm-cell-hover-wash: transparent;
     --qcm-error: CanvasText;
     --qcm-success: CanvasText;
     --qcm-warning: CanvasText;

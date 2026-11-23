@@ -1453,7 +1453,7 @@ button.grid-cell-face {
 }
 
 button.grid-cell-face:hover {
-  background: rgb(255 255 255 / 0.25);
+  background: var(--qcm-cell-hover-wash);
 }
 
 .grid-cell input {
