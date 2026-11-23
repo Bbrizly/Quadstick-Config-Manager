@@ -27,7 +27,8 @@ export type IconName =
   | "clear"
   | "chevron"
   | "drag"
-  | "format";
+  | "format"
+  | "more";
 
 const PATHS: Record<IconName, string> = {
   home: "M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z",
@@ -65,6 +66,7 @@ const PATHS: Record<IconName, string> = {
   chevron: "M8.6 16.6 13.2 12 8.6 7.4 10 6l6 6-6 6z",
   drag: "M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z",
   format: "M5 4v3h5.5v12h3V7H19V4H5z",
+  more: "M6 10a2 2 0 100 4 2 2 0 000-4zm12 0a2 2 0 100 4 2 2 0 000-4zm-6 0a2 2 0 100 4 2 2 0 000-4z",
 };
 
 // Each glyph's own bounds (SVG getBBox of the path). Avalonia's PathIcon
@@ -98,6 +100,7 @@ const BOXES: Record<IconName, string> = {
   chevron: "8.6 6 7.4 12",
   drag: "3 6 18 12",
   format: "5 4 14 15",
+  more: "4 10 16 4",
 };
 
 export interface IconProps {

@@ -485,7 +485,7 @@ export function HomePage({
                   </button>
                   <span className="card-menu">
                     <Popover
-                      label="⋯"
+                      label={<Icon name="more" size={18} />}
                       name={t("Rewrite_MoreActionsFor", [card.name])}
                       className="icon quiet"
                       alignEnd
