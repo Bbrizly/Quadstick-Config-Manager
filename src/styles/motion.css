@@ -296,3 +296,11 @@ input.qcm-switch:checked:active:not(:disabled)::before {
 :root[data-reduce-motion="true"] button:active:not(:disabled) {
   transform: none;
 }
+
+/* A language switch re-renders everything at once: no control transitions
+   through it (applyDocumentLocale clears this two frames later). */
+:root[data-settling="true"] *,
+:root[data-settling="true"] *::before,
+:root[data-settling="true"] *::after {
+  transition: none !important;
+}

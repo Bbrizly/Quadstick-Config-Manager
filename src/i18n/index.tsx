@@ -104,7 +104,15 @@ export function applyDocumentLocale(
   locale: LocaleTag | "qps-ploc",
   root: HTMLElement = document.documentElement,
 ): void {
-  root.lang = locale === "qps-ploc" ? "en-XA" : locale;
+  const lang = locale === "qps-ploc" ? "en-XA" : locale;
+  // A new language re-renders every control at once, and each one started
+  // its hover transitions; WebKit left those unstarted while the window was
+  // covered, so a still window looked busy. The switch lands without them.
+  if (root.lang !== "" && root.lang !== lang) {
+    root.dataset["settling"] = "true";
+    requestAnimationFrame(() => requestAnimationFrame(() => delete root.dataset["settling"]));
+  }
+  root.lang = lang;
   root.dir = localeDirection(locale);
   root.dataset["locale"] = locale;
 }
