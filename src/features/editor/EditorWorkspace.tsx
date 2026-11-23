@@ -27,6 +27,7 @@ import { BindingInspector } from "./BindingInspector";
 import { comboGroups } from "./combos";
 import { CustomNamesTable, customNames, nextDraftName } from "./CustomNames";
 import { duplicateCounts } from "./duplicates";
+import { useEditorFit } from "./editorFit";
 import { ModesDialog } from "./ModesDialog";
 import { MoveGlyph } from "./MoveGlyph";
 import { InfoButton, Popover } from "./Popover";
@@ -259,6 +260,7 @@ export function EditorWorkspace({
   busyExternal = false,
 }: EditorWorkspaceProps) {
   const { t, plural } = useI18n();
+  const { workspace, fit, short } = useEditorFit();
   const profileModes = useMemo(
     () => snapshot.modes.filter((mode) => mode.kind === "mode"),
     [snapshot.modes],
@@ -338,6 +340,23 @@ export function EditorWorkspace({
       setSelectedZoneState(zone);
     },
     [selectedZone],
+  );
+  // In the stacked layouts the inspector sits below the picture, so a pick
+  // would change something off screen. Bring it into view; "nearest" does
+  // nothing when it already shows, as in the full layout.
+  const mappingPanel = useRef<HTMLElement>(null);
+  const pickZone = useCallback(
+    (zone: ZoneId | null): void => {
+      setSelectedZone(zone);
+      if (zone === null) return;
+      requestAnimationFrame(() => {
+        const still =
+          document.documentElement.dataset["reduceMotion"] === "true" ||
+          window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+        mappingPanel.current?.scrollIntoView?.({ block: "nearest", behavior: still ? "auto" : "smooth" });
+      });
+    },
+    [setSelectedZone],
   );
   const pickInput = useCallback((input: string | null): void => {
     setPickedInput(input);
@@ -1277,7 +1296,8 @@ export function EditorWorkspace({
   } else {
     main = (
       <div className="device-workspace">
-        <section className="device-canvas" aria-label={view === "device" ? t("Shell_Device") : t("Shell_Parts")}>
+        {/* The visualizer names its own region; a labelled wrapper doubled it. */}
+        <div className="device-canvas">
           <QuadStickVisualizer
             client={client}
             rows={rows}
@@ -1288,16 +1308,16 @@ export function EditorWorkspace({
             model={model}
             view={view}
             onSelectRow={setSelectedRow}
-            onSelectZone={setSelectedZone}
+            onSelectZone={pickZone}
             onLiveRows={setLiveRows}
             onLiveHeard={setLiveHeard}
             pickedInput={pickedInput}
             onPickInput={pickInput}
             zoneListSlot={view === "device" ? zoneListSlot : null}
           />
-        </section>
+        </div>
 
-        <aside className="mapping-panel" aria-labelledby="mapping-title">
+        <aside ref={mappingPanel} className="mapping-panel" aria-labelledby="mapping-title">
           {selectedZone === null ? (
             <>
               <h2 id="mapping-title" className="visually-hidden">{t("Shell_Configuration")}</h2>
@@ -1365,7 +1385,13 @@ export function EditorWorkspace({
   }
 
   return (
-    <section className="editor-workspace" aria-labelledby="editor-title">
+    <section
+      ref={workspace}
+      className="editor-workspace"
+      aria-labelledby="editor-title"
+      data-fit={fit}
+      data-short={short ? "true" : undefined}
+    >
       <h1 id="editor-title" className="visually-hidden">{title}</h1>
       {snapshot.dirty ? (
         <span className="visually-hidden" role="img" aria-label={t("Main_ThisProfileHasUnsavedChanges")}>*</span>

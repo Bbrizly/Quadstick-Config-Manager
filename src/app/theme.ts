@@ -24,9 +24,13 @@ export function applyInterfaceScale(
   const pct = allowed ? percent : 100;
   if (pct === 100) {
     root.style.removeProperty("zoom");
+    root.style.removeProperty("--qcm-zoom");
     return;
   }
   root.style.zoom = `${pct}%`;
+  // 100vh resolves before the zoom, so a height that fills the window
+  // divides by this (B-096).
+  root.style.setProperty("--qcm-zoom", String(pct / 100));
 }
 
 export function applyReduceMotion(

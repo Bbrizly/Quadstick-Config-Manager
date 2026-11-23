@@ -5,7 +5,9 @@
 .editor-route {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 86px);
+  /* 100vh resolves before the root's Interface size zoom, and the 86px
+     header carries a hairline under it (B-096). */
+  height: calc(100vh / var(--qcm-zoom, 1) - 86px - var(--qcm-hairline));
   min-height: 0;
 }
 
@@ -159,16 +161,15 @@
 }
 
 /* Too short to show both a usable list and the pinned keys: the whole
-   sidebar scrolls again, as Avalonia's does. */
-@media (max-height: 650px) {
-  .modes-panel {
-    overflow-y: auto;
-  }
+   sidebar scrolls again, as Avalonia's does. data-short is the plate's own
+   height, which a media query misses under Interface size (B-096). */
+.editor-workspace[data-short] .modes-panel {
+  overflow-y: auto;
+}
 
-  .modes-panel-body {
-    flex: 1 0 auto;
-    overflow: visible;
-  }
+.editor-workspace[data-short] .modes-panel-body {
+  flex: 1 0 auto;
+  overflow: visible;
 }
 
 /* The heading's DockPanel keeps 8 below it; the list adds none. */
@@ -825,18 +826,6 @@ button.issue-fix {
   padding: 4px 6px;
 }
 
-@media (max-width: 980px) {
-  .editor-columns {
-    grid-template-columns: 1fr;
-  }
-
-  .modes-panel,
-  .inspector-panel {
-    border: 0;
-    border-bottom: var(--qcm-hairline) solid var(--qcm-border);
-  }
-}
-
 .narrowed-note {
   display: flex;
   flex-wrap: wrap;
@@ -876,11 +865,84 @@ button.issue-fix {
   justify-self: start;
 }
 
-/* The mapping track keeps its 264 floor; stack before it would overflow. */
-@media (max-width: 720px) {
-  .device-workspace {
-    grid-template-columns: 1fr;
-  }
+/* B-096: data-fit is the workspace's CSS width, measured in script because
+   Interface size is root zoom and no media or WebKit container query sees
+   it. Too narrow for the 626 stage beside the 264 inspector: the inspector
+   goes under the stage and one scroller holds both. */
+.editor-workspace:not([data-fit="full"]) .device-workspace {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  grid-auto-rows: auto;
+  align-items: start;
+  overflow-y: auto;
+}
+
+.editor-workspace:not([data-fit="full"]) .device-canvas,
+.editor-workspace:not([data-fit="full"]) .mapping-panel {
+  overflow: visible;
+}
+
+.editor-workspace:not([data-fit="full"]) .mapping-panel {
+  border-left: 0;
+  border-top: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+/* Too narrow for the sidebar beside the stage: everything is one column,
+   modes first, so the keyboard order is the reading order. The workspace is
+   the one scroller, command bar included, because at 200% the plate alone
+   was left under 100px of height; the problems bar stays pinned below. */
+.editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) {
+  overflow-y: auto;
+  /* A focused control scrolls clear of the pinned bar (WCAG 2.4.11). */
+  scroll-padding-block-end: 96px;
+}
+
+.editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) .editor-plate {
+  /* Its own stacking context, so no raised row or stage layer rides over
+     the pinned problems bar as it scrolls under. */
+  isolation: isolate;
+  flex: none;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  grid-auto-rows: auto;
+  align-items: start;
+}
+
+.editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) .problems-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 8px 16px 14px;
+  border-top: var(--qcm-hairline) solid var(--qcm-border);
+  background: var(--qcm-bg);
+}
+
+.editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) .modes-panel {
+  overflow: visible;
+  border-right: 0;
+  border-bottom: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) .modes-panel-body {
+  flex: 1 0 auto;
+  overflow: visible;
+}
+
+.editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) .device-workspace {
+  overflow: visible;
+}
+
+/* 200% in a 1280 window leaves 640: the plate gives up its side margins so
+   the stage keeps its 626 floor without a sideways scroll. */
+.editor-workspace[data-fit="tight"] .editor-plate {
+  margin-inline: 0;
+  border-inline: 0;
+  border-radius: 0;
+}
+
+.editor-workspace[data-fit="tight"] .device-canvas {
+  padding-inline: 0;
 }
 
 /* DuplicateChip: the count itself, accent fill, never colour alone. */
@@ -1084,12 +1146,14 @@ button.unused-chip {
   gap: 4px;
 }
 
+/* As tall as the other help dots and the buttons beside it: the heading
+   alone gave a 20px target, under the 24 floor. */
 button.mode-help {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-width: 0;
-  min-height: 0;
+  min-width: var(--qcm-icon-button);
+  min-height: var(--qcm-icon-button);
   padding: 2px;
   border: 0;
   background: transparent;
@@ -1321,6 +1385,7 @@ button.row-select[aria-pressed="true"] {
 /* A cell: its column's tint, a 3px edge that turns warning or error when the
    validator names this cell, so a problem never reflows the row. */
 .grid-cell {
+  position: relative;
   display: flex;
   align-items: center;
   min-height: 51px;
@@ -1340,12 +1405,35 @@ button.row-select[aria-pressed="true"] {
   background: var(--qcm-input-tint);
 }
 
+/* The two edges are 1.04:1 apart in colour, so a warning is also dashed
+   and each wears its glyph in the corner, over the edge, not in the row. */
 .grid-cell.issue-warning {
   border-color: var(--qcm-warning);
+  border-style: dashed;
 }
 
 .grid-cell.issue-error {
   border-color: var(--qcm-error);
+}
+
+.grid-cell-issue {
+  position: absolute;
+  top: -8px;
+  inset-inline-end: -8px;
+  z-index: 1;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--qcm-surface);
+  box-sizing: content-box;
+  pointer-events: none;
+}
+
+.issue-warning > .grid-cell-issue {
+  color: var(--qcm-warning);
+}
+
+.issue-error > .grid-cell-issue {
+  color: var(--qcm-error);
 }
 
 button.grid-cell-face {

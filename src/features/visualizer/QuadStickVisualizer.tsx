@@ -40,6 +40,7 @@ import { useLiveInput } from "../live/useLiveInput";
 import { GestureTable } from "./GestureTable";
 import { comboPairTitle, comboPrefix, firstMappedCombo } from "./parts";
 import { photoFor } from "./photos";
+import { stageRoom, verticalScroller } from "./stageFit";
 import "./visualizer.css";
 
 export type VisualizerBinding = BindingCells;
@@ -121,10 +122,22 @@ function StageViewbox({
     // 626px CSS floor (scale 0.69, 11px callouts) still wins; below it the canvas scrolls.
     const canvas = element.closest<HTMLElement>(".device-canvas");
     const fit = () => {
-      if (canvas !== null) {
-        const below = Number.parseFloat(getComputedStyle(canvas).paddingBottom) || 0;
-        const top = element.getBoundingClientRect().top - canvas.getBoundingClientRect().top + canvas.scrollTop;
-        const room = canvas.clientHeight - top - below;
+      // The box whose height to fit is whatever scrolls the stage: the canvas
+      // beside the inspector, or the column it shares once stacked (B-096).
+      // The aim is the whole stage in view once its canvas is scrolled to the top.
+      const box = canvas === null ? null : verticalScroller(element);
+      if (canvas !== null && box !== null) {
+        const canvasRect = canvas.getBoundingClientRect();
+        // A problems bar pinned over the bottom of the scroller hides that much.
+        const dock = box.querySelector<HTMLElement>(".problems-dock");
+        const room = stageRoom({
+          boxHeight: box.clientHeight,
+          rectDelta: element.getBoundingClientRect().top - canvasRect.top,
+          zoom: canvas.offsetWidth > 0 ? canvasRect.width / canvas.offsetWidth : 1,
+          scrollTop: box === canvas ? canvas.scrollTop : 0,
+          paddingBottom: Number.parseFloat(getComputedStyle(canvas).paddingBottom) || 0,
+          covered: dock !== null && getComputedStyle(dock).position === "sticky" ? dock.offsetHeight : 0,
+        });
         element.style.maxWidth = room > 0 ? `${String(Math.min(width, (room * width) / height))}px` : "";
       }
       const room = element.clientWidth;
@@ -135,6 +148,10 @@ function StageViewbox({
     const observer = new ResizeObserver(fit);
     observer.observe(element);
     if (canvas !== null) observer.observe(canvas);
+    // Any of these may be the scroller, depending on the editor's width.
+    for (const box of [canvas?.parentElement, element.closest(".editor-plate"), element.closest(".editor-workspace")]) {
+      if (box instanceof HTMLElement) observer.observe(box);
+    }
     return () => observer.disconnect();
   }, [width, height]);
   return (
