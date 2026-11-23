@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
 import { Icon } from "../../components/primitives/icons";
@@ -154,6 +154,13 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
 
   const devices = presence?.devices ?? [];
   const confirmation = plan?.confirmation ?? null;
+  // Yes, continue takes Install's place, so a second Enter would overwrite
+  // default.csv or prefs.csv. The question opens on the safe answer.
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const asking = confirmation !== null;
+  useEffect(() => {
+    if (asking && !busy) cancelRef.current?.focus();
+  }, [asking, busy]);
 
   return (
     <Dialog
@@ -163,7 +170,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
       actions={
         receipt === null ? (
           <>
-            <button type="button" disabled={busy} onClick={close}>
+            <button ref={cancelRef} type="button" disabled={busy} onClick={close}>
               {t("Device_Cancel")}
             </button>
             {confirmation === null ? (
@@ -180,7 +187,6 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
               <button
                 className="primary-action"
                 type="button"
-                data-autofocus
                 disabled={busy}
                 onClick={() => void confirmInstall()}
               >
