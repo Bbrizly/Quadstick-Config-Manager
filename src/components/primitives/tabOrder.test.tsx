@@ -3,11 +3,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { I18nProvider } from "../../i18n";
 import { AppShell } from "./AppShell";
-import { handleDocumentTab, rememberTabStart, trapTabKey } from "./focus";
+import { handleDocumentTab, keepFocusThroughBusy, rememberTabStart, trapTabKey } from "./focus";
 
 // macOS WebKit follows the system Keyboard navigation setting, off by
 // default, and then Tab only visits text fields and selects. Every Tab is
 // moved in script instead, so these press Tab and check where focus lands.
+
+const noop = (): void => undefined;
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 function tab(shiftKey = false, init: KeyboardEventInit = {}): KeyboardEvent {
   const event = new KeyboardEvent("keydown", {
@@ -189,7 +192,7 @@ describe("document Tab order", () => {
     expect(walk(2)).toEqual(["Yes", "No"]);
   });
 
-  it("is mounted by the app shell", () => {
+  it("is mounted by the app shell", async () => {
     render(
       <I18nProvider locale="en">
         <AppShell
@@ -211,6 +214,14 @@ describe("document Tab order", () => {
     screen.getByRole("button", { name: /Go to/u }).dispatchEvent(new Event("pointerdown", { bubbles: true }));
     tab();
     expect(focusedName()).toBe("Home");
+    const inside = screen.getByRole<HTMLButtonElement>("button", { name: "Inside" });
+    inside.focus();
+    inside.blur();
+    inside.disabled = true;
+    await settle();
+    inside.disabled = false;
+    await settle();
+    expect(document.activeElement).toBe(inside);
   });
 });
 
@@ -239,5 +250,119 @@ describe("dialog Tab trap", () => {
     expect(focusedName()).toBe("A");
     press(true);
     expect(focusedName()).toBe("C");
+  });
+});
+
+// Chromium drops focus to body when a focused button turns disabled and never
+// gives it back. jsdom keeps focus on it and will not blur a disabled button,
+// so blur() just before disabling stands in for that drop.
+describe("focus through a busy button", () => {
+  let stop: () => void = noop;
+  afterEach(() => {
+    stop();
+    cleanup();
+  });
+
+  function busyPage() {
+    render(
+      <>
+        <button type="button">Refresh</button>
+        <button type="button">Other</button>
+      </>,
+    );
+    stop = keepFocusThroughBusy();
+    const refresh = screen.getByRole<HTMLButtonElement>("button", { name: "Refresh" });
+    refresh.focus();
+    return { refresh, other: screen.getByRole("button", { name: "Other" }) };
+  }
+
+  it("puts focus back once the button is enabled again", async () => {
+    const { refresh } = busyPage();
+    refresh.blur();
+    refresh.disabled = true;
+    await settle();
+    expect(document.activeElement).toBe(document.body);
+    refresh.disabled = false;
+    await settle();
+    expect(document.activeElement).toBe(refresh);
+  });
+
+  it("keeps the ring off when the button was clicked, not tabbed to", async () => {
+    render(<button type="button">Refresh</button>);
+    stop = keepFocusThroughBusy();
+    const refresh = screen.getByRole<HTMLButtonElement>("button", { name: "Refresh" });
+    refresh.matches = (selector: string) => selector !== ":focus-visible";
+    refresh.focus();
+    const focus = vi.spyOn(refresh, "focus");
+    refresh.blur();
+    refresh.disabled = true;
+    await settle();
+    refresh.disabled = false;
+    await settle();
+    expect(focus).toHaveBeenCalledWith({ preventScroll: true });
+    expect(document.activeElement).toBe(refresh);
+  });
+
+  it("asks for the ring when the button had it", async () => {
+    render(<button type="button">Refresh</button>);
+    stop = keepFocusThroughBusy();
+    const refresh = screen.getByRole<HTMLButtonElement>("button", { name: "Refresh" });
+    refresh.matches = (selector: string) => selector === ":focus-visible";
+    refresh.focus();
+    const focus = vi.spyOn(refresh, "focus");
+    refresh.blur();
+    refresh.disabled = true;
+    await settle();
+    refresh.disabled = false;
+    await settle();
+    expect(focus).toHaveBeenCalledWith({ focusVisible: true, preventScroll: true });
+  });
+
+  it("leaves focus alone when the user moved on", async () => {
+    const { refresh, other } = busyPage();
+    refresh.blur();
+    refresh.disabled = true;
+    await settle();
+    other.focus();
+    refresh.disabled = false;
+    await settle();
+    expect(document.activeElement).toBe(other);
+  });
+
+  it("leaves focus on body after a click elsewhere (WebKit clicks do not focus)", async () => {
+    const { refresh, other } = busyPage();
+    refresh.blur();
+    refresh.disabled = true;
+    await settle();
+    other.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    refresh.disabled = false;
+    await settle();
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("leaves focus on body when a click elsewhere came before the busy spell", async () => {
+    const { refresh, other } = busyPage();
+    refresh.blur();
+    other.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    refresh.disabled = true;
+    await settle();
+    refresh.disabled = false;
+    await settle();
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("does not pull focus out of an open modal", async () => {
+    const { refresh } = busyPage();
+    refresh.blur();
+    refresh.disabled = true;
+    await settle();
+    render(
+      <div role="dialog" aria-modal="true">
+        <button type="button">Yes</button>
+      </div>,
+    );
+    refresh.disabled = false;
+    await settle();
+    expect(document.activeElement).toBe(document.body);
   });
 });

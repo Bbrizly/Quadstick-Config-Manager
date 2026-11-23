@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 
 import type { ThemePreference } from "../../app/theme";
 import { useI18n, type MessageKey } from "../../i18n";
-import { handleDocumentTab, rememberTabStart } from "./focus";
+import { handleDocumentTab, keepFocusThroughBusy, rememberTabStart } from "./focus";
 import { Icon, type IconName } from "./icons";
 
 export type ShellDestination = "home" | "device" | "community";
@@ -76,7 +76,9 @@ export function AppShell({
     document.addEventListener("keydown", handleDocumentTab);
     document.addEventListener("pointerdown", rememberTabStart, true);
     document.addEventListener("focusin", rememberTabStart);
+    const stopKeeping = keepFocusThroughBusy();
     return () => {
+      stopKeeping();
       document.removeEventListener("keydown", handleDocumentTab);
       document.removeEventListener("pointerdown", rememberTabStart, true);
       document.removeEventListener("focusin", rememberTabStart);

@@ -130,6 +130,82 @@ export function handleDocumentTab(event: KeyboardEvent): void {
   }
 }
 
+// A busy button disables itself. Chromium then drops focus to body and never
+// gives it back; WebKit keeps it. Put it back once the button is enabled
+// again, unless the user has moved on or a dialog owns focus.
+let lastFocused: HTMLElement | null = null;
+let lastFocusVisible = true;
+let parked: { element: HTMLElement; visible: boolean } | null = null;
+
+function matchesFocusVisible(element: HTMLElement): boolean {
+  try {
+    return element.matches(":focus-visible");
+  } catch {
+    return true;
+  }
+}
+
+function onBusyMutation(records: MutationRecord[]): void {
+  for (const record of records) {
+    const element = record.target;
+    if (!(element instanceof HTMLElement)) continue;
+    const disabled = element.hasAttribute("disabled");
+    if (disabled && element === lastFocused) {
+      const active = document.activeElement;
+      // Focus already went somewhere else first: nothing to keep.
+      if (active === element || active === null || active === document.body) {
+        parked = { element, visible: lastFocusVisible };
+      }
+    } else if (!disabled && parked?.element === element) {
+      const { visible } = parked;
+      parked = null;
+      const active = document.activeElement;
+      if (active !== null && active !== document.body) continue;
+      if (!element.isConnected || element.closest('[aria-modal="true"]') !== null || openModal() !== null) {
+        continue;
+      }
+      // It never moved, and scrolling to it would cut short a scroll the
+      // page started (the status line brought into view).
+      element.focus({ ...(visible ? KEYBOARD_FOCUS : {}), preventScroll: true });
+    }
+  }
+}
+
+function onBusyFocusIn(event: Event): void {
+  const target = event.target;
+  lastFocused = target instanceof HTMLElement ? target : null;
+  // Read now: Chromium has already dropped focus when the disable is seen.
+  lastFocusVisible = lastFocused === null || matchesFocusVisible(lastFocused);
+  if (parked !== null && target !== parked.element) parked = null;
+}
+
+function onBusyPointerDown(event: Event): void {
+  // A WebKit click on another button leaves focus on body: the user moved on,
+  // and the old button must not be parked when a later busy spell disables it.
+  const target = event.target instanceof Node ? event.target : null;
+  if (lastFocused !== null && (target === null || !lastFocused.contains(target))) lastFocused = null;
+  if (parked !== null && (target === null || !parked.element.contains(target))) parked = null;
+}
+
+/** Gives focus back to a button that disabled itself while busy. Returns
+    the teardown. */
+export function keepFocusThroughBusy(): () => void {
+  const observer = new MutationObserver(onBusyMutation);
+  observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ["disabled"] });
+  document.addEventListener("focusin", onBusyFocusIn);
+  document.addEventListener("pointerdown", onBusyPointerDown, true);
+  if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
+    lastFocused = document.activeElement;
+  }
+  return () => {
+    observer.disconnect();
+    document.removeEventListener("focusin", onBusyFocusIn);
+    document.removeEventListener("pointerdown", onBusyPointerDown, true);
+    lastFocused = null;
+    parked = null;
+  };
+}
+
 export function restoreFocus(target: Element | null): void {
   if (target instanceof HTMLElement && target.isConnected) {
     target.focus();
