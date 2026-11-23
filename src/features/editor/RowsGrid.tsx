@@ -58,11 +58,19 @@ function TokenCell({
   readonly onCommit: (value: string) => void;
   readonly extra?: ReactNode;
 }) {
+  const { t } = useI18n();
   const [editing, setEditing] = useState(startEditing);
   const edge = issue === undefined ? "" : ` issue-${issue.severity}`;
-  const spoken = issue === undefined ? name : `${issue.severity === "error" ? "Error" : "Warning"}: ${name}`;
+  const severity =
+    issue === undefined ? "" : t(issue.severity === "error" ? "Rewrite_SeverityError" : "Rewrite_SeverityWarning");
+  const spoken = issue === undefined ? name : `${severity}: ${name}`;
   return (
     <span className={`grid-cell tint-${tint}${edge}`}>
+      {/* The problems bar's glyph, so a warning and an error differ by shape
+          and not by colour alone. The label above already says which. */}
+      {issue === undefined ? null : (
+        <Icon name={issue.severity === "error" ? "error" : "warning"} size={16} className="grid-cell-issue" />
+      )}
       {editing ? (
         <input
           defaultValue={value}
