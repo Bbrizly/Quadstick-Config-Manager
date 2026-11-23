@@ -77,8 +77,10 @@
   max-width: 910px;
   /* Scale floor 0.69 (626 of 910): the 16-unit callout type reads 11px
      there, and a narrower window scrolls the picture instead of shrinking
-     the words under it. */
-  min-width: 626px;
+     the words under it. Under Interface size zoom it keeps 626 when the
+     column has room, so 200% reads 22px, and only gives way, down to the
+     zoom-divided floor that still reads 11px, to avoid a sideways scroll. */
+  min-width: max(calc(626px / var(--qcm-zoom, 1)), min(626px, 100%));
   margin-inline: auto;
   overflow: hidden;
 }

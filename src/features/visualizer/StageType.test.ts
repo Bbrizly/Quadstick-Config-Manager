@@ -23,6 +23,7 @@ describe("stage type", () => {
   });
 
   it("never scales the stage under 0.69, where 16-unit type is 11px", () => {
-    expect(stageRule()).toMatch(/min-width:\s*626px/u);
+    // Divided by the Interface size zoom, which multiplies on top.
+    expect(stageRule()).toMatch(/min-width:\s*max\(calc\(626px \/ var\(--qcm-zoom, 1\)\), min\(626px, 100%\)\)/u);
   });
 });
