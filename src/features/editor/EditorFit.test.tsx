@@ -22,6 +22,12 @@ function rule(selector: string): string {
   return found[2]!;
 }
 
+describe("status chip", () => {
+  it("never squeezes its glyph", () => {
+    expect(rule(".status-chip > svg")).toMatch(/flex:\s*none/u);
+  });
+});
+
 describe("editor fit", () => {
   afterEach(() => {
     vi.restoreAllMocks();

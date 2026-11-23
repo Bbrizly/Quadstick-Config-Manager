@@ -784,6 +784,12 @@ button.issue-fix {
   overflow-wrap: anywhere;
 }
 
+/* The glyph backs up the colour, so it keeps its size when the text is
+   long and the window zoomed (it was squeezed to 5px wide at 200%). */
+.status-chip > svg {
+  flex: none;
+}
+
 .status-ready {
   color: var(--qcm-success);
 }
