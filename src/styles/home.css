@@ -104,6 +104,13 @@
   color: var(--qcm-accent-text);
 }
 
+/* The ring sits just outside the plate, so it never merges with the
+   featured tile's accent edge or a card's hover border. */
+.home-view .homeaction:focus-visible,
+.home-view .card:focus-visible {
+  outline-offset: 2px;
+}
+
 .card-grid {
   display: flex;
   flex-wrap: wrap;
@@ -164,10 +171,6 @@
   overflow-wrap: anywhere;
 }
 
-.cardsub.dim {
-  opacity: 0.75;
-}
-
 /* As with the device line: the empty LibraryCards panel below is still
    spaced by its StackPanel, 12 more. */
 .library-empty {
@@ -218,7 +221,9 @@
 }
 
 .home-version {
+  /* The 4px every homepanel sits in, so this shares their left edge. */
   margin: 2px 0 4px;
+  padding: 0 4px;
   font-size: var(--qcm-small-size);
   color: var(--qcm-text-secondary);
 }
@@ -281,7 +286,9 @@
 }
 
 .cardsub.edited {
-  opacity: 0.75;
+  /* Avalonia dims this line to 0.75, which reads at 4.0:1 on a light card.
+     Secondary text at full strength is already the quieter voice. */
+  font-variant-numeric: tabular-nums;
 }
 
 .home-status {

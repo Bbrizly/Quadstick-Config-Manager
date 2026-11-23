@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Dialog } from "../../components/primitives/Dialog";
 import { Icon } from "../../components/primitives/icons";
 import { HomeDriveButton } from "../cloud/HomeDriveButton";
-import { Popover } from "../editor/Popover";
+import { InfoButton, Popover } from "../editor/Popover";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
@@ -384,15 +384,12 @@ export function HomePage({
           <h2 className="section" id="home-device-title">
             {t("Shell_OnYourQuadStick")}
           </h2>
-          <button
-            className="icon quiet"
-            type="button"
+          {/* `HomeFilesHelpButton`: the gesture that opens this list on the device. */}
+          <InfoButton
+            name={t("Shell_OnYourQuadStick")}
             title={t("Shell_OnYourQuadStick")}
-            aria-label={t("Shell_OnYourQuadStick")}
-            onClick={onOpenHelp}
-          >
-            ?
-          </button>
+            body={t("Shell_EachOfTheseIsA")}
+          />
           <button
             className="quiet manage-files"
             type="button"
@@ -410,7 +407,7 @@ export function HomePage({
           <div className="card-grid">
             {deviceNames.map((name) => (
               <button className="card" type="button" key={name} onClick={onManageDevice}>
-                <span className="card-initials" style={{ background: tileColorFor(name) }}>
+                <span className="card-initials" style={{ background: tileColorFor(name) }} aria-hidden="true">
                   {initials(name)}
                 </span>
                 <span className="card-body">
