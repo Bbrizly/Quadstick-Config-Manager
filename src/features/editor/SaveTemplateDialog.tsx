@@ -27,11 +27,11 @@ export function SaveTemplateDialog({ open, suggested, busy, onSave, onClose }: S
       onClose={onClose}
       actions={
         <>
-          <button className="primary" type="button" disabled={busy} onClick={() => onSave(name)}>
-            {t("Main_SaveTemplate")}
-          </button>
           <button type="button" disabled={busy} onClick={onClose}>
             {t("Main_Cancel")}
+          </button>
+          <button className="primary" type="button" disabled={busy} onClick={() => onSave(name)}>
+            {t("Main_SaveTemplate")}
           </button>
         </>
       }
