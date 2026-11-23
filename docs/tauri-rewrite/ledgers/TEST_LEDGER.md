@@ -113,3 +113,12 @@ Both need the full-volume hardware case in TASK-056.
 - `follow_link.rs::unused_custom_names_wait_for_a_file_then_last_with_it`.
 - `profile_commands.rs` / `lib.rs`: the 90-command surface.
 - Frontend: `DeviceSettingsRoute.test.tsx` (nav opens settings, mount path, files window; no stick bold line and drive picker), `CardActions.test.tsx` (forget a card's link with the editor shut), controller switch role.
+
+## Polish pass (2026-11-23)
+
+- `SettingsPage.test.tsx`: one tab stop, arrows and Home move and label the panel (B-082).
+- `ModesDialog.test.tsx`: armed delete shows Really delete? on the button (B-083).
+- `Dialog.test.tsx`: focus survives a button swap and a busy spell, and stays where the user put it (B-085).
+- `TutorialTour.test.tsx`: opens on Next (B-086).
+- `InstallProfileDialog.test.tsx`: the overwrite question focuses Cancel, so a second Enter does not overwrite default.csv.
+- Every test above was run red with its fix removed. Screens checked on the mock in headless Chromium and Playwright WebKit 26 (Home, editor, modes help, Settings); a still editor runs zero animations in both. Not yet run in the real Tauri WebView (`pnpm e2e:mac`).

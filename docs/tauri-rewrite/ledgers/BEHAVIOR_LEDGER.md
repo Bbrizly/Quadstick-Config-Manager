@@ -83,5 +83,13 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-077 | B | Settings: General holds language, appearance, size, model, card wording, Drive backup, updates; Advanced holds motion, grouping, privacy, window, tutorial; Help holds the quick guide | IMPLEMENTED |
 | B-078 | B | device nav opens device settings (drive found and read, none draws the catalog, several ask), files in a window from the page and Home; group picture and Games on a Mac block; drive path line | phase 7 shots + `DeviceSettingsRoute.test.tsx` | IMPLEMENTED |
 | B-079 | B | Home card menu actions act on the file without opening it; unused custom names kept per profile; template rename/delete; Get the latest list as `ConfirmLatestAsync`; Undo never greyed; Inter | phase 7 | IMPLEMENTED |
-
+| B-080 | B | Home "Edited" line is full secondary text, not Avalonia's 0.75 dim (4.0:1 on a light card failed 4.5:1) | contrast check + screenshot | IMPLEMENTED |
+| B-081 | A | Home ? beside On your QuadStick opens the files-help flyout (`HomeFilesHelpButton`), not the whole guide | screenshot | IMPLEMENTED |
+| B-082 | C | Settings tabs: one tab stop, arrows/Home/End move, panel labelled by its tab | `SettingsPage.test.tsx` | IMPLEMENTED |
+| B-083 | C | mode delete: the armed first click shows Really delete? on the button, not only in its name | `ModesDialog.test.tsx` | IMPLEMENTED |
+| B-084 | C | file delete on the QuadStick focuses Cancel, Delete is plain danger (Avalonia ConfirmAsync); Enter in rename commits | manual (mock has only protected files) | IMPLEMENTED |
+| B-085 | C | a dialog whose buttons swap while open (Install to Close) keeps focus in the panel | `Dialog.test.tsx` | IMPLEMENTED |
+| B-086 | C | tutorial opens on Next, Skip sits left in the button row, step count and text read together | `TutorialTour.test.tsx` | IMPLEMENTED |
+| B-087 | B | Drive backup, Drive picker, drive choice and follow-link review put dismiss first and the action last, safe option focused | screenshots | IMPLEMENTED |
+| B-088 | C | no animation loops while an input is held (visualizer and sentence pips fade in once); the device check fades instead of popping on every editor load; presses do not move under reduce motion | `grep infinite` empty + getAnimations idle probe | IMPLEMENTED |
 Status moves to PARITY-TESTED/HARDWARE-VERIFIED only with linked TEST_LEDGER evidence.
