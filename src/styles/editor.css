@@ -699,8 +699,11 @@ button.mode-select:disabled {
   margin: 0 16px 14px;
 }
 
+/* B-122: 150 tall, but never so tall that the open bar leaves under 112px of
+   workspace for the focused control; at 200% it was taller than the
+   workspace. ProblemsDock publishes both heights. */
 .problems-list {
-  height: 150px;
+  height: max(40px, min(150px, calc(var(--qcm-workspace-h, 1000px) - var(--qcm-dock-bar-h, 0px) - 120px)));
   overflow: auto;
   padding: 4px;
   border: var(--qcm-hairline) solid var(--qcm-border);

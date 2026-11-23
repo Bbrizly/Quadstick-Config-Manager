@@ -56,10 +56,20 @@ function issueText(issue: Issue, severity: string): string {
   return `${severity} ${issue.cell}: ${issue.message} (${issue.fix})`;
 }
 
-/** Lets a stacked workspace pad its scrolling by the pinned bar's height. */
+/**
+ * Lets a stacked workspace pad its scrolling by the pinned bar's height, and
+ * gives the open list the workspace's height and the bar's own, so it can
+ * leave room for the control that has focus (B-122).
+ */
 function publishDockHeight(element: HTMLElement | null): void {
   const workspace = element?.closest<HTMLElement>(".editor-workspace");
-  workspace?.style.setProperty("--qcm-dock-h", `${String(element?.offsetHeight ?? 0)}px`);
+  if (workspace === null || workspace === undefined || element === null) return;
+  const list = element.querySelector<HTMLElement>(":scope > .problems-list");
+  const gap = list === null ? 0 : Number.parseFloat(getComputedStyle(element).rowGap) || 0;
+  const bar = element.offsetHeight - (list?.offsetHeight ?? 0) - gap;
+  workspace.style.setProperty("--qcm-dock-h", `${String(element.offsetHeight)}px`);
+  workspace.style.setProperty("--qcm-dock-bar-h", `${String(bar)}px`);
+  workspace.style.setProperty("--qcm-workspace-h", `${String(workspace.clientHeight)}px`);
 }
 
 /**
@@ -104,6 +114,8 @@ export function ProblemsDock({ issues, status, onFocusIssue, onStatus, onMoveToN
     if (element === null || typeof ResizeObserver === "undefined") return undefined;
     const observer = new ResizeObserver(() => publishDockHeight(element));
     observer.observe(element);
+    const workspace = element.closest(".editor-workspace");
+    if (workspace !== null) observer.observe(workspace);
     return () => observer.disconnect();
   }, []);
 
