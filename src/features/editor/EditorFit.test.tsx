@@ -103,7 +103,7 @@ describe("editor fit", () => {
     expect(rule(`${fit} .editor-plate`)).toMatch(/grid-template-columns:\s*minmax\(0, 1fr\)/u);
     // Nothing in the plate may ride over the pinned bar, or hide focus under it.
     expect(rule(`${fit} .editor-plate`)).toMatch(/isolation:\s*isolate/u);
-    expect(rule(fit)).toMatch(/scroll-padding-block-end:\s*96px/u);
+    expect(rule(fit)).toMatch(/scroll-padding-block-end:\s*calc\(var\(--qcm-dock-h, 80px\) \+ 16px\)/u);
     expect(rule(`${fit} .problems-dock`)).toMatch(/position:\s*sticky/u);
   });
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { Icon, type IconName } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
@@ -56,6 +56,12 @@ function issueText(issue: Issue, severity: string): string {
   return `${severity} ${issue.cell}: ${issue.message} (${issue.fix})`;
 }
 
+/** Lets a stacked workspace pad its scrolling by the pinned bar's height. */
+function publishDockHeight(element: HTMLElement | null): void {
+  const workspace = element?.closest<HTMLElement>(".editor-workspace");
+  workspace?.style.setProperty("--qcm-dock-h", `${String(element?.offsetHeight ?? 0)}px`);
+}
+
 /**
  * The bottom problems bar (`ProblemsDock`): one slim line with the count, the
  * full list expanding above it only when asked, and the status line beside it.
@@ -88,8 +94,21 @@ export function ProblemsDock({ issues, status, onFocusIssue, onStatus, onMoveToN
     onFocusIssue(issue);
   };
 
+  // Where the bar is pinned (stacked layouts) a focused control must scroll
+  // clear of it, open or closed, so the workspace pads by its real height.
+  const dock = useRef<HTMLDivElement>(null);
+  // After every render (opening and closing re-render), and on any resize.
+  useLayoutEffect(() => publishDockHeight(dock.current));
+  useLayoutEffect(() => {
+    const element = dock.current;
+    if (element === null || typeof ResizeObserver === "undefined") return undefined;
+    const observer = new ResizeObserver(() => publishDockHeight(element));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="problems-dock">
+    <div className="problems-dock" ref={dock}>
       {expanded ? (
         <div className="problems-list" role="list" aria-label={t("Shell_ListOfValidationProblemsSelect")}>
           {ordered.length === 0 ? (

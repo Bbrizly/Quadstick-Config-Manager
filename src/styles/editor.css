@@ -893,8 +893,9 @@ button.issue-fix {
    was left under 100px of height; the problems bar stays pinned below. */
 .editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) {
   overflow-y: auto;
-  /* A focused control scrolls clear of the pinned bar (WCAG 2.4.11). */
-  scroll-padding-block-end: 96px;
+  /* A focused control scrolls clear of the pinned bar, open or closed
+     (WCAG 2.4.11); ProblemsDock publishes its height. */
+  scroll-padding-block-end: calc(var(--qcm-dock-h, 80px) + 16px);
 }
 
 .editor-workspace:is([data-fit="stacked"], [data-fit="tight"]) .editor-plate {
