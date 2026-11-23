@@ -26,6 +26,7 @@ export const NETWORK_METHODS = {
   checkForUpdate: ["check_for_update"],
   openExternalUrl: ["open_external_url"],
   openPrivacyPolicy: ["open_privacy_policy"],
+  openContactLink: ["open_contact_link"],
   sendFeedback: ["send_feedback"],
   openRegistryProfile: ["open_registry_profile"],
   importSheetsLink: ["import_sheets_link"],

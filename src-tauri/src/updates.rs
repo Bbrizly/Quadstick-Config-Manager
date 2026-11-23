@@ -284,9 +284,59 @@ pub fn open_privacy_policy() -> Result<(), Failure> {
     })
 }
 
+/// The four Contact links (`SettingsView.ContactTab`). The window names one
+/// and the address is fixed here, so no URL crosses the boundary.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ContactLink {
+    ReportBug,
+    Website,
+    Linkedin,
+    Email,
+}
+
+pub const REPORT_BUG_URL: &str = "https://github.com/Bbrizly/Quadstick-Config-Manager/issues";
+pub const WEBSITE_URL: &str = "https://bbrizly.github.io";
+pub const LINKEDIN_URL: &str = "https://www.linkedin.com/in/bassam-k/";
+pub const EMAIL_URL: &str = "mailto:bassamkamal.py@gmail.com";
+
+impl ContactLink {
+    #[must_use]
+    pub const fn url(self) -> &'static str {
+        match self {
+            Self::ReportBug => REPORT_BUG_URL,
+            Self::Website => WEBSITE_URL,
+            Self::Linkedin => LINKEDIN_URL,
+            Self::Email => EMAIL_URL,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OpenContactLinkRequest {
+    link: ContactLink,
+}
+
+fn contact_url(request: Value) -> Result<&'static str, QcmError> {
+    let request: OpenContactLinkRequest = parse(request, "open_contact_link request")?;
+    Ok(request.link.url())
+}
+
+#[tauri::command]
+pub fn open_contact_link(request: Value) -> Result<(), Failure> {
+    let url = redact(contact_url(request))?;
+    open::that(url).map_err(|error| {
+        Box::new(QcmErrorDto::from(&QcmError::Internal(InternalError {
+            what: "open contact link",
+            detail: OsDetail::new(error.to_string()),
+        })))
+    })
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{compare, normalize_tag};
+    use super::{compare, contact_url, normalize_tag};
 
     // Every key the check answers with is a string the window can show.
     #[test]
@@ -329,6 +379,36 @@ mod tests {
         ];
         for &(a, b, expected) in cases {
             assert_eq!(compare(a, b), expected, "compare({a}, {b})");
+        }
+    }
+
+    #[test]
+    fn each_contact_link_opens_its_fixed_address() {
+        for (link, url) in [
+            ("report_bug", "https://github.com/Bbrizly/Quadstick-Config-Manager/issues"),
+            ("website", "https://bbrizly.github.io"),
+            ("linkedin", "https://www.linkedin.com/in/bassam-k/"),
+            ("email", "mailto:bassamkamal.py@gmail.com"),
+        ] {
+            let got = contact_url(serde_json::json!({ "link": link }));
+            assert_eq!(got.ok(), Some(url), "{link}");
+        }
+    }
+
+    #[test]
+    fn a_contact_link_outside_the_four_is_refused() {
+        for request in [
+            serde_json::json!({ "link": "https://example.com" }),
+            serde_json::json!({ "link": "ReportBug" }),
+            serde_json::json!({ "link": "email", "url": "mailto:x@y.z" }),
+            serde_json::json!({}),
+        ] {
+            let error = contact_url(request).expect_err("refused");
+            assert_eq!(
+                error.code(),
+                qcm_core::error::ErrorCode::RequestMalformed,
+                "{error:?}"
+            );
         }
     }
 }

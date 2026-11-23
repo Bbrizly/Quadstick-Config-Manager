@@ -115,6 +115,7 @@ pub fn registered_commands() -> &'static [&'static str] {
         "open_registry_profile",
         "record_install_cancelled",
         "open_privacy_policy",
+        "open_contact_link",
         "subscribe_profile_links",
         "unsubscribe_profile_links",
         "get_controller_options",
@@ -372,6 +373,7 @@ pub fn run_with(mut config: host::HostConfig, context: tauri::Context<tauri::Wry
                 registry::open_registry_profile,
                 commands::record_install_cancelled,
                 updates::open_privacy_policy,
+                updates::open_contact_link,
                 registry::subscribe_profile_links,
                 registry::unsubscribe_profile_links,
                 controller::get_controller_options,
@@ -453,7 +455,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 96);
+        assert_eq!(commands.len(), 97);
         for expected in [
             "import_sheets_link",
             "check_latest_from_link",

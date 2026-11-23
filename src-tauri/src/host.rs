@@ -185,6 +185,7 @@ pub const NETWORK_COMMANDS: &[&str] = &[
     "check_for_update",
     "open_external_url",
     "open_privacy_policy",
+    "open_contact_link",
     "send_feedback",
     "track_telemetry_event",
     "open_registry_profile",

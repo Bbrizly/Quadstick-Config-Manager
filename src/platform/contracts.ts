@@ -180,6 +180,9 @@ export interface Capabilities {
 /** The current usage-data notice (`Telemetry.NoticeVersion`). */
 export const USAGE_NOTICE_VERSION = 2;
 
+/** The four Contact-tab links. Native holds the addresses. */
+export type ContactLink = "report_bug" | "website" | "linkedin" | "email";
+
 /** `install_failed` reasons a window reports when the person backs out. */
 export type InstallCancelReason =
   | "cancelled_device"

@@ -149,6 +149,18 @@ button.settings-tab[aria-selected="true"] {
   gap: 10px;
 }
 
+/* Avalonia stacks the Contact links one per line, 16px apart. */
+/* Each link keeps its 48px target, so the targets themselves space the
+   list; a gap on top read as four loose items. */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-links .link-button {
+  text-underline-offset: 3px;
+}
+
 .settings-connected {
   margin: 0;
   color: var(--qcm-success);

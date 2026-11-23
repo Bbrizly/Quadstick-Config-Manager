@@ -8,7 +8,7 @@ import type {
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
   InstallPlan, InstallProgress, InstallReceipt, LiveSnapshot, SaveReceipt, SettingsPatch, Subscription,
   UpdateResult, PendingCrashReport, CrashReportChoice, CrashResolveResult, PendingRescue,
-  InstallCancelReason,
+  InstallCancelReason, ContactLink,
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
@@ -72,6 +72,7 @@ export class TauriQcmClient implements QcmClient {
   openExternalUrl(url: string): Promise<void> { return call("open_external_url", { url }); }
   sendFeedback(text: string): Promise<void> { return call("send_feedback", { text }); }
   openPrivacyPolicy(): Promise<void> { return call("open_privacy_policy"); }
+  openContactLink(link: ContactLink): Promise<void> { return call("open_contact_link", { link }); }
   async recordInstallCancelled(reason: InstallCancelReason): Promise<void> {
     await call<boolean>("record_install_cancelled", { reason });
   }
@@ -197,6 +198,7 @@ export const TAURI_COMMANDS = [
   "open_device_profile", "open_device_preferences", "start_live_input", "stop_live_input",
   "subscribe_devices_changed", "unsubscribe_devices_changed",
   "check_for_update", "open_external_url", "send_feedback", "open_privacy_policy",
+  "open_contact_link",
   "record_install_cancelled",
   "get_pending_crash_report", "resolve_crash_report",
   "get_pending_rescue", "open_rescue_profile", "discard_pending_rescues",

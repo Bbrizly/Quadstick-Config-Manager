@@ -162,4 +162,36 @@ describe("GATE_SOFT settings page", () => {
       expect(send).toHaveBeenCalledWith("Ship the rewrite");
     });
   });
+  it("shows the four Contact links in Avalonia's order and opens each by name", async () => {
+    const client = new MockQcmClient();
+    renderSettings(client);
+    fireEvent.click(await screen.findByRole("tab", { name: /Contact/u }));
+    const links = [
+      ["Report a bug on GitHub, opens in your browser", "Report a bug on GitHub", "report_bug"],
+      ["Open the website, opens in your browser", "Website: bbrizly.github.io", "website"],
+      ["Open LinkedIn, opens in your browser", "LinkedIn", "linkedin"],
+      ["Send an email, opens your mail app", "Email: bassamkamal.py@gmail.com", "email"],
+    ] as const;
+    const buttons = links.map(([name, text]) => {
+      const button = screen.getByRole("button", { name });
+      expect(button).toHaveTextContent(text);
+      expect(button).toHaveClass("link-button");
+      return button;
+    });
+    for (let index = 1; index < buttons.length; index += 1) {
+      expect(buttons[index - 1]!.compareDocumentPosition(buttons[index]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
+    buttons.forEach((button) => fireEvent.click(button));
+    expect(client.contactLinksOpened).toEqual(links.map(([, , link]) => link));
+  });
+
+  it("hides the Contact links when the host has no openContactLink", async () => {
+    const client = new MockQcmClient();
+    Object.defineProperty(client, "openContactLink", { value: undefined });
+    renderSettings(client);
+    fireEvent.click(await screen.findByRole("tab", { name: /Contact/u }));
+    expect(await screen.findByText(/Contact/u, { selector: "h2" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /opens in your browser|opens your mail app/u })).toBeNull();
+    expect(screen.queryByText("LinkedIn")).toBeNull();
+  });
 });

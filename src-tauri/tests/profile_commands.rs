@@ -669,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 96);
+    assert_eq!(registered.len(), 97);
     for name in [
         "subscribe_close_requests",
         "unsubscribe_close_requests",
@@ -760,6 +760,7 @@ fn every_command_this_build_registers_is_on_the_list() {
         "open_registry_profile",
         "record_install_cancelled",
         "open_privacy_policy",
+        "open_contact_link",
         "subscribe_profile_links",
         "unsubscribe_profile_links",
         "get_controller_options",

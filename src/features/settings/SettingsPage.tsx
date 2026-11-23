@@ -14,6 +14,7 @@ import {
   asQcmError,
   type AppSettings,
   type CardSentenceStyle,
+  type ContactLink,
   type ModelChoice,
   type PickerGrouping,
   type QcmClient,
@@ -61,6 +62,16 @@ const HELP_SECTIONS: readonly (readonly [MessageKey | "Renaming" | "Keyboard", M
   ["Keyboard", "Main_TabMovesBetweenFieldsArrows"],
   ["Main_FoundAProblem", "Main_SelectAProblemInThe"],
 ];
+
+/** `SettingsView.ContactTab`, in its order. Native holds the addresses. */
+const CONTACT_LINKS: readonly (readonly [ContactLink, (t: Translate) => string, MessageKey])[] = [
+  ["report_bug", (t) => t("Settings_ReportBug"), "Settings_ReportBugHelp"],
+  ["website", (t) => t("Settings_WebsiteLink", ["bbrizly.github.io"]), "Settings_WebsiteHelp"],
+  ["linkedin", () => "LinkedIn", "Settings_LinkedInHelp"],
+  ["email", (t) => t("Settings_EmailLink", ["bassamkamal.py@gmail.com"]), "Settings_EmailHelp"],
+];
+
+type Translate = (key: MessageKey, values?: readonly unknown[]) => string;
 
 interface SettingsPageProps {
   readonly client: QcmClient;
@@ -614,6 +625,23 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
             <>
               <h2 className="settings-heading">{t("Settings_TabContact")}</h2>
               <p className="settings-caption">{t("Settings_ContactIntro")}</p>
+              {client.openContactLink === undefined ? null : (
+                <div className="contact-links">
+                  {CONTACT_LINKS.map(([link, label, help]) => (
+                    <button
+                      key={link}
+                      type="button"
+                      className="link-button"
+                      aria-label={t(help)}
+                      onClick={() => {
+                        void client.openContactLink?.(link).catch(() => undefined);
+                      }}
+                    >
+                      {label(t)}
+                    </button>
+                  ))}
+                </div>
+              )}
               {client.sendFeedback === undefined ? null : (
                 <>
                   <h3 className="settings-heading">{t("Settings_SendFeedback")}</h3>

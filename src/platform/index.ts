@@ -2,7 +2,7 @@
 export type { CommunityCatalog, CommunityClient, CommunityProfile } from "./communityContracts";
 export type {
   AppSettings, AppSnapshot, Capabilities, CloseDisposition, CloseOutcome, ConfirmationKind,
-  ConfirmationRequirement, CrashReportChoice, CrashResolveResult, DeletePlan, DeleteReceipt,
+  ConfirmationRequirement, ContactLink, CrashReportChoice, CrashResolveResult, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, DeviceProfileEntry,
   DeviceSummary, EditorOp, EditorSnapshot, InstallCancelReason, InstallPlan, InstallProgress, InstallReceipt,
   InterfaceScale, Issue, IssueSeverity, LedColour, LiveMotion, LiveSnapshot, LiveStatus, Mode,

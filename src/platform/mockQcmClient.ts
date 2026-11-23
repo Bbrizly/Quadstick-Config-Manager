@@ -11,6 +11,7 @@
 import type {
   AppSettings,
   InstallCancelReason,
+  ContactLink,
   AppSnapshot,
   CloseDisposition,
   CloseOutcome,
@@ -252,6 +253,7 @@ export class MockQcmClient implements QcmClient {
   #usageData = false;
   readonly installCancels: InstallCancelReason[] = [];
   privacyPolicyOpened = 0;
+  contactLinksOpened: ContactLink[] = [];
 
   /** Behave like a build that can send usage data, so the notice shows. */
   enableUsageData(): void {
@@ -453,6 +455,11 @@ export class MockQcmClient implements QcmClient {
 
   openPrivacyPolicy(): Promise<void> {
     this.privacyPolicyOpened += 1;
+    return Promise.resolve();
+  }
+
+  openContactLink(link: ContactLink): Promise<void> {
+    this.contactLinksOpened.push(link);
     return Promise.resolve();
   }
 
