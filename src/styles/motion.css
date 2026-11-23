@@ -3,7 +3,11 @@
    live in tokens so reduced motion keeps the fades and drops the movement. */
 
 :root {
+  /* Shared with every stylesheet: hover and press use --qcm-dur-instant,
+     arrivals --qcm-ease-out, exits --qcm-ease-in. */
   --qcm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --qcm-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --qcm-dur-instant: 100ms;
   --qcm-dur-fast: 120ms;
   --qcm-dur: 200ms;
   --qcm-dur-slow: 320ms;
@@ -51,19 +55,20 @@
 }
 
 /* Closing is quicker than opening and lets the page through at once. The
-   element is dropped when its "-out" animation finishes (presence.ts). */
+   element is dropped when its "-out" animation finishes (presence.ts), so
+   every exit keyframe name ends in "-out". */
 .dialog-backdrop.closing {
   pointer-events: none;
-  animation: qcm-fade-out var(--qcm-dur-fast) ease-in forwards;
+  animation: qcm-fade-out var(--qcm-dur-instant) var(--qcm-ease-in) forwards;
 }
 
 .dialog-panel.closing {
-  animation: qcm-panel-out 140ms ease-in forwards;
+  animation: qcm-panel-out 140ms var(--qcm-ease-in) forwards;
 }
 
 .popover-panel.closing {
   pointer-events: none;
-  animation: qcm-drop-out var(--qcm-dur-fast) ease-in forwards;
+  animation: qcm-drop-out var(--qcm-dur-fast) var(--qcm-ease-in) forwards;
 }
 
 /* The problems list rises out of the bar it opens from. */
@@ -73,14 +78,13 @@
 
 /* ---- Feedback: a new status, the device arriving, a switch ---- */
 
-/* Keyed on its text, so each new message (Saved, a new count) lands. */
+/* Keyed on its text, so each new message (Saved, a new count, the device
+   coming or going) lands. A fade only: the chip remounts with every editor
+   page, so a scale here read as an arrival each time and echoed the install
+   mark. */
 .problems-status > .status-chip,
 .device-status > .status-chip {
   animation: qcm-fade var(--qcm-dur) ease-out backwards;
-}
-
-.device-status > .status-ready svg {
-  animation: qcm-pop var(--qcm-dur-slow) var(--qcm-ease-out) backwards;
 }
 
 input.qcm-switch {
@@ -89,6 +93,8 @@ input.qcm-switch {
     border-color var(--qcm-dur-fast) ease;
 }
 
+/* A press stretches the knob toward where it will go. Width, not scaleX:
+   scaling a round knob draws an ellipse, not a pill. */
 input.qcm-switch::before {
   transition:
     transform var(--qcm-dur) var(--qcm-ease-out),
@@ -209,12 +215,6 @@ input.qcm-switch:checked:active:not(:disabled)::before {
   }
 }
 
-@keyframes qcm-pop {
-  from {
-    transform: scale(var(--qcm-pop-big));
-  }
-}
-
 @keyframes qcm-land {
   from {
     opacity: 0;
@@ -265,6 +265,11 @@ input.qcm-switch:checked:active:not(:disabled)::before {
     animation-duration: 150ms !important;
     animation-delay: 0s !important;
   }
+
+  /* A press changes colour only: no shrink. */
+  :root button:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 :root[data-reduce-motion="true"] {
@@ -286,4 +291,8 @@ input.qcm-switch:checked:active:not(:disabled)::before {
 :root[data-reduce-motion="true"] .install-landed > :last-child {
   animation-duration: 150ms !important;
   animation-delay: 0s !important;
+}
+
+:root[data-reduce-motion="true"] button:active:not(:disabled) {
+  transform: none;
 }
