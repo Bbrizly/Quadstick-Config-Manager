@@ -233,7 +233,7 @@ input.qcm-switch:checked:active:not(:disabled)::before {
 
 @keyframes qcm-ring {
   from {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--qcm-success) 45%, transparent);
+    box-shadow: 0 0 0 0 var(--qcm-success-ring);
   }
   to {
     box-shadow: 0 0 0 var(--qcm-ring) transparent;

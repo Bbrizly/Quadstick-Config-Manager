@@ -25,6 +25,9 @@
   --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
   /* Behind an open dialog. */
   --qcm-scrim: rgb(0 0 0 / 45%);
+  /* Text at 12% and success at 45%, written out: mixing them needs Safari 16.2. */
+  --qcm-cue-shade: rgb(22 25 28 / 12%);
+  --qcm-success-ring: rgb(15 107 52 / 45%);
   --qcm-error: #a6291f;
   --qcm-success: #0f6b34;
   --qcm-warning: #7a4b00;
@@ -104,6 +107,8 @@
   --qcm-on-tile: #ffffff;
   --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
   --qcm-scrim: rgb(0 0 0 / 45%);
+  --qcm-cue-shade: rgb(240 244 246 / 12%);
+  --qcm-success-ring: rgb(127 222 155 / 45%);
   --qcm-error: #f2b4b0;
   --qcm-success: #7fde9b;
   --qcm-warning: #e8c36a;
@@ -139,6 +144,8 @@
     --qcm-on-tile: #ffffff;
     --qcm-cell-hover-wash: rgb(255 255 255 / 0.25);
     --qcm-scrim: rgb(0 0 0 / 45%);
+    --qcm-cue-shade: rgb(240 244 246 / 12%);
+    --qcm-success-ring: rgb(127 222 155 / 45%);
     --qcm-error: #f2b4b0;
     --qcm-success: #7fde9b;
     --qcm-warning: #e8c36a;
@@ -177,6 +184,8 @@
     --qcm-cell-hover-wash: transparent;
     /* Forced colours repaint it as Canvas and keep the alpha. */
     --qcm-scrim: rgb(0 0 0 / 45%);
+    --qcm-cue-shade: transparent;
+    --qcm-success-ring: transparent;
     --qcm-error: CanvasText;
     --qcm-success: CanvasText;
     --qcm-warning: CanvasText;

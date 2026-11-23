@@ -132,11 +132,18 @@ describe("visualizer.css cue", () => {
   });
 
   it("keeps callout text at 4.5:1 under the darkest edge of the shadow", () => {
-    const pct = Number(/color-mix\(in srgb, var\(--qcm-text\) (\d+)%, transparent\)/u.exec(css)?.[1]);
-    expect(pct).toBeGreaterThan(0);
+    expect(css).toMatch(/linear-gradient\(to top, var\(--qcm-cue-shade\), transparent\)/u);
     for (const block of [':root[data-theme="light"]', ':root[data-theme="dark"]']) {
       const t = tokens(block);
-      const under = hexRgb(t["surface"]!).map((v, i) => v * (1 - pct / 100) + hexRgb(t["text"]!)[i]! * (pct / 100));
+      // The shade is the theme's own text colour at a set alpha (tokens.css).
+      const at = tokenCss.indexOf(block);
+      const body = tokenCss.slice(at, tokenCss.indexOf("}", at));
+      const shade = /--qcm-cue-shade:\s*rgb\((\d+) (\d+) (\d+) \/ (\d+)%\)/u.exec(body);
+      expect(shade, `${block} cue-shade`).not.toBeNull();
+      const pct = Number(shade![4]);
+      const ink = [Number(shade![1]), Number(shade![2]), Number(shade![3])];
+      expect(ink).toEqual(hexRgb(t["text"]!));
+      const under = hexRgb(t["surface"]!).map((v, i) => v * (1 - pct / 100) + ink[i]! * (pct / 100));
       for (const name of ["text", "text-secondary", "accent-text", "warning", "error"]) {
         const [hi, lo] = [lum(hexRgb(t[name]!)), lum(under)].toSorted((a, b) => b - a);
         expect((hi! + 0.05) / (lo! + 0.05), `${block} ${name}`).toBeGreaterThanOrEqual(4.5);

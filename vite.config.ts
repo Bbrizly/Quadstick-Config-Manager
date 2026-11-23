@@ -23,7 +23,9 @@ export default defineConfig({
   build: {
     outDir: "dist-ui",
     emptyOutDir: true,
-    target: "es2023",
+    // The macOS floor is 12.0 with Safari 16 (tauri.conf.json): WKWebView is
+    // the system Safari, so syntax is lowered to that, not to es2023.
+    target: ["safari16", "chrome105", "es2022"],
     // The shipped app has no devtools to read them, and they doubled the
     // bundle on disk. Set QCM_SOURCEMAP=1 for a build you mean to debug.
     sourcemap: process.env["QCM_SOURCEMAP"] === "1",
