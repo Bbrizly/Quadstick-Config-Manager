@@ -21,4 +21,8 @@ describe("stage type", () => {
     expect(stageRule()).toMatch(/--qcm-small-size:\s*16px/u);
     expect(stageRule()).toMatch(/--qcm-body-size:\s*17px/u);
   });
+
+  it("never scales the stage under 0.69, where 16-unit type is 11px", () => {
+    expect(stageRule()).toMatch(/min-width:\s*626px/u);
+  });
 });

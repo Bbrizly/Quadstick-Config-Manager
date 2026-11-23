@@ -118,7 +118,7 @@ function StageViewbox({
     if (element === null) return undefined;
     // Fit the height too, as a Uniform Viewbox does: a stage sized by width
     // alone hid the bottom callouts under a scroll with no bar on macOS. The
-    // 546px CSS floor still wins, and below it the canvas scrolls as before.
+    // 626px CSS floor (scale 0.69, 11px callouts) still wins; below it the canvas scrolls.
     const canvas = element.closest<HTMLElement>(".device-canvas");
     const fit = () => {
       if (canvas !== null) {

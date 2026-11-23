@@ -75,9 +75,10 @@
   position: relative;
   width: 100%;
   max-width: 910px;
-  /* Scale floor 0.6: below it the callout words stop being readable, so a
-     narrow window scrolls the picture sideways instead. */
-  min-width: 546px;
+  /* Scale floor 0.69 (626 of 910): the 16-unit callout type reads 11px
+     there, and a narrower window scrolls the picture instead of shrinking
+     the words under it. */
+  min-width: 626px;
   margin-inline: auto;
   overflow: hidden;
 }
